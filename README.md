@@ -9,22 +9,22 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/your-username/youth-weekly/actions">
-    <img src="https://github.com/your-username/youth-weekly/workflows/CI/badge.svg" alt="CI Status">
+  <a href="https://github.com/xfengyin/youth-weekly/actions">
+    <img src="https://github.com/xfengyin/youth-weekly/workflows/CI/badge.svg" alt="CI Status">
   </a>
-  <a href="https://github.com/your-username/youth-weekly/releases">
-    <img src="https://img.shields.io/github/v/release/your-username/youth-weekly" alt="Latest Release">
+  <a href="https://github.com/xfengyin/youth-weekly/releases">
+    <img src="https://img.shields.io/github/v/release/xfengyin/youth-weekly" alt="Latest Release">
   </a>
-  <a href="https://github.com/your-username/youth-weekly/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/your-username/youth-weekly" alt="License">
+  <a href="https://github.com/xfengyin/youth-weekly/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/xfengyin/youth-weekly" alt="License">
   </a>
-  <a href="https://youth-weekly.github.io/rss.xml">
+  <a href="https://xfengyin.github.io/youth-weekly/rss.xml">
     <img src="https://img.shields.io/badge/RSS-Subscribe-orange" alt="RSS">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://youth-weekly.github.io">🌐 在线访问</a> •
+  <a href="https://xfengyin.github.io/youth-weekly">🌐 在线访问</a> •
   <a href="#-订阅">📮 订阅</a> •
   <a href="#-投稿">✍️ 投稿</a> •
   <a href="#-本地开发">💻 开发</a>
@@ -55,12 +55,12 @@
 
 每周一直接收送到您的邮箱。
 
-👉 [立即订阅](https://youth-weekly.github.io/subscribe/)
+👉 [立即订阅](https://xfengyin.github.io/youth-weekly/subscribe/)
 
 ### RSS 订阅
 
 ```
-https://youth-weekly.github.io/rss.xml
+https://xfengyin.github.io/youth-weekly/rss.xml
 ```
 
 推荐使用 [Feedly](https://feedly.com)、[Inoreader](https://www.inoreader.com) 或 [Reeder](https://reederapp.com/) 阅读。
@@ -73,7 +73,7 @@ https://youth-weekly.github.io/rss.xml
 
 ### 投稿方式
 
-1. **GitHub Issue** - [提交内容](https://github.com/your-username/youth-weekly/issues/new?template=content_submission.md)
+1. **GitHub Issue** - [提交内容](https://github.com/xfengyin/youth-weekly/issues/new?template=content_submission.md)
 2. **Pull Request** - Fork 后提交 Markdown 文件
 3. **邮件** - youth-weekly@example.com
 
@@ -100,7 +100,7 @@ https://youth-weekly.github.io/rss.xml
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/youth-weekly.git
+git clone https://github.com/xfengyin/youth-weekly.git
 cd youth-weekly
 
 # 安装前端依赖
@@ -202,6 +202,6 @@ python generate_newsletter.py
 </p>
 
 <p align="center">
-  <a href="https://youth-weekly.github.io">访问网站</a> |
-  <a href="https://github.com/your-username/youth-weekly">GitHub</a>
+  <a href="https://xfengyin.github.io/youth-weekly">访问网站</a> |
+  <a href="https://github.com/xfengyin/youth-weekly">GitHub</a>
 </p>
