@@ -1,0 +1,84 @@
+<view class="container">
+  <!-- 头部 Banner -->
+  <view class="card" style="background: linear-gradient(135deg, #0ea5e9, #d946ef); color: white;">
+    <view style="font-size: 48rpx; font-weight: bold; margin-bottom: 20rpx;">
+      青年周刊
+    </view>
+    <view style="font-size: 28rpx; opacity: 0.9;">
+      为年轻人打造的内容聚合周刊
+    </view>
+  </view>
+
+  <!-- 最新一期 -->
+  <view wx:if="{{latestIssue}}" class="card" bindtap="goToIssue" data-slug="{{latestIssue.slug}}">
+    <view style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16rpx;">
+      <text style="font-size: 24rpx; color: #6b7280;">最新一期</text>
+      <text style="font-size: 24rpx; color: #0ea5e9;">查看全部 ></text>
+    </view>
+    <view style="font-size: 32rpx; font-weight: 600; margin-bottom: 12rpx;">
+      {{latestIssue.title}}
+    </view>
+    <view style="font-size: 26rpx; color: #6b7280; margin-bottom: 16rpx;">
+      {{latestIssue.date}} · 第{{latestIssue.issue}}期
+    </view>
+    <view style="font-size: 28rpx; color: #4b5563; line-height: 1.6;">
+      {{latestIssue.description}}
+    </view>
+  </view>
+
+  <!-- 分类入口 -->
+  <view class="card">
+    <view class="card-title">内容分类</view>
+    <view style="display: flex; flex-wrap: wrap; margin-top: 20rpx;">
+      <view 
+        wx:for="{{categories}}" 
+        wx:key="id"
+        style="width: 33.33%; text-align: center; padding: 20rpx 0;"
+      >
+        <view style="font-size: 48rpx; margin-bottom: 8rpx;">{{item.icon}}</view>
+        <view style="font-size: 26rpx; color: #4b5563;">{{item.name}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 近期周刊 -->
+  <view class="card" wx:if="{{recentIssues.length > 1}}">
+    <view style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20rpx;">
+      <view class="card-title" style="margin: 0;">近期周刊</view>
+      <text style="font-size: 24rpx; color: #0ea5e9;" bindtap="goToAllIssues">全部 ></text>
+    </view>
+    <view 
+      wx:for="{{recentIssues}}" 
+      wx:key="slug"
+      wx:if="{{index > 0}}"
+      style="padding: 24rpx 0; border-bottom: 1rpx solid #e5e7eb;"
+      bindtap="goToIssue"
+      data-slug="{{item.slug}}"
+    >
+      <view style="font-size: 30rpx; font-weight: 500; margin-bottom: 8rpx;">
+        {{item.title}}
+      </view>
+      <view style="font-size: 24rpx; color: #9ca3af;">
+        {{item.date}} · 第{{item.issue}}期
+      </view>
+    </view>
+  </view>
+
+  <!-- 订阅提示 -->
+  <view class="card" style="background: linear-gradient(135deg, #0ea5e9, #8b5cf6); color: white;">
+    <view style="font-size: 32rpx; font-weight: 600; margin-bottom: 12rpx;">
+      订阅青年周刊
+    </view>
+    <view style="font-size: 28rpx; opacity: 0.9; margin-bottom: 24rpx;">
+      每周一更新，不错过任何精彩内容
+    </view>
+    <button class="button" style="background: white; color: #0ea5e9;" open-type="share">
+      分享给朋友
+    </button>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text style="color: #6b7280;">加载中...</text>
+  </view>
+</view>

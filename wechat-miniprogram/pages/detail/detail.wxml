@@ -1,0 +1,38 @@
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text style="color: #6b7280;">加载中...</text>
+  </view>
+
+  <!-- 内容 -->
+  <block wx:if="{{!loading && issue}}">
+    <!-- 头部信息 -->
+    <view class="card" style="background: linear-gradient(135deg, #0ea5e9, #8b5cf6); color: white;">
+      <view style="font-size: 26rpx; opacity: 0.9; margin-bottom: 16rpx;">
+        {{issue.date}} · 第{{issue.issue}}期
+      </view>
+      <view style="font-size: 40rpx; font-weight: bold; line-height: 1.4;">
+        {{issue.title}}
+      </view>
+    </view>
+
+    <!-- 文章正文 -->
+    <view class="card">
+      <rich-text nodes="{{content}}"></rich-text>
+    </view>
+
+    <!-- 分享按钮 -->
+    <view class="card" style="text-align: center;">
+      <button open-type="share" class="button button-primary" style="width: 100%;">
+        分享给朋友
+      </button>
+    </view>
+
+    <!-- 返回列表 -->
+    <view style="text-align: center; padding: 40rpx;">
+      <navigator url="/pages/list/list" open-type="switchTab" style="color: #0ea5e9; font-size: 28rpx;">
+        ← 返回周刊列表
+      </navigator>
+    </view>
+  </block>
+</view>

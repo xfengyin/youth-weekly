@@ -1,0 +1,42 @@
+name: Weekly Publish
+
+on:
+  schedule:
+    # 每周一晚上 9 点检查并发布
+    - cron: '0 21 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        cd scripts
+        pip install -r requirements.txt
+    
+    - name: Check for new issue
+      id: check
+      run: |
+        cd scripts
+        python check_new_issue.py
+    
+    - name: Publish if ready
+      if: steps.check.outputs.ready == 'true'
+      run: |
+        cd scripts
+        python publish_issue.py
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add ..
+        git commit -m "chore: publish weekly issue $(date +%Y-%m-%d)" || exit 0
+        git push
