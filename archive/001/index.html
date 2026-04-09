@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>青年周刊 · 创刊号</title>
+<meta property="og:image" content="./assets/cover.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#6366f1;--secondary:#8b5cf6;--accent:#ec4899;--bg:#fafafa;--text:#1a1a2e;--text-muted:#64748b;--border:#e2e8f0;--shadow:0 4px 24px rgba(0,0,0,.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:.8rem 2rem;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:900px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.nav-logo{font-family:'Noto Serif SC',serif;font-size:1.3rem;font-weight:700;color:var(--primary);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;list-style:none}.nav-links a{color:var(--text-muted);text-decoration:none;font-size:.9rem;font-weight:500}.nav-links a:hover{color:var(--primary)}
+.cover{position:relative;margin-top:56px;height:50vh;min-height:360px;overflow:hidden}.cover img{width:100%;height:100%;object-fit:cover}
+.cover-overlay{position:absolute;bottom:0;left:0;right:0;padding:3rem 2rem 2rem;background:linear-gradient(transparent,rgba(0,0,0,.8));color:#fff}
+.cover-overlay h1{font-family:'Noto Serif SC',serif;font-size:2.5rem;margin-bottom:.5rem}.cover-overlay .meta{opacity:.9;font-size:1rem}
+.article{max-width:800px;margin:0 auto;padding:3rem 2rem 4rem}
+.article h2{font-family:'Noto Serif SC',serif;font-size:1.8rem;font-weight:700;margin:3rem 0 1.5rem;padding-bottom:.5rem;border-bottom:3px solid var(--primary)}
+.article h3{font-size:1.4rem;font-weight:600;margin:2.5rem 0 1rem;color:var(--secondary)}
+.article h4{font-size:1.15rem;font-weight:600;margin:2rem 0 .75rem}
+.article p{margin-bottom:1.25rem}.article ul,.article ol{margin:1rem 0 1.5rem 1.5rem}.article li{margin-bottom:.5rem}
+.article strong{color:var(--primary);font-weight:600}
+.article code{background:#f1f5f9;padding:.15rem .4rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.88em;color:var(--accent)}
+.article pre{background:#1e293b;color:#e2e8f0;padding:1.25rem;border-radius:12px;overflow-x:auto;margin:1.5rem 0;font-family:'JetBrains Mono',monospace;font-size:.88rem;line-height:1.6}
+.article pre code{background:none;padding:0;color:inherit}
+.article blockquote{border-left:4px solid var(--primary);padding:.75rem 1.5rem;margin:1.5rem 0;background:#f8f9ff;border-radius:0 8px 8px 0;color:var(--text-muted)}
+.article table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.95rem;border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
+.article th,.article td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--border)}
+.article th{background:var(--primary);color:#fff;font-weight:600}.article tr:nth-child(even){background:#f8f9ff}
+.article hr{border:none;height:2px;background:linear-gradient(90deg,var(--primary),var(--accent));margin:2.5rem 0}
+.article figure{margin:2rem 0;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}.article figure img{width:100%;display:block}
+.article figcaption{padding:.75rem 1rem;background:#f8f9ff;font-size:.88rem;color:var(--text-muted);text-align:center}
+.section-banner{width:100%;border-radius:16px;margin:1.5rem 0;box-shadow:var(--shadow);max-height:200px;object-fit:cover}
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid var(--border);margin-top:4rem;color:var(--text-muted)}footer a{color:var(--primary);text-decoration:none}
+@media(max-width:768px){.cover-overlay h1{font-size:1.6rem}.article{padding:2rem 1.25rem}.nav-links{display:none}}
+</style>
+</head>
+<body>
+<nav><div class="nav-inner"><a href="../" class="nav-logo">青年周刊</a><ul class="nav-links"><li><a href="../">首页</a></li><li><a href="https://github.com/xfengyin/youth-weekly">GitHub</a></li></ul></div></nav>
+<div class="cover"><img src="./assets/cover.jpeg" alt="创刊号封面"><div class="cover-overlay"><h1>青年周刊 · 创刊号</h1><div class="meta">2026年4月8日 · 第1期 · 每周更新</div></div></div>
+<article class="article"><h1>青年周刊 · 创刊号</h1>
+
+<hr>
+
+<h2>📋 本期目录</h2>
+
+<ol>
+<li><a href="#刊首语">刊首语：欢迎来到青年周刊</a></li>
+<li><a href="#科技新势力">科技新势力</a></li>
+<li><a href="#二次元次元壁">二次元次元壁</a></li>
+<li><a href="#游戏研究所">游戏研究所</a></li>
+<li><a href="#青春故事会">青春故事会</a></li>
+<li><a href="#好工具">好工具</a></li>
+<li><a href="#在看什么">在看什么</a></li>
+<li><a href="#一周图鉴">一周图鉴</a></li>
+<li><a href="#谁在招人">谁在招人</a></li>
+
+</ol>
+<hr>
+
+<h2>刊首语</h2>
+
+<strong>欢迎来到《青年周刊》！</strong>
+
+<p>这是一份专门为年轻人打造的内容聚合周刊。在这个信息爆炸的时代，我们希望成为你身边的一个可靠伙伴，帮你筛选有价值的内容，发现有趣的事物，记录成长的点滴。</p>
+
+<p>《青年周刊》融合了传统杂志的编辑精神与现代互联网的开源理念。我们参考了阮一峰老师的《科技爱好者周刊》的开源模式，同时借鉴了《青年文摘》的温暖风格、《看天下》的视野广度、《知音漫客》的视觉冲击力，以及《大众游戏报》的游戏精神。</p>
+
+<strong>我们的内容板块包括：</strong>
+
+<ul>
+<li><strong>科技新势力</strong>：AI、编程、工具推荐，让你走在技术前沿</li>
+<li><strong>二次元次元壁</strong>：ACG资讯、动漫评论、原创插画，守护你的次元梦</li>
+<li><strong>游戏研究所</strong>：游戏评测、攻略心得、行业动态，玩出专业态度</li>
+<li><strong>青春故事会</strong>：成长故事、职场经验、学习心得，陪你走过迷茫期</li>
+<li><strong>好工具</strong>：生产力工具、生活助手推荐，提升效率的利器</li>
+<li><strong>在看什么</strong>：影视、书籍、播客推荐及评论，丰富你的精神世界</li>
+<li><strong>一周图鉴</strong>：视觉内容精选，用图片记录精彩瞬间</li>
+<li><strong>谁在招人</strong>：招聘信息、实习机会、职场动态</li>
+
+<p></ul>
+我们相信，好的内容能够连接有趣的人，激发思考，创造价值。</p>
+
+<p><strong>欢迎投稿！</strong> 无论是文章、推荐还是想法，都欢迎通过 GitHub Issues 与我们分享。</p>
+
+<p>让我们一起，打造属于年轻人的内容社区。</p>
+
+<p>——《青年周刊》编辑部</p>
+
+<hr>
+
+<img class="section-banner" src="./assets/tech-section.jpeg" alt="科技新势力" loading="lazy"><h2>科技新势力</h2>
+
+<blockquote>本周精选：AI工具、编程技巧、效率软件推荐</blockquote>
+
+<h3>🤖 AI工具推荐</h3>
+
+<h4>1. Cursor：AI驱动的代码编辑器</h4>
+
+<p><a href="https://cursor.sh/">Cursor</a> 是一款基于 VS Code 的 AI 代码编辑器，内置了 GPT-4 级别的代码补全和理解能力。</p>
+
+<strong>亮点功能：</strong>
+<ul>
+<li>智能代码补全：不只是补全单词，而是理解上下文生成整段代码</li>
+<li>AI 聊天：选中代码后可以直接问 AI 问题</li>
+<li>代码重构：描述你想要的效果，AI 帮你重构</li>
+<li>自动生成提交信息</li>
+
+<p></ul>
+<strong>适合人群：</strong> 程序员、学习者、需要快速原型开发的人</p>
+
+<p><strong>使用建议：</strong> 配合良好的代码注释习惯，可以让 AI 更准确地理解你的意图。</p>
+
+<hr>
+
+<h4>2. Suno AI：用文本生成音乐</h4>
+
+<p><a href="https://suno.ai/">Suno AI</a> 是一款革命性的 AI 音乐生成工具，只需要输入文字描述，就能生成完整的歌曲。</p>
+
+<strong>特色：</strong>
+<ul>
+<li>支持多种音乐风格：流行、摇滚、古典、电子等</li>
+<li>可以生成带歌词的歌曲</li>
+<li>免费版每月有一定额度</li>
+
+<p></ul>
+<strong>应用场景：</strong> 视频配乐、游戏音效、个人创作灵感</p>
+
+<hr>
+
+<h3>💻 编程技巧</h3>
+
+<h4>Python 异步编程最佳实践</h4>
+
+<p>随着 IO 密集型应用越来越多，掌握异步编程成为 Python 开发者的必备技能。</p>
+
+<p>``<code>python
+import asyncio</p>
+
+<p>async def fetch_data():
+    # 异步 HTTP 请求示例
+    async with aiohttp.ClientSession() as session:
+        async with session.get('https://api.example.com') as response:
+            return await response.json()</p>
+
+<h1>并发执行多个任务</h1>
+async def main():
+    tasks = [fetch_data() for _ in range(10)]
+    results = await asyncio.gather(*tasks)
+    return results
+</code>`<code>
+
+<strong>关键要点：</strong>
+<ol>
+<li>使用 </code>async<code> 和 </code>await<code> 关键字</li>
+<li>选择合适的异步库：</code>aiohttp<code>、</code>aiomysql<code>、</code>aioredis<code></li>
+<li>注意并发控制，避免资源耗尽</li>
+
+</ol>
+<hr>
+
+<h3>🛠️ 效率软件</h3>
+
+<h4>本周推荐：Raycast</h4>
+
+<p><a href="https://www.raycast.com/">Raycast</a> 是 macOS 上的生产力工具，可以替代 Spotlight，提供更强大的功能。</p>
+
+<strong>核心功能：</strong>
+<ul>
+<li>快速启动应用和搜索文件</li>
+<li>剪贴板历史管理</li>
+<li>窗口管理</li>
+<li>丰富的插件生态</li>
+<li>自定义脚本支持</li>
+
+</ul>
+<strong>快捷键：</strong> </code>Option + Space<code>
+
+<hr>
+
+<img class="section-banner" src="./assets/anime-section.jpeg" alt="二次元次元壁" loading="lazy"><h2>二次元次元壁</h2>
+
+<blockquote>ACG资讯、动漫评论、原创推荐</blockquote>
+
+<h3>📺 春季新番推荐（2026年4月番）</h3>
+
+<h4>1. 《葬送的芙莉莲》第二季</h4>
+
+<p><strong>类型：</strong> 奇幻 / 冒险 / 治愈</p>
+
+<p><strong>简介：</strong> 魔法使芙莉莲在勇者一行人击败魔王后，开始了新的旅程。这部作品以独特的视角探讨了时间、生命和情感的主题。</p>
+
+<strong>看点：</strong>
+<ul>
+<li>精美的作画和细腻的情感刻画</li>
+<li>不同于传统异世界作品的深度</li>
+<li>优秀的配乐和世界观构建</li>
+
+<p></ul>
+<strong>推荐指数：</strong> ⭐⭐⭐⭐⭐</p>
+
+<hr>
+
+<h4>2. 《我推的孩子》第二季</h4>
+
+<p><strong>类型：</strong> 偶像 / 悬疑 / 剧情</p>
+
+<p><strong>简介：</strong> 围绕偶像星野爱和她的两个孩子展开的悬疑故事，深入探讨了娱乐圈的光鲜与黑暗。</p>
+
+<strong>看点：</strong>
+<ul>
+<li>紧凑的剧情和出人意料的转折</li>
+<li>对娱乐圈生态的真实描绘</li>
+<li>悬疑元素的巧妙融入</li>
+
+<p></ul>
+<strong>推荐指数：</strong> ⭐⭐⭐⭐⭐</p>
+
+<hr>
+
+<h3>📚 漫画推荐</h3>
+
+<h4>《电锯人》第二部</h4>
+
+<p>藤本树老师的《电锯人》第二部《学园篇》正在连载中，延续了第一部的疯狂与创意。</p>
+
+<strong>推荐理由：</strong>
+<ul>
+<li>独特的叙事风格</li>
+<li>令人意想不到的剧情发展</li>
+<li>对人性深刻的探讨</li>
+
+<p></ul>
+<strong>阅读平台：</strong> 少年 Jump+</p>
+
+<hr>
+
+<h3>🎨 本周插画师推荐</h3>
+
+<strong>插画师：</strong> <a href="https://twitter.com/Rolua_N">Rolua</a>
+
+<p><strong>风格：</strong> 日系赛博朋克，色彩绚丽，充满未来感</p>
+
+<p><strong>代表作：</strong> 各种原创角色设计和场景插画</p>
+
+<hr>
+
+<img class="section-banner" src="./assets/gaming-section.jpeg" alt="游戏研究所" loading="lazy"><h2>游戏研究所</h2>
+
+<blockquote>新游评测、游戏攻略、行业动态</blockquote>
+
+<h3>🎮 本周焦点：《黑神话：悟空》最终预告</h3>
+
+<p>2026年最期待的国产 3A 大作《黑神话：悟空》发布了最终预告片，展示了更多游戏内容和玩法细节。</p>
+
+<strong>预告片亮点：</strong>
+<ul>
+<li>展示了多种变身系统</li>
+<li>丰富的 Boss 战设计</li>
+<li>精美的画面表现力</li>
+<li>中国传统文化的深度融入</li>
+
+<p></ul>
+<strong>发售日期：</strong> 2026年8月20日</p>
+
+<p><strong>期待指数：</strong> ⭐⭐⭐⭐⭐</p>
+
+<hr>
+
+<h3>📱 手游推荐</h3>
+
+<h4>《绝区零》</h4>
+
+<p>米哈游最新动作 RPG 手游，已经正式上线。</p>
+
+<strong>游戏特色：</strong>
+<ul>
+<li>爽快的战斗系统</li>
+<li>独特的都市奇幻世界观</li>
+<li>精美的 3D 画面</li>
+<li>丰富的角色阵容</li>
+
+<p></ul>
+<strong>适合人群：</strong> 喜欢动作游戏和二次元风格的玩家</p>
+
+<hr>
+
+<h3>🎯 独立游戏推荐</h3>
+
+<h4>《Hades II》（哈迪斯2）</h4>
+
+<p>Supergiant Games 的roguelike动作游戏续作，目前处于抢先体验阶段。</p>
+
+<strong>改进点：</strong>
+<ul>
+<li>更多可玩角色</li>
+<li>更丰富的武器系统</li>
+<li>改进的叙事结构</li>
+<li>魔法系统的加入</li>
+
+<p></ul>
+<strong>平台：</strong> PC / Switch</p>
+
+<hr>
+
+<h3>💡 游戏开发小知识</h3>
+
+<h4>Unity vs Unreal Engine 5：如何选择？</h4>
+
+<table>
+<tr><th>特性</th><th>Unity</th><th>Unreal Engine 5</th></tr>
+<tr><td>学习曲线</td><td>较平缓</td><td>较陡峭</td></tr>
+<tr><td>画面表现</td><td>优秀</td><td>顶级</td></tr>
+<tr><td>移动端</td><td>优秀支持</td><td>一般</td></tr>
+<tr><td>2D游戏</td><td>优秀</td><td>一般</td></tr>
+<tr><td>授权费用</td><td>免费/订阅</td><td>5%版税</td></tr>
+<tr><td>资源商店</td><td>丰富</td><td>较少</td></tr>
+</table>
+
+<strong>建议：</strong>
+<ul>
+<li>2D 游戏、手游、独立开发 → Unity</li>
+<li>3A 大作、追求极致画面 → Unreal Engine 5</li>
+
+</ul>
+<hr>
+
+<img class="section-banner" src="./assets/career-section.jpeg" alt="青春故事会" loading="lazy"><h2>青春故事会</h2>
+
+<blockquote>成长故事、职场指南、学习心得</blockquote>
+
+<h3>💼 职场新人指南：入职前三个月的生存法则</h3>
+
+<p>作为职场新人，前三个月是建立印象、适应环境的关键时期。以下是一些实用建议：</p>
+
+<h4>1. 主动学习，不懂就问</h4>
+
+<ul>
+<li><strong>记录问题</strong>：准备一个笔记本，随时记录不懂的问题</li>
+<li><strong>先思考再问</strong>：提问前先自己搜索或思考，带着自己的理解去问</li>
+<li><strong>总结反馈</strong>：问完问题后及时总结，避免重复提问</li>
+
+</ul>
+<h4>2. 建立工作日志习惯</h4>
+
+</code>`<code>
+工作日志模板：
+日期：2026-04-08
+今日完成：
+<ol>
+<li>xxx</li>
+<li>xxx</li>
+
+</ol>
+遇到的问题：
+<ul>
+<li>xxx</li>
+
+</ul>
+明日计划：
+<ul>
+<li>xxx</li>
+
+</ul>
+学习收获：
+<ul>
+<li>xxx</li>
+</ul>
+</code>``
+
+<h4>3. 与导师/Leader 保持良好沟通</h4>
+
+<ul>
+<li>定期（每周或每两周）主动约 1-on-1 会议</li>
+<li>准备会议议程，不浪费彼此时间</li>
+<li>反馈工作中遇到的困难和需要的支持</li>
+
+</ul>
+<h4>4. 快速熟悉业务和技术栈</h4>
+
+<ul>
+<li>阅读文档：产品文档、技术文档、历史代码</li>
+<li>了解流程：开发流程、发布流程、协作规范</li>
+<li>画图整理：用思维导图整理业务架构和技术架构</li>
+
+</ul>
+<h4>5. 建立个人品牌</h4>
+
+<ul>
+<li><strong>可靠性</strong>：承诺的事情要做到，做不到要及时沟通</li>
+<li><strong>主动性</strong>：主动承担任务，主动发现问题</li>
+<li><strong>学习能力</strong>：快速学习新知识的能力</li>
+
+</ul>
+<hr>
+
+<h3>📖 读者投稿：从实习生到正式员工的一年</h3>
+
+<em>作者：@小明的成长日记</em>
+
+<blockquote>去年这个时候，我还是一名大四实习生，对未来充满迷茫。一年后，我已经成长为能够独立负责项目的正式员工。这一年我学到了很多，也踩了不少坑。</blockquote>
+>
+<blockquote>最大的感悟是：<strong>职场和学校最大的区别在于结果导向</strong>。在学校，努力的过程也会被认可；但在职场，最终交付的结果才是衡量标准。</blockquote>
+>
+<blockquote>其次，<strong>沟通能力比技术能力更重要</strong>。很多技术问题本质上是沟通问题。学会用非技术人员也能理解的方式解释技术方案，是工程师的必修课。</blockquote>
+>
+<blockquote>最后，<strong>保持学习热情</strong>。技术更新很快，只有持续学习才能不被淘汰。我给自己定了一个小目标：每周至少学习一项新技术或新工具。</blockquote>
+
+<hr>
+
+<img class="section-banner" src="./assets/tools-section.jpeg" alt="好工具" loading="lazy"><h2>好工具</h2>
+
+<blockquote>生产力工具、生活助手推荐</blockquote>
+
+<h3>🖥️ 开发工具</h3>
+
+<h4>1. Warp：现代化的终端</h4>
+
+<p><a href="https://www.warp.dev/">Warp</a> 是一款基于 Rust 开发的现代化终端，提供了许多创新的交互方式。</p>
+
+<strong>特色功能：</strong>
+<ul>
+<li>命令行编辑如同 IDE：支持语法高亮、自动补全</li>
+<li>AI 命令提示：描述需求自动生成命令</li>
+<li>块级输出：每条命令的输出都是独立的块，便于复制和分享</li>
+<li>团队协作：支持保存和分享命令工作流</li>
+
+<p></ul>
+<strong>支持平台：</strong> macOS / Linux（Windows 版本开发中）</p>
+
+<hr>
+
+<h4>2. TablePlus：现代化的数据库管理工具</h4>
+
+<p><a href="https://tableplus.com/">TablePlus</a> 是一款支持多种数据库的现代化管理工具。</p>
+
+<strong>支持数据库：</strong>
+<ul>
+<li>MySQL、PostgreSQL、SQLite</li>
+<li>MongoDB、Redis</li>
+<li>SQL Server、Oracle</li>
+
+</ul>
+<strong>特点：</strong>
+<ul>
+<li>界面简洁美观</li>
+<li>原生应用，性能优秀</li>
+<li>支持 SSH 隧道连接</li>
+<li>强大的查询编辑器</li>
+
+</ul>
+<hr>
+
+<h3>📝 效率工具</h3>
+
+<h4>3. Notion Calendar</h4>
+
+<p>Notion 推出的日历应用，可以与 Notion 工作区深度集成。</p>
+
+<strong>优势：</strong>
+<ul>
+<li>与 Notion 数据库同步</li>
+<li>支持多个日历账户（Google、Apple、Outlook）</li>
+<li>美观的界面设计</li>
+<li>免费使用</li>
+
+</ul>
+<hr>
+
+<h4>4. Readwise Reader</h4>
+
+<p><a href="https://readwise.io/read">Readwise Reader</a> 是一款稍后读应用，支持多种内容格式。</p>
+
+<strong>功能亮点：</strong>
+<ul>
+<li>保存网页文章、PDF、Twitter 线程</li>
+<li>高亮和笔记同步</li>
+<li>每日回顾功能</li>
+<li>支持 RSS 订阅</li>
+
+<p></ul>
+<strong>适合：</strong> 知识工作者、终身学习者</p>
+
+<hr>
+
+<h3>🎨 设计工具</h3>
+
+<h4>5. Figma 新功能：AI 设计助手</h4>
+
+<p>Figma 最近推出了 AI 设计助手功能，可以根据文本描述生成设计稿。</p>
+
+<strong>应用场景：</strong>
+<ul>
+<li>快速原型设计</li>
+<li>灵感参考</li>
+<li>自动调整设计布局</li>
+
+</ul>
+<hr>
+
+<img class="section-banner" src="./assets/watching-section.jpeg" alt="在看什么" loading="lazy"><h2>在看什么</h2>
+
+<blockquote>影视、书籍、播客推荐</blockquote>
+
+<h3>🎬 影视推荐</h3>
+
+<h4>电影：《沙丘2》（Dune: Part Two）</h4>
+
+<p><strong>导演：</strong> 丹尼斯·维伦纽瓦</p>
+
+<p><strong>简介：</strong> 保罗·厄崔迪与契妮和弗雷曼人联手，踏上对毁灭他家族的阴谋者的复仇之路。</p>
+
+<strong>看点：</strong>
+<ul>
+<li>震撼的视觉奇观</li>
+<li>史诗级的配乐</li>
+<li>对原著的忠实还原</li>
+
+<p></ul>
+<strong>推荐指数：</strong> ⭐⭐⭐⭐⭐</p>
+
+<hr>
+
+<h4>剧集：《三体》Netflix 版</h4>
+
+<p>Netflix 版《三体》第一季已经上线，引发了热议。</p>
+
+<strong>评价：</strong>
+<ul>
+<li>制作精良，特效出色</li>
+<li>对原著有一定改编，但核心精神保留</li>
+<li>节奏紧凑，适合 binge-watching</li>
+
+</ul>
+<hr>
+
+<h3>📚 书籍推荐</h3>
+
+<h4>《原子习惯》（Atomic Habits）</h4>
+
+<p><strong>作者：</strong> James Clear</p>
+
+<p><strong>核心观点：</strong> 小习惯的复利效应。每天进步 1%，一年后你会进步 37 倍。</p>
+
+<strong>四个习惯养成法则：</strong>
+<ol>
+<li>让它显而易见</li>
+<li>让它有吸引力</li>
+<li>让它简便易行</li>
+<li>让它令人愉悦</li>
+
+<p></ol>
+<strong>适合：</strong> 想要养成好习惯、改掉坏习惯的人</p>
+
+<hr>
+
+<h4>《纳瓦尔宝典》（The Almanack of Naval Ravikant）</h4>
+
+<p><strong>作者：</strong> Eric Jorgenson</p>
+
+<p><strong>简介：</strong> 硅谷投资人 Naval Ravikant 的智慧合集，涵盖财富、幸福、哲学等话题。</p>
+
+<strong>金句摘录：</strong>
+<blockquote>"Play iterated games. All returns in life, whether in wealth, relationships, or knowledge, come from compound interest."</blockquote>
+
+<hr>
+
+<h3>🎧 播客推荐</h3>
+
+<h4>《忽左忽右》</h4>
+
+<p>一档文化类播客，由 JustPod 出品。主持人程衍樑与各路嘉宾探讨历史、文化、社会等话题。</p>
+
+<strong>推荐单集：</strong>
+<ul>
+<li>2026年3月：《AI时代的创作与版权》</li>
+<li>2026年2月：《东亚社畜文化考》</li>
+
+<p></ul>
+<strong>收听平台：</strong> 小宇宙、Apple Podcasts、Spotify</p>
+
+<hr>
+
+<h4>《声东击西》</h4>
+
+<p>由徐涛主持的播客，探讨科技、商业、社会等话题。</p>
+
+<p><strong>特色：</strong> 视角独特，常常从意想不到的角度切入话题。</p>
+
+<hr>
+
+<h2>一周图鉴</h2>
+
+<blockquote>本周精选视觉内容</blockquote>
+
+<h3>📷 本周摄影作品</h3>
+
+<p><strong>主题：</strong> 城市夜景</p>
+
+<p>!<a href="./assets/city-night.jpg">城市夜景示例</a></p>
+
+<blockquote>摄影师：@nightwalker</blockquote>
+<blockquote>地点：上海外滩</blockquote>
+<blockquote>设备：Sony A7R5</blockquote>
+
+<hr>
+
+<h3>🎨 本周设计作品</h3>
+
+<p><strong>主题：</strong> 赛博朋克风格插画</p>
+
+<p>!<a href="./assets/cyberpunk-art.jpg">赛博朋克插画示例</a></p>
+
+<blockquote>设计师：@pixeldreamer</blockquote>
+<blockquote>工具：Procreate + Photoshop</blockquote>
+
+<hr>
+
+<h3>📊 本周数据可视化</h3>
+
+<p><strong>主题：</strong> 2026年AI应用发展图谱</p>
+
+<p>!<a href="./assets/ai-landscape.jpg">AI应用图谱示例</a></p>
+
+<hr>
+
+<em>注：以上图片为占位符，实际周刊将使用真实图片</em>
+
+<hr>
+
+<img class="section-banner" src="./assets/jobs-section.jpeg" alt="谁在招人" loading="lazy"><h2>谁在招人</h2>
+
+<blockquote>本周招聘信息精选</blockquote>
+
+<h3>💻 技术岗位</h3>
+
+<h4>1. 字节跳动 - 前端开发工程师</h4>
+
+<p><strong>地点：</strong> 北京 / 上海 / 杭州</p>
+
+<strong>要求：</strong>
+<ul>
+<li>本科及以上学历，计算机相关专业</li>
+<li>熟悉 React / Vue 等前端框架</li>
+<li>良好的编码习惯和工程化思维</li>
+
+</ul>
+<strong>福利：</strong>
+<ul>
+<li>有竞争力的薪酬</li>
+<li>免费三餐、房补</li>
+<li>丰富的技术分享和培训</li>
+
+<p></ul>
+<strong>投递：</strong> careers.bytedance.com</p>
+
+<hr>
+
+<h4>2. 阿里巴巴 - AI产品经理</h4>
+
+<p><strong>地点：</strong> 杭州</p>
+
+<strong>职责：</strong>
+<ul>
+<li>负责 AI 产品的规划和设计</li>
+<li>与技术团队紧密合作，推动产品落地</li>
+<li>分析用户数据，持续优化产品体验</li>
+
+</ul>
+<strong>要求：</strong>
+<ul>
+<li>3年以上产品经理经验</li>
+<li>对 AI 技术有深入了解</li>
+<li>优秀的沟通和协调能力</li>
+
+</ul>
+<hr>
+
+<h4>3. 米哈游 - 游戏策划</h4>
+
+<p><strong>地点：</strong> 上海</p>
+
+<p><strong>方向：</strong> 系统策划 / 数值策划 / 文案策划</p>
+
+<strong>要求：</strong>
+<ul>
+<li>热爱游戏，有深度游戏体验</li>
+<li>良好的逻辑思维能力和文字表达能力</li>
+<li>有相关实习或项目经验优先</li>
+
+</ul>
+<hr>
+
+<h3>🎨 设计岗位</h3>
+
+<h4>4. Figma - Product Designer</h4>
+
+<p><strong>地点：</strong> 旧金山 / 远程</p>
+
+<strong>要求：</strong>
+<ul>
+<li>3年以上产品设计经验</li>
+<li>优秀的视觉设计和交互设计能力</li>
+<li>良好的英语沟通能力</li>
+
+</ul>
+<strong>福利：</strong>
+<ul>
+<li>远程友好</li>
+<li>有竞争力的薪酬和期权</li>
+<li>每年设计大会参访机会</li>
+
+</ul>
+<hr>
+
+<h3>📚 实习岗位</h3>
+
+<h4>5. 小红书 - 产品实习生</h4>
+
+<p><strong>地点：</strong> 上海</p>
+
+<strong>要求：</strong>
+<ul>
+<li>2027届及以后毕业</li>
+<li>每周至少实习 4 天</li>
+<li>对互联网产品有热情</li>
+
+</ul>
+<strong>你将获得：</strong>
+<ul>
+<li>深入了解内容社区产品的机会</li>
+<li> mentor 1对1指导</li>
+<li>实习证明和转正机会</li>
+
+</ul>
+<hr>
+
+<h2>📮 关于本期周刊</h2>
+
+<strong>《青年周刊》第1期</strong>
+
+<ul>
+<li>编辑：青年周刊编辑部</li>
+<li>发布日期：2026年4月8日</li>
+<li>投稿邮箱：youth-weekly@xfengyin.com</li>
+<li>GitHub：https://github.com/xfengyin/youth-weekly</li>
+
+</ul>
+<strong>订阅方式：</strong>
+<ul>
+<li>RSS 订阅：https://xfengyin.github.io/youth-weekly/rss.xml</li>
+<li>邮件订阅：https://xfengyin.github.io/youth-weekly/subscribe</li>
+
+<p></ul>
+<strong>参与贡献：</strong>
+欢迎通过 GitHub Issues 投稿或提出建议！</p>
+
+<hr>
+
+<blockquote>"保持好奇，保持年轻。"</blockquote>
+
+<p><strong>下期预告：</strong> 2026年4月15日，敬请期待！</p></article>
+<footer><p>© 2026 青年周刊 Youth Weekly · <a href="https://github.com/xfengyin/youth-weekly">GitHub</a></p><p style="margin-top:.5rem;font-size:.85rem">用 ❤️ 为年轻人创作</p></footer>
+</body>
+</html>
