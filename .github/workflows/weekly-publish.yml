@@ -1,42 +1,67 @@
-name: Weekly Publish
+name: 📰 Weekly Publish
 
 on:
   schedule:
-    # 每周一晚上 9 点检查并发布
-    - cron: '0 21 * * 1'
+    # 每周一晚上 9 点（北京时间）检查新内容
+    - cron: '0 13 * * 1'
   workflow_dispatch:
+    inputs:
+      issue_number:
+        description: '指定期号（留空则自动检测）'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  issues: write
 
 jobs:
   check-and-publish:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        cd scripts
-        pip install -r requirements.txt
-    
-    - name: Check for new issue
+
+    - name: Check for new content
       id: check
       run: |
         cd scripts
-        python check_new_issue.py
-    
-    - name: Publish if ready
-      if: steps.check.outputs.ready == 'true'
+        pip install -r requirements.txt
+        python check_new_issue.py || echo "No new issue found"
+
+    - name: Generate static content
+      if: steps.check.outputs.has_new == 'true'
       run: |
         cd scripts
-        python publish_issue.py
+        python generate_static.py
+        python generate_rss.py
+
+    - name: Commit and push
+      if: steps.check.outputs.has_new == 'true'
+      run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add ..
-        git commit -m "chore: publish weekly issue $(date +%Y-%m-%d)" || exit 0
-        git push
+        git add -A
+        git diff --staged --quiet || (git commit -m "📰 自动发布新一期周刊" && git push)
+
+    - name: Create Issue notification
+      if: steps.check.outputs.has_new == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `📰 新一期周刊已发布`,
+            body: `新周刊已自动发布并部署。\n\n**发布时间：** ${new Date().toISOString().split('T')[0]}\n\n**在线阅读：** https://xfengyin.github.io/youth-weekly/\n\n---\n*此 Issue 由 GitHub Actions 自动创建*`,
+            labels: ['automated', 'weekly-publish']
+          });

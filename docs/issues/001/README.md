@@ -633,12 +633,12 @@ Netflix 版《三体》第一季已经上线，引发了热议。
 
 - 编辑：青年周刊编辑部
 - 发布日期：2026年4月8日
-- 投稿邮箱：youth-weekly@example.com
-- GitHub：https://github.com/your-username/youth-weekly
+- 投稿邮箱：youth-weekly@xfengyin.com
+- GitHub：https://github.com/xfengyin/youth-weekly
 
 **订阅方式：**
-- RSS 订阅：https://youth-weekly.github.io/rss.xml
-- 邮件订阅：https://youth-weekly.github.io/subscribe
+- RSS 订阅：https://xfengyin.github.io/youth-weekly/rss.xml
+- 邮件订阅：https://xfengyin.github.io/youth-weekly/subscribe
 
 **参与贡献：**
 欢迎通过 GitHub Issues 投稿或提出建议！
