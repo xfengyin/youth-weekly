@@ -2,17 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Notion Design System: CSS Custom Properties ── */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
+  --color-bg: #ffffff;
+  --color-bg-alt: #f6f5f4;
+  --color-text: rgba(0, 0, 0, 0.95);
+  --color-text-secondary: #615d59;
+  --color-text-muted: #a39e98;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-blue: #0075de;
+  --color-blue-hover: #005bab;
+  --color-blue-light: #62aef0;
+  --color-blue-focus: #097fe8;
+  --color-badge-bg: #f2f9ff;
+  --color-badge-text: #097fe8;
+  --color-success: #1aae39;
+  --color-warning: #dd5b00;
+  --color-error: #eb5757;
+  --notion-card-shadow: rgba(0, 0, 0, 0.04) 0px 4px 18px,
+    rgba(0, 0, 0, 0.027) 0px 2.025px 7.84688px,
+    rgba(0, 0, 0, 0.02) 0px 0.8px 2.925px,
+    rgba(0, 0, 0, 0.01) 0px 0.175px 1.04062px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --color-bg: #191919;
+    --color-bg-alt: #202020;
+    --color-text: rgba(255, 255, 255, 0.95);
+    --color-text-secondary: #a39e98;
+    --color-text-muted: #615d59;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-badge-bg: rgba(0, 117, 222, 0.15);
+    --color-badge-text: #62aef0;
   }
 }
 
@@ -20,82 +42,239 @@
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
-    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    @apply bg-white dark:bg-[#191919] text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)];
+    font-feature-settings: 'lnum', 'locl';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer components {
+  /* ── Prose Custom (Notion Style) ── */
   .prose-custom {
     @apply prose prose-lg dark:prose-invert max-w-none;
+    line-height: 1.7;
   }
-  
+
   .prose-custom h1 {
-    @apply text-3xl font-bold mt-8 mb-4 text-gray-900 dark:text-white;
+    @apply text-3xl font-bold mt-10 mb-5;
+    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    color: rgba(0, 0, 0, 0.95);
+    letter-spacing: -0.025em;
   }
-  
+
   .prose-custom h2 {
-    @apply text-2xl font-semibold mt-6 mb-3 text-gray-800 dark:text-gray-100;
+    @apply text-2xl font-bold mt-8 mb-4;
+    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    color: rgba(0, 0, 0, 0.95);
+    letter-spacing: -0.02em;
   }
-  
+
   .prose-custom h3 {
-    @apply text-xl font-semibold mt-4 mb-2 text-gray-800 dark:text-gray-200;
+    @apply text-xl font-semibold mt-6 mb-3;
+    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    color: rgba(0, 0, 0, 0.95);
   }
-  
+
+  .prose-custom h4 {
+    @apply text-lg font-semibold mt-4 mb-2;
+    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    color: rgba(0, 0, 0, 0.95);
+  }
+
   .prose-custom a {
-    @apply text-primary-600 dark:text-primary-400 hover:underline;
+    color: var(--color-blue);
+    text-decoration: none;
+    transition: color 0.15s;
   }
-  
+  .prose-custom a:hover {
+    text-decoration: underline;
+  }
+
   .prose-custom code {
-    @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm;
+    @apply px-1.5 py-0.5 rounded text-sm;
+    background: var(--color-bg-alt);
+    font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
   }
-  
+
   .prose-custom pre {
-    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto;
+    @apply p-5 rounded-notion-lg overflow-x-auto;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
   }
-  
+  .prose-custom pre code {
+    background: transparent;
+    padding: 0;
+  }
+
   .prose-custom blockquote {
-    @apply border-l-4 border-primary-500 pl-4 italic text-gray-600 dark:text-gray-400;
+    @apply border-l-4 pl-5 my-6;
+    border-left-color: var(--color-blue);
+    color: var(--color-text-secondary);
+    font-style: normal;
   }
-  
+
+  /* Dark mode overrides for prose */
+  :is(.dark) .prose-custom h1,
+  :is(.dark) .prose-custom h2,
+  :is(.dark) .prose-custom h3,
+  :is(.dark) .prose-custom h4 {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* ── Buttons (Notion Style) ── */
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors;
+    @apply font-semibold py-2 px-4 transition-all duration-150;
+    background: var(--color-blue);
+    color: #ffffff;
+    border: 1px solid transparent;
+    border-radius: 4px;
   }
-  
+  .btn-primary:hover {
+    background: var(--color-blue-hover);
+  }
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--color-blue-focus);
+    outline-offset: 2px;
+  }
+
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors;
+    @apply font-semibold py-2 px-4 transition-all duration-150;
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.95);
+    border: 1px solid transparent;
+    border-radius: 4px;
   }
-  
+  .btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.08);
+    transform: scale(1.02);
+  }
+  .btn-secondary:active {
+    transform: scale(0.97);
+  }
+  :is(.dark) .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.95);
+  }
+  :is(.dark) .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  /* ── Card (Notion Style) ── */
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden;
+    @apply overflow-hidden;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--notion-card-shadow);
+    transition: box-shadow 0.2s ease;
   }
-  
+  .card:hover {
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 6px 24px,
+      rgba(0, 0, 0, 0.04) 0px 3px 10px,
+      rgba(0, 0, 0, 0.03) 0px 1px 4px;
+  }
+
+  /* ── Input (Notion Style) ── */
   .input {
-    @apply w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500;
+    @apply w-full px-3 py-2 text-base transition-colors duration-150;
+    background: var(--color-bg);
+    color: rgba(0, 0, 0, 0.9);
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+  }
+  .input:focus {
+    @apply outline-none;
+    border-color: var(--color-blue-focus);
+    box-shadow: 0 0 0 2px rgba(9, 127, 232, 0.2);
+  }
+  .input::placeholder {
+    color: var(--color-text-muted);
+  }
+  :is(.dark) .input {
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* ── Callout Block (Notion Style) ── */
+  .callout {
+    @apply flex items-start gap-3 p-4 rounded-notion my-4;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+  }
+  .callout-icon {
+    @apply flex-shrink-0 text-lg mt-0.5;
+  }
+  .callout-content {
+    @apply text-sm leading-relaxed;
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Pill Badge (Notion Style) ── */
+  .badge {
+    @apply inline-flex items-center font-semibold text-xs tracking-wide;
+    background: var(--color-badge-bg);
+    color: var(--color-badge-text);
+    padding: 4px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.125px;
+  }
+
+  /* ── Bookmark Card (Notion Style) ── */
+  .bookmark-card {
+    @apply flex items-center gap-4 p-4 rounded-notion transition-shadow;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+  }
+  .bookmark-card:hover {
+    box-shadow: var(--notion-card-shadow);
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-500;
+  }
+
+  /* ── Serif Heading Utility ── */
+  .font-serif-heading {
+    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+  }
+
+  /* ── Warm Section Background ── */
+  .bg-warm {
+    background: var(--color-bg-alt);
   }
 }
 
-/* Custom scrollbar */
+/* ── Custom Scrollbar (Notion Style) ── */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100 dark:bg-gray-800;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-gray-500;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+:is(.dark) ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+:is(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }

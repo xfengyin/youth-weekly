@@ -9,30 +9,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 py-20 lg:py-32">
+      {/* Hero Section — Notion Warm Minimal */}
+      <section className="relative bg-white dark:bg-[#191919] py-24 lg:py-36">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="inline-flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-full px-4 py-2 shadow-sm mb-8">
-              <Sparkles className="w-4 h-4 text-primary-500" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="inline-flex items-center space-x-2 bg-[#f6f5f4] dark:bg-[rgba(255,255,255,0.08)] rounded-[9999px] px-4 py-1.5 mb-10">
+              <Sparkles className="w-3.5 h-3.5 text-[#0075de]" />
+              <span className="text-[12px] font-semibold tracking-wide text-[#615d59] dark:text-[#a39e98]">
                 创刊号已发布
               </span>
             </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              欢迎来到<span className="text-gradient">青年周刊</span>
+
+            <h1 className="text-4xl md:text-6xl lg:text-[64px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-8 leading-[1.05] tracking-tight">
+              欢迎来到
+              <span className="text-[#0075de]">青年周刊</span>
             </h1>
-            
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-10">
+
+            <p className="text-lg md:text-xl text-[#615d59] dark:text-[#a39e98] max-w-2xl mx-auto mb-12 leading-relaxed">
               一份为年轻人打造的内容聚合周刊。融合科技、二次元、游戏、成长等多个领域，
               每周为你精选最有价值的内容。
             </p>
-            
+
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 href="/issues/"
-                className="btn-primary inline-flex items-center justify-center space-x-2 text-lg px-8 py-3"
+                className="btn-primary inline-flex items-center justify-center space-x-2 text-[15px] font-semibold px-7 py-2.5"
               >
                 <BookOpen className="w-5 h-5" />
                 <span>开始阅读</span>
@@ -40,71 +41,66 @@ export default function Home() {
               </Link>
               <Link
                 href="/subscribe/"
-                className="btn-secondary inline-flex items-center justify-center space-x-2 text-lg px-8 py-3"
+                className="btn-secondary inline-flex items-center justify-center space-x-2 text-[15px] font-semibold px-7 py-2.5"
               >
                 <span>邮件订阅</span>
               </Link>
             </div>
           </div>
         </div>
-
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-primary-200 dark:bg-primary-900/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-32 h-32 bg-secondary-200 dark:bg-secondary-900/30 rounded-full blur-3xl" />
       </section>
 
-      {/* Latest Issue Section */}
+      {/* Latest Issue Section — White Background */}
       {latestIssue && (
-        <section className="py-16 bg-white dark:bg-gray-900">
+        <section className="py-20 bg-white dark:bg-[#191919]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="text-2xl md:text-[32px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] leading-tight">
                 最新一期
               </h2>
               <Link
                 href={`/issues/${latestIssue.slug}/`}
-                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium inline-flex items-center"
+                className="text-[#0075de] dark:text-[#62aef0] hover:text-[#005bab] dark:hover:text-[#62aef0] font-semibold text-[15px] inline-flex items-center"
               >
                 阅读全文
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
 
-            <div className="card p-8 hover:shadow-md transition-shadow">
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <div className="card p-8 md:p-10">
+              <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] mb-5">
                 <Calendar className="w-4 h-4" />
                 <span>{latestIssue.date}</span>
                 <span>·</span>
                 <span>第{latestIssue.issue}期</span>
               </div>
-              
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+
+              <h3 className="text-2xl md:text-[28px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-5 leading-snug">
                 {latestIssue.title}
               </h3>
-              
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
+
+              <p className="text-[#615d59] dark:text-[#a39e98] leading-relaxed mb-7">
                 {latestIssue.description}
               </p>
-              
+
               <div className="flex flex-wrap gap-2">
-                {['科技新势力', '二次元次元壁', '游戏研究所', '青春故事会'].map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
+                {['科技新势力', '二次元次元壁', '游戏研究所', '青春故事会'].map(
+                  (tag) => (
+                    <span key={tag} className="badge">
+                      {tag}
+                    </span>
+                  )
+                )}
               </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* Recent Issues Section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-950">
+      {/* Recent Issues Section — Warm White Background */}
+      <section className="py-20 bg-[#f6f5f4] dark:bg-[#202020]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
+          <h2 className="text-2xl md:text-[32px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-10 leading-tight">
             往期周刊
           </h2>
 
@@ -113,22 +109,22 @@ export default function Home() {
               <Link
                 key={issue.slug}
                 href={`/issues/${issue.slug}/`}
-                className="card p-6 hover:shadow-md transition-shadow group"
+                className="card p-7 group"
               >
-                <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] mb-4">
                   <Calendar className="w-4 h-4" />
                   <span>{issue.date}</span>
                 </div>
-                
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+
+                <h3 className="text-lg font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-3 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors leading-snug">
                   {issue.title}
                 </h3>
-                
-                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+
+                <p className="text-sm text-[#615d59] dark:text-[#a39e98] line-clamp-2 leading-relaxed">
                   {issue.description}
                 </p>
-                
-                <div className="mt-4 flex items-center text-primary-600 dark:text-primary-400 text-sm font-medium">
+
+                <div className="mt-5 flex items-center text-[#0075de] dark:text-[#62aef0] text-sm font-semibold">
                   <span>阅读本期</span>
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -137,10 +133,10 @@ export default function Home() {
           </div>
 
           {issues.length > 5 && (
-            <div className="mt-8 text-center">
+            <div className="mt-10 text-center">
               <Link
                 href="/issues/"
-                className="btn-secondary inline-flex items-center"
+                className="btn-secondary inline-flex items-center text-[15px] font-semibold"
               >
                 <span>查看全部 {issues.length} 期</span>
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -150,14 +146,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      {/* Categories Section — White Background */}
+      <section className="py-20 bg-white dark:bg-[#191919]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+          <h2 className="text-2xl md:text-[32px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-10 text-center leading-tight">
             内容板块
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {[
               { icon: '🚀', name: '科技新势力', desc: 'AI、编程、工具' },
               { icon: '🎨', name: '二次元次元壁', desc: 'ACG、动漫' },
@@ -171,13 +167,13 @@ export default function Home() {
               <Link
                 key={category.name}
                 href={`/categories/#${category.name}`}
-                className="card p-6 text-center hover:shadow-md transition-shadow group"
+                className="card p-6 text-center group"
               >
-                <div className="text-4xl mb-3">{category.icon}</div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                <div className="text-4xl mb-4">{category.icon}</div>
+                <h3 className="font-bold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-1.5 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
                   {category.name}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-[#a39e98] dark:text-[#615d59]">
                   {category.desc}
                 </p>
               </Link>
@@ -186,18 +182,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Subscribe CTA */}
-      <section className="py-16 bg-gradient-to-r from-primary-600 to-secondary-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
+      {/* Subscribe CTA — Notion Blue Section */}
+      <section className="py-20 bg-[#0075de]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-[40px] font-bold font-serif-heading text-white mb-5 leading-tight">
             订阅青年周刊
           </h2>
-          <p className="text-primary-100 mb-8 text-lg">
+          <p className="text-[rgba(255,255,255,0.85)] mb-10 text-lg leading-relaxed">
             每周一更新，直接发送到您的邮箱。不错过任何精彩内容。
           </p>
           <Link
             href="/subscribe/"
-            className="inline-flex items-center justify-center px-8 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            className="inline-flex items-center justify-center px-8 py-3 bg-white text-[#0075de] font-semibold text-[15px] rounded-[4px] hover:bg-[#f6f5f4] transition-colors"
           >
             立即订阅
             <ArrowRight className="w-5 h-5 ml-2" />
