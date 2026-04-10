@@ -11,8 +11,7 @@ export default function SubscribePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // 模拟订阅请求
+
     if (email && email.includes('@')) {
       setStatus('success')
       setMessage('订阅成功！感谢您的关注，我们会将最新周刊发送到您的邮箱。')
@@ -24,38 +23,38 @@ export default function SubscribePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12">
+    <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-10">
           <Link
             href="/"
-            className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 mb-4"
+            className="inline-flex items-center text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] font-semibold text-[15px] mb-5"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             返回首页
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl md:text-[40px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] leading-tight">
             订阅青年周刊
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p className="mt-3 text-[#615d59] dark:text-[#a39e98]">
             每周一更新，不错过任何精彩内容
           </p>
         </div>
 
         {/* Subscription Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
           {/* Email Subscription */}
-          <div className="card p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
-                <Mail className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+          <div className="card p-7">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="p-3 bg-[#f2f9ff] dark:bg-[rgba(0,117,222,0.15)] rounded-notion">
+                <Mail className="w-5 h-5 text-[#0075de] dark:text-[#62aef0]" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 className="text-lg font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
                   邮件订阅
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-[#a39e98] dark:text-[#615d59]">
                   每周一直接收送到邮箱
                 </p>
               </div>
@@ -79,91 +78,127 @@ export default function SubscribePage() {
             </form>
 
             {status === 'success' && (
-              <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg flex items-start space-x-2">
-                <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p className="text-sm">{message}</p>
+              <div className="callout mt-5 !bg-[rgba(26,174,57,0.06)] !border-[rgba(26,174,57,0.15)]">
+                <CheckCircle className="w-5 h-5 text-[#1aae39] flex-shrink-0" />
+                <p className="callout-content text-[#1aae39]">{message}</p>
               </div>
             )}
 
             {status === 'error' && (
-              <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg flex items-start space-x-2">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p className="text-sm">{message}</p>
+              <div className="callout mt-5 !bg-[rgba(235,87,87,0.06)] !border-[rgba(235,87,87,0.15)]">
+                <AlertCircle className="w-5 h-5 text-[#eb5757] flex-shrink-0" />
+                <p className="callout-content text-[#eb5757]">{message}</p>
               </div>
             )}
 
-            <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+            <p className="mt-5 text-xs text-[#a39e98] dark:text-[#615d59] leading-relaxed">
               我们尊重您的隐私，不会分享您的邮箱地址。您可以随时取消订阅。
             </p>
           </div>
 
           {/* RSS Subscription */}
-          <div className="card p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                <Rss className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+          <div className="card p-7">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="p-3 bg-[rgba(221,91,0,0.06)] dark:bg-[rgba(221,91,0,0.12)] rounded-notion">
+                <Rss className="w-5 h-5 text-[#dd5b00]" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 className="text-lg font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
                   RSS 订阅
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-[#a39e98] dark:text-[#615d59]">
                   使用 RSS 阅读器订阅
                 </p>
               </div>
             </div>
 
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 mb-4">
-              <code className="text-sm text-gray-700 dark:text-gray-300 break-all">
+            <div className="bg-[#f6f5f4] dark:bg-[rgba(255,255,255,0.06)] rounded-notion p-3.5 mb-5 border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
+              <code className="text-sm text-[#615d59] dark:text-[#a39e98] break-all font-mono">
                 https://youth-weekly.github.io/rss.xml
               </code>
             </div>
 
             <button
               onClick={() => {
-                navigator.clipboard.writeText('https://youth-weekly.github.io/rss.xml')
+                navigator.clipboard.writeText(
+                  'https://youth-weekly.github.io/rss.xml'
+                )
               }}
               className="w-full btn-secondary"
             >
               复制 RSS 地址
             </button>
 
-            <div className="mt-4 space-y-2">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="mt-6 space-y-2.5">
+              <p className="text-sm font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
                 推荐的 RSS 阅读器：
               </p>
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                <li>• <a href="https://feedly.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-600">Feedly</a></li>
-                <li>• <a href="https://www.inoreader.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-600">Inoreader</a></li>
-                <li>• <a href="https://reederapp.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-600">Reeder</a> (macOS/iOS)</li>
+              <ul className="text-sm text-[#615d59] dark:text-[#a39e98] space-y-1.5">
+                <li>
+                  •{' '}
+                  <a
+                    href="https://feedly.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
+                  >
+                    Feedly
+                  </a>
+                </li>
+                <li>
+                  •{' '}
+                  <a
+                    href="https://www.inoreader.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
+                  >
+                    Inoreader
+                  </a>
+                </li>
+                <li>
+                  •{' '}
+                  <a
+                    href="https://reederapp.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
+                  >
+                    Reeder
+                  </a>{' '}
+                  (macOS/iOS)
+                </li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Info Section */}
-        <div className="card p-6 bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-gray-800 dark:to-gray-900">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            订阅内容说明
-          </h2>
-          <ul className="space-y-3 text-gray-600 dark:text-gray-300">
-            <li className="flex items-start space-x-2">
-              <span className="text-primary-600 dark:text-primary-400">✓</span>
-              <span>每周一早上 8 点更新</span>
-            </li>
-            <li className="flex items-start space-x-2">
-              <span className="text-primary-600 dark:text-primary-400">✓</span>
-              <span>包含全部 8 个板块的内容</span>
-            </li>
-            <li className="flex items-start space-x-2">
-              <span className="text-primary-600 dark:text-primary-400">✓</span>
-              <span>可随时取消订阅</span>
-            </li>
-            <li className="flex items-start space-x-2">
-              <span className="text-primary-600 dark:text-primary-400">✓</span>
-              <span>无垃圾邮件，只有优质内容</span>
-            </li>
-          </ul>
+        {/* Info Section — Callout Style */}
+        <div className="callout">
+          <span className="callout-icon">📬</span>
+          <div className="callout-content">
+            <p className="font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-3">
+              订阅内容说明
+            </p>
+            <ul className="space-y-2">
+              <li className="flex items-center space-x-2">
+                <span className="text-[#0075de] dark:text-[#62aef0]">✓</span>
+                <span>每周一早上 8 点更新</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className="text-[#0075de] dark:text-[#62aef0]">✓</span>
+                <span>包含全部 8 个板块的内容</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className="text-[#0075de] dark:text-[#62aef0]">✓</span>
+                <span>可随时取消订阅</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className="text-[#0075de] dark:text-[#62aef0]">✓</span>
+                <span>无垃圾邮件，只有优质内容</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
