@@ -1,23 +1,18 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Clock, Share2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Share2 } from 'lucide-react'
 import { getAllIssues, getIssueBySlug, renderMarkdown } from '../../lib/content'
-
-interface Props {
-  params: {
-    slug: string
-  }
-}
 
 export async function generateStaticParams() {
   const issues = getAllIssues()
   return issues.map((issue) => ({
-    slug: issue.slug,
+    slug: String(issue.slug),
   }))
 }
 
-export async function generateMetadata({ params }: Props) {
-  const issue = getIssueBySlug(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const issue = getIssueBySlug(slug)
 
   if (!issue) {
     return {
@@ -31,8 +26,9 @@ export async function generateMetadata({ params }: Props) {
   }
 }
 
-export default async function IssuePage({ params }: Props) {
-  const issue = getIssueBySlug(params.slug)
+export default async function IssuePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const issue = getIssueBySlug(slug)
 
   if (!issue) {
     notFound()
@@ -42,7 +38,6 @@ export default async function IssuePage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#191919]">
-      {/* Header — Warm Background */}
       <div className="bg-[#f6f5f4] dark:bg-[#202020] border-b border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
           <Link
@@ -76,13 +71,11 @@ export default async function IssuePage({ params }: Props) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <article className="prose-custom">
           <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
         </article>
 
-        {/* Callout Block — Share & Feedback */}
         <div className="callout mt-12">
           <span className="callout-icon">💡</span>
           <div className="callout-content">
@@ -92,7 +85,7 @@ export default async function IssuePage({ params }: Props) {
             <p>
               分享给朋友，或到{' '}
               <a
-                href="https://github.com/your-username/youth-weekly/issues"
+                href="https://github.com/xfengyin/youth-weekly/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#0075de] dark:text-[#62aef0] hover:underline"
@@ -104,30 +97,10 @@ export default async function IssuePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Share Section */}
         <div className="mt-8 pt-8 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-[#a39e98] dark:text-[#615d59]">
-                分享本期：
-              </span>
-              <button
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: issue.title,
-                      url: window.location.href,
-                    })
-                  }
-                }}
-                className="p-2 text-[#a39e98] dark:text-[#615d59] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
-            </div>
-
+          <div className="flex items-center justify-end">
             <Link
-              href="https://github.com/your-username/youth-weekly/issues"
+              href="https://github.com/xfengyin/youth-weekly/issues"
               target="_blank"
               className="text-sm text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0]"
             >
@@ -136,7 +109,6 @@ export default async function IssuePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Navigation */}
         <div className="mt-8 flex justify-between">
           <Link
             href="/issues/"

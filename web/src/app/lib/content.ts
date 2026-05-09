@@ -6,7 +6,7 @@ import remarkHtml from 'remark-html'
 import remarkGfm from 'remark-gfm'
 import DOMPurify from 'isomorphic-dompurify'
 
-const docsDirectory = path.join(process.cwd(), '..', '..', 'docs')
+const docsDirectory = path.join(process.cwd(), '..', 'docs')
 
 export interface Issue {
   issue: number
@@ -49,16 +49,17 @@ export function getAllIssues(): Issue[] {
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     const { data, content } = matter(fileContents)
 
-    return {
+    const issue: Issue = {
       issue: parseInt(dir),
-      title: data.title || `第${dir}期`,
-      date: data.date || '',
+      title: String(data.title || `第${dir}期`),
+      date: String(data.date || ''),
       published: data.published !== false,
-      cover: data.cover,
-      description: data.description,
-      content: content,
-      slug: dir,
+      cover: data.cover ? String(data.cover) : undefined,
+      description: data.description ? String(data.description) : undefined,
+      content: String(content),
+      slug: String(dir),
     }
+    return issue
   }).filter((issue): issue is Issue => issue !== null && issue.published)
 
   return issues
@@ -77,13 +78,13 @@ export function getIssueBySlug(slug: string): Issue | null {
 
   return {
     issue: parseInt(slug),
-    title: data.title || `第${slug}期`,
-    date: data.date || '',
+    title: String(data.title || `第${slug}期`),
+    date: String(data.date || ''),
     published: data.published !== false,
-    cover: data.cover,
-    description: data.description,
-    content: content,
-    slug,
+    cover: data.cover ? String(data.cover) : undefined,
+    description: data.description ? String(data.description) : undefined,
+    content: String(content),
+    slug: String(slug),
   }
 }
 
