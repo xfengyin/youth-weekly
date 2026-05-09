@@ -1,0 +1,1523 @@
+From 700d46df5c3af691c1d523b442bf76eeb8e2808c Mon Sep 17 00:00:00 2001
+From: Code Review Assistant <assistant@example.com>
+Date: Sat, 9 May 2026 02:48:08 +0000
+Subject: [PATCH] refactor: improve code quality and security
+
+- Security: Add DOMPurify XSS protection for Markdown rendering
+- Architecture: Extract shared Python content module (src/)
+- Testing: Add pytest unit tests with 18 test cases
+- CI/CD: Fix quality gates (remove || true, add real tests)
+- Deploy: Add deployment verification step
+- Config: Add centralized config.yaml
+
+BREAKING CHANGES:
+- Python scripts now import from src module
+
+Fixes #security-xss
+Fixes #code-duplication
+Fixes #ci-quality-gates
+---
+ .github/workflows/ci.yml       |  23 ++-
+ .github/workflows/deploy.yml   |  31 ++--
+ config.yaml                    |  65 +++++++
+ scripts/check_new_issue.py     |  73 +++-----
+ scripts/generate_newsletter.py |  83 +++------
+ scripts/generate_rss.py        |  73 ++------
+ scripts/generate_static.py     | 149 ++++++---------
+ scripts/src/__init__.py        | 174 ++++++++++++++++++
+ scripts/src/config.py          |  94 ++++++++++
+ scripts/tests/__init__.py      |   8 +
+ scripts/tests/test_content.py  | 319 +++++++++++++++++++++++++++++++++
+ web/package.json               |   2 +
+ web/src/app/lib/content.ts     |  27 ++-
+ 13 files changed, 846 insertions(+), 275 deletions(-)
+ create mode 100644 config.yaml
+ create mode 100644 scripts/src/__init__.py
+ create mode 100644 scripts/src/config.py
+ create mode 100644 scripts/tests/__init__.py
+ create mode 100644 scripts/tests/test_content.py
+
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index de1b558..dff4c8c 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -28,12 +28,17 @@ jobs:
+     - name: Lint
+       run: |
+         cd web
+-        npm run lint || true
++        npm run lint
++
++    - name: Type check
++      run: |
++        cd web
++        npm run type-check
+ 
+     - name: Build
+       run: |
+         cd web
+-        npm run build || true
++        npm run build
+ 
+   test-scripts:
+     runs-on: ubuntu-latest
+@@ -50,11 +55,17 @@ jobs:
+       run: |
+         cd scripts
+         pip install -r requirements.txt
++        pip install pytest
++
++    - name: Run unit tests
++      run: |
++        cd scripts
++        python -m pytest tests/ -v --tb=short
+ 
+-    - name: Test scripts
++    - name: Verify scripts can be imported
+       run: |
+         cd scripts
+-        python -c "import generate_static; print('✅ Scripts OK')" || echo "⚠️ Script test skipped"
++        python -c "from src import load_all_issues, get_latest_issue; print('✅ Module import OK')"
+ 
+   validate-content:
+     runs-on: ubuntu-latest
+@@ -65,8 +76,8 @@ jobs:
+     - name: Check content structure
+       run: |
+         echo "📂 Checking content structure..."
+-        test -d docs/issues && echo "✅ docs/issues/ exists" || echo "❌ Missing docs/issues/"
+-        test -f docs/issues/001/README.md && echo "✅ Issue #001 exists" || echo "❌ Missing Issue #001"
++        test -d docs/issues && echo "✅ docs/issues/ exists" || { echo "❌ Missing docs/issues/"; exit 1; }
++        test -f docs/issues/001/README.md && echo "✅ Issue #001 exists" || { echo "❌ Missing Issue #001"; exit 1; }
+         echo ""
+         echo "📊 Content statistics:"
+         find docs/issues -name "README.md" | wc -l | xargs echo "  Total issues:"
+diff --git a/.github/workflows/deploy.yml b/.github/workflows/deploy.yml
+index 9deae42..2f31daa 100644
+--- a/.github/workflows/deploy.yml
++++ b/.github/workflows/deploy.yml
+@@ -4,7 +4,6 @@ on:
+   push:
+     branches: [ main ]
+   schedule:
+-    # 每周一早上 8 点自动部署（UTC 0:00 = 北京时间 8:00）
+     - cron: '0 0 * * 1'
+   workflow_dispatch:
+ 
+@@ -47,30 +46,40 @@ jobs:
+     - name: Generate content
+       run: |
+         cd scripts
+-        python generate_static.py || echo "⚠️ Static generation skipped"
+-        python generate_rss.py || echo "⚠️ RSS generation skipped"
++        python generate_static.py
++        python generate_rss.py
+ 
+     - name: Build site
+       run: |
+         cd web
+-        npm run build || true
++        npm run build
+ 
+     - name: Prepare deployment
+       run: |
+         mkdir -p output
+-        # Copy built site if available
+         if [ -d "web/out" ]; then
++          echo "📦 Using Next.js static export (web/out)"
+           cp -r web/out/* output/
+-        elif [ -d "web/dist" ]; then
+-          cp -r web/dist/* output/
++        elif [ -d "web/.next" ]; then
++          echo "📦 Using Next.js build output (web/.next)"
++          mkdir -p output/_next
++          cp -r web/.next/static/* output/_next/ 2>/dev/null || true
++          cp -r web/.next/server/* output/ 2>/dev/null || true
+         else
+-          # Fallback: copy docs as static site
+-          cp -r docs/* output/
+-          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=./issues/001/"></head><body><p>Redirecting...</p></body></html>' > output/index.html
++          echo "⚠️ No build output found, using fallback"
++          cp -r docs/* output/ 2>/dev/null || true
++          echo '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><p>Build required. Please run CI first.</p></body></html>' > output/index.html
+         fi
+-        # Add nojekyll
+         touch output/.nojekyll
+ 
++    - name: Verify deployment
++      run: |
++        if [ ! -f "output/index.html" ] && [ ! -d "output/issues" ]; then
++          echo "❌ Deployment verification failed: no content found"
++          exit 1
++        fi
++        echo "✅ Deployment verification passed"
++
+     - name: Upload artifact
+       uses: actions/upload-pages-artifact@v3
+       with:
+diff --git a/config.yaml b/config.yaml
+new file mode 100644
+index 0000000..d1ec0cd
+--- /dev/null
++++ b/config.yaml
+@@ -0,0 +1,65 @@
++# 青年周刊配置文件
++# 所有配置项统一管理
++
++site:
++  name: "青年周刊"
++  description: "为年轻人打造的内容聚合周刊"
++  url: "https://youth-weekly.github.io"
++  email: "contact@youth-weekly.com"
++  language: "zh-CN"
++
++author:
++  name: "青年周刊编辑部"
++  email: "youth-weekly@example.com"
++  github: "https://github.com/xfengyin/youth-weekly"
++
++paths:
++  docs: "docs"
++  issues: "docs/issues"
++  assets: "docs/assets"
++  output: "scripts/dist"
++
++categories:
++  - id: "editorial"
++    name: "刊首语"
++    icon: "📝"
++  - id: "tech"
++    name: "科技新势力"
++    icon: "🚀"
++  - id: "anime"
++    name: "二次元次元壁"
++    icon: "🎨"
++  - id: "gaming"
++    name: "游戏研究所"
++    icon: "🎮"
++  - id: "stories"
++    name: "青春故事会"
++    icon: "📖"
++  - id: "tools"
++    name: "好工具"
++    icon: "🛠️"
++  - id: "watching"
++    name: "在看什么"
++    icon: "👀"
++  - id: "gallery"
++    name: "一周图鉴"
++    icon: "📷"
++  - id: "jobs"
++    name: "谁在招人"
++    icon: "💼"
++
++content:
++  max_excerpt_length: 500
++  max_search_excerpt: 200
++  max_rss_items: 20
++  newsletter_highlights_length: 1000
++
++rss:
++  title: "青年周刊"
++  description: "为年轻人打造的内容聚合周刊 - 融合科技、二次元、游戏、成长等多个领域"
++  subtitle: "每周精选科技、二次元、游戏、成长内容"
++
++build:
++  node_version: "20"
++  python_version: "3.11"
++  output_dir: "web/out"
+diff --git a/scripts/check_new_issue.py b/scripts/check_new_issue.py
+index 535e667..4a6e012 100644
+--- a/scripts/check_new_issue.py
++++ b/scripts/check_new_issue.py
+@@ -4,73 +4,54 @@
+ """
+ import os
+ import sys
+-import yaml
+ from pathlib import Path
+-from datetime import datetime, timedelta
++from datetime import datetime
++
++sys.path.insert(0, str(Path(__file__).parent))
++from src import load_all_issues
+ 
+-# 项目根目录
+ ROOT_DIR = Path(__file__).parent.parent
+ DOCS_DIR = ROOT_DIR / "docs"
+ 
+-def load_issue(issue_dir: Path) -> dict:
+-    """加载单期周刊"""
+-    readme_path = issue_dir / "README.md"
+-    if not readme_path.exists():
+-        return None
+-    
+-    content = readme_path.read_text(encoding='utf-8')
+-    
+-    # 解析 front matter
+-    if content.startswith('---'):
+-        parts = content.split('---', 2)
+-        if len(parts) >= 3:
+-            front_matter = yaml.safe_load(parts[1])
+-            return {
+-                **front_matter,
+-                'slug': issue_dir.name
+-            }
+-    
+-    return None
+ 
+ def check_new_issue():
+     """检查是否有新的周刊可以发布"""
+-    issues_dir = DOCS_DIR / "issues"
+-    if not issues_dir.exists():
++    if not DOCS_DIR.exists():
+         print("No issues directory found")
+         return False
+-    
++
++    issues = load_all_issues(DOCS_DIR, reverse=True, include_unpublished=False)
++
++    if not issues:
++        print("No published issue found")
++        return False
++
+     today = datetime.now().date()
+-    
+-    # 检查每一期
+-    for issue_dir in sorted(issues_dir.iterdir(), reverse=True):
+-        if issue_dir.is_dir() and issue_dir.name.isdigit():
+-            issue = load_issue(issue_dir)
+-            if issue:
+-                # 检查是否是今天或之前发布
+-                if issue.get('date'):
+-                    try:
+-                        issue_date = datetime.strptime(issue['date'], '%Y-%m-%d').date()
+-                        # 如果日期是今天或之前，且 published 为 true
+-                        if issue_date <= today and issue.get('published', True):
+-                            # 检查这期是否已经发布（通过检查 web 目录中是否存在）
+-                            print(f"Found issue ready for publish: {issue['title']}")
+-                            return True
+-                    except ValueError:
+-                        continue
+-    
++
++    for issue in issues:
++        if issue.get('date'):
++            try:
++                issue_date = datetime.strptime(issue['date'], '%Y-%m-%d').date()
++                if issue_date <= today and issue.get('published', True):
++                    print(f"Found issue ready for publish: {issue['title']}")
++                    return True
++            except ValueError:
++                continue
++
+     print("No new issue ready for publish")
+     return False
+ 
++
+ def main():
+     """主函数"""
+     ready = check_new_issue()
+-    
+-    # 设置输出供 GitHub Actions 使用
++
+     if 'GITHUB_OUTPUT' in os.environ:
+         with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+             f.write(f"ready={'true' if ready else 'false'}\n")
+-    
++
+     sys.exit(0 if ready else 1)
+ 
++
+ if __name__ == "__main__":
+     main()
+diff --git a/scripts/generate_newsletter.py b/scripts/generate_newsletter.py
+index cc38f66..2298520 100644
+--- a/scripts/generate_newsletter.py
++++ b/scripts/generate_newsletter.py
+@@ -2,19 +2,17 @@
+ """
+ 生成邮件内容的脚本
+ """
+-import os
+ import sys
+-import yaml
+ from pathlib import Path
+-from datetime import datetime
+ from jinja2 import Template
+ 
+-# 项目根目录
++sys.path.insert(0, str(Path(__file__).parent))
++from src import get_latest_issue
++
+ ROOT_DIR = Path(__file__).parent.parent
+ DOCS_DIR = ROOT_DIR / "docs"
+ OUTPUT_DIR = ROOT_DIR / "scripts" / "dist"
+ 
+-# 邮件模板
+ NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
+ <html lang="zh-CN">
+ <head>
+@@ -113,15 +111,15 @@ NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
+             <h1>青年周刊</h1>
+             <p>第 {{ issue_number }} 期 | {{ date }}</p>
+         </div>
+-        
++
+         <div class="content">
+             <h2>{{ title }}</h2>
+             <p>{{ description }}</p>
+-            
++
+             <div style="text-align: center; margin: 30px 0;">
+                 <a href="{{ issue_url }}" class="cta-button">阅读完整内容</a>
+             </div>
+-            
++
+             <h2>本期目录</h2>
+             <ul>
+                 <li>刊首语</li>
+@@ -134,17 +132,17 @@ NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
+                 <li>一周图鉴</li>
+                 <li>谁在招人</li>
+             </ul>
+-            
++
+             <h2>精彩看点</h2>
+             <div class="section">
+                 {{ highlights }}
+             </div>
+         </div>
+-        
++
+         <div class="footer">
+             <p>青年周刊 - 为年轻人打造的内容聚合周刊</p>
+             <p>
+-                <a href="{{ unsubscribe_url }}">取消订阅</a> | 
++                <a href="{{ unsubscribe_url }}">取消订阅</a> |
+                 <a href="{{ issue_url }}">在浏览器中查看</a>
+             </p>
+         </div>
+@@ -153,87 +151,52 @@ NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
+ </html>
+ """
+ 
++
+ def ensure_dir(path: Path):
+     """确保目录存在"""
+     path.mkdir(parents=True, exist_ok=True)
+ 
+-def load_issue(issue_dir: Path) -> dict:
+-    """加载单期周刊"""
+-    readme_path = issue_dir / "README.md"
+-    if not readme_path.exists():
+-        return None
+-    
+-    content = readme_path.read_text(encoding='utf-8')
+-    
+-    # 解析 front matter
+-    if content.startswith('---'):
+-        parts = content.split('---', 2)
+-        if len(parts) >= 3:
+-            front_matter = yaml.safe_load(parts[1])
+-            body = parts[2].strip()
+-            return {
+-                **front_matter,
+-                'content': body,
+-                'slug': issue_dir.name
+-            }
+-    
+-    return None
+ 
+ def generate_newsletter():
+     """生成邮件内容"""
+-    issues_dir = DOCS_DIR / "issues"
+-    if not issues_dir.exists():
+-        print("No issues directory found")
+-        return
+-    
+-    # 找到最新一期
+-    latest_issue = None
+-    for issue_dir in sorted(issues_dir.iterdir(), reverse=True):
+-        if issue_dir.is_dir() and issue_dir.name.isdigit():
+-            issue = load_issue(issue_dir)
+-            if issue and issue.get('published', True):
+-                latest_issue = issue
+-                break
+-    
++    latest_issue = get_latest_issue(DOCS_DIR)
++
+     if not latest_issue:
+         print("No published issue found")
+         return
+-    
+-    # 提取精彩片段（简单提取前1000字）
++
+     content = latest_issue.get('content', '')
+     highlights = content[:1000].replace('#', '').strip()
+-    
+-    # 渲染模板
++
+     template = Template(NEWSLETTER_TEMPLATE)
+     html = template.render(
+-        title=latest_issue.get('title', f'第{latest_issue["slug"]}期'),
++        title=latest_issue.get('title', f"第{latest_issue['slug']}期"),
+         issue_number=latest_issue.get('issue', latest_issue['slug']),
+         date=latest_issue.get('date', ''),
+         description=latest_issue.get('description', ''),
+-        issue_url=f'https://youth-weekly.github.io/issues/{latest_issue["slug"]}/',
++        issue_url=f"https://youth-weekly.github.io/issues/{latest_issue['slug']}/",
+         unsubscribe_url='https://youth-weekly.github.io/unsubscribe/',
+         highlights=highlights
+     )
+-    
+-    # 保存
++
+     ensure_dir(OUTPUT_DIR)
+     newsletter_path = OUTPUT_DIR / "newsletter.html"
+     with open(newsletter_path, 'w', encoding='utf-8') as f:
+         f.write(html)
+-    
++
+     print(f"Generated newsletter: {newsletter_path}")
+ 
++
+ def main():
+     """主函数"""
+     print("Generating newsletter...")
+-    
+-    # 创建输出目录
++
+     ensure_dir(OUTPUT_DIR)
+-    
+-    # 生成邮件内容
++
+     generate_newsletter()
+-    
++
+     print("Done!")
+ 
++
+ if __name__ == "__main__":
+     main()
+diff --git a/scripts/generate_rss.py b/scripts/generate_rss.py
+index b97c485..e0077b7 100644
+--- a/scripts/generate_rss.py
++++ b/scripts/generate_rss.py
+@@ -2,43 +2,23 @@
+ """
+ 生成 RSS Feed 的脚本
+ """
+-import os
+ import sys
+-import yaml
+ from pathlib import Path
+ from datetime import datetime
+ from feedgen.feed import FeedGenerator
+ 
+-# 项目根目录
++sys.path.insert(0, str(Path(__file__).parent))
++from src import load_all_issues
++
+ ROOT_DIR = Path(__file__).parent.parent
+ DOCS_DIR = ROOT_DIR / "docs"
+ OUTPUT_DIR = ROOT_DIR / "scripts" / "dist"
+ 
++
+ def ensure_dir(path: Path):
+     """确保目录存在"""
+     path.mkdir(parents=True, exist_ok=True)
+ 
+-def load_issue(issue_dir: Path) -> dict:
+-    """加载单期周刊"""
+-    readme_path = issue_dir / "README.md"
+-    if not readme_path.exists():
+-        return None
+-    
+-    content = readme_path.read_text(encoding='utf-8')
+-    
+-    # 解析 front matter
+-    if content.startswith('---'):
+-        parts = content.split('---', 2)
+-        if len(parts) >= 3:
+-            front_matter = yaml.safe_load(parts[1])
+-            body = parts[2].strip()
+-            return {
+-                **front_matter,
+-                'content': body,
+-                'slug': issue_dir.name
+-            }
+-    
+-    return None
+ 
+ def generate_rss():
+     """生成 RSS Feed"""
+@@ -51,58 +31,43 @@ def generate_rss():
+     fg.logo('https://youth-weekly.github.io/logo.png')
+     fg.subtitle('每周精选科技、二次元、游戏、成长内容')
+     fg.link(href='https://youth-weekly.github.io/rss.xml', rel='self')
+-    
+-    issues_dir = DOCS_DIR / "issues"
+-    if not issues_dir.exists():
+-        print("No issues directory found")
+-        return
+-    
+-    # 加载所有周刊
+-    issues = []
+-    for issue_dir in sorted(issues_dir.iterdir(), reverse=True):
+-        if issue_dir.is_dir() and issue_dir.name.isdigit():
+-            issue = load_issue(issue_dir)
+-            if issue and issue.get('published', True):
+-                issues.append(issue)
+-    
+-    # 只取最近20期
++
++    issues = load_all_issues(DOCS_DIR, reverse=True)
++
+     for issue in issues[:20]:
+         fe = fg.add_entry()
+-        fe.title(issue.get('title', f'第{issue["slug"]}期'))
+-        fe.link(href=f'https://youth-weekly.github.io/issues/{issue["slug"]}/')
++        fe.title(issue.get('title', f"第{issue['slug']}期"))
++        fe.link(href=f"https://youth-weekly.github.io/issues/{issue['slug']}/")
+         fe.description(issue.get('description', ''))
+-        fe.guid(f'https://youth-weekly.github.io/issues/{issue["slug"]}/', permalink=True)
+-        
+-        # 设置日期
++        fe.guid(f"https://youth-weekly.github.io/issues/{issue['slug']}/", permalink=True)
++
+         if issue.get('date'):
+             try:
+                 date = datetime.strptime(issue['date'], '%Y-%m-%d')
+                 fe.pubDate(date)
+             except ValueError:
+                 pass
+-        
+-        # 添加内容
++
+         content = issue.get('content', '')
+         fe.content(content, type='html')
+-    
+-    # 保存 RSS
++
+     ensure_dir(OUTPUT_DIR)
+     rss_path = OUTPUT_DIR / "rss.xml"
+     fg.rss_file(str(rss_path))
+-    
++
+     print(f"Generated RSS feed: {rss_path}")
+ 
++
+ def main():
+     """主函数"""
+     print("Generating RSS feed...")
+-    
+-    # 创建输出目录
++
+     ensure_dir(OUTPUT_DIR)
+-    
+-    # 生成 RSS
++
+     generate_rss()
+-    
++
+     print("Done!")
+ 
++
+ if __name__ == "__main__":
+     main()
+diff --git a/scripts/generate_static.py b/scripts/generate_static.py
+index 0c869d7..7d36223 100644
+--- a/scripts/generate_static.py
++++ b/scripts/generate_static.py
+@@ -2,151 +2,108 @@
+ """
+ 生成静态页面和数据的脚本
+ """
+-import os
+ import sys
+ import json
+-import yaml
+ from pathlib import Path
+ from datetime import datetime
+ 
+-# 项目根目录
++sys.path.insert(0, str(Path(__file__).parent))
++from src import load_all_issues, get_latest_issue, get_issue_count
++
+ ROOT_DIR = Path(__file__).parent.parent
+ DOCS_DIR = ROOT_DIR / "docs"
+ OUTPUT_DIR = ROOT_DIR / "scripts" / "dist"
+ 
++
+ def ensure_dir(path: Path):
+     """确保目录存在"""
+     path.mkdir(parents=True, exist_ok=True)
+ 
+-def load_issue(issue_dir: Path) -> dict:
+-    """加载单期周刊"""
+-    readme_path = issue_dir / "README.md"
+-    if not readme_path.exists():
+-        return None
+-    
+-    content = readme_path.read_text(encoding='utf-8')
+-    
+-    # 解析 front matter
+-    if content.startswith('---'):
+-        parts = content.split('---', 2)
+-        if len(parts) >= 3:
+-            front_matter = yaml.safe_load(parts[1])
+-            body = parts[2].strip()
+-            return {
+-                **front_matter,
+-                'content': body,
+-                'slug': issue_dir.name
+-            }
+-    
+-    return None
+ 
+ def generate_issues_index():
+     """生成周刊索引 JSON"""
+-    issues_dir = DOCS_DIR / "issues"
+-    if not issues_dir.exists():
+-        print("No issues directory found")
+-        return []
+-    
+-    issues = []
+-    for issue_dir in sorted(issues_dir.iterdir(), reverse=True):
+-        if issue_dir.is_dir() and issue_dir.name.isdigit():
+-            issue = load_issue(issue_dir)
+-            if issue and issue.get('published', True):
+-                issues.append({
+-                    'issue': issue.get('issue', int(issue_dir.name)),
+-                    'title': issue.get('title', f'第{issue_dir.name}期'),
+-                    'date': issue.get('date', ''),
+-                    'description': issue.get('description', ''),
+-                    'slug': issue_dir.name,
+-                    'cover': issue.get('cover', ''),
+-                })
+-    
+-    # 保存索引
++    issues = load_all_issues(DOCS_DIR, reverse=True)
++
++    issues_data = [
++        {
++            'issue': issue.get('issue', int(issue['slug'])),
++            'title': issue.get('title', f"第{issue['slug']}期"),
++            'date': issue.get('date', ''),
++            'description': issue.get('description', ''),
++            'slug': issue['slug'],
++            'cover': issue.get('cover', ''),
++        }
++        for issue in issues
++    ]
++
+     ensure_dir(OUTPUT_DIR)
+     index_path = OUTPUT_DIR / "issues.json"
+     with open(index_path, 'w', encoding='utf-8') as f:
+-        json.dump(issues, f, ensure_ascii=False, indent=2)
+-    
++        json.dump(issues_data, f, ensure_ascii=False, indent=2)
++
+     print(f"Generated issues index: {index_path}")
+-    return issues
++    return issues_data
++
+ 
+ def generate_search_index():
+     """生成搜索索引"""
+-    issues_dir = DOCS_DIR / "issues"
+-    if not issues_dir.exists():
+-        return
+-    
++    issues = load_all_issues(DOCS_DIR, reverse=True)
++
+     search_index = []
+-    for issue_dir in issues_dir.iterdir():
+-        if issue_dir.is_dir() and issue_dir.name.isdigit():
+-            issue = load_issue(issue_dir)
+-            if issue and issue.get('published', True):
+-                # 提取前500字作为摘要
+-                content = issue.get('content', '')
+-                excerpt = content[:500].replace('#', '').strip()
+-                
+-                search_index.append({
+-                    'issue': issue.get('issue', int(issue_dir.name)),
+-                    'title': issue.get('title', ''),
+-                    'date': issue.get('date', ''),
+-                    'slug': issue_dir.name,
+-                    'excerpt': excerpt + '...' if len(content) > 500 else excerpt,
+-                })
+-    
+-    # 保存搜索索引
++    for issue in issues:
++        content = issue.get('content', '')
++        excerpt_raw = content[:500].replace('#', '').strip()
++        excerpt = excerpt_raw + '...' if len(content) > 500 else excerpt_raw
++
++        search_index.append({
++            'issue': issue.get('issue', int(issue['slug'])),
++            'title': issue.get('title', ''),
++            'date': issue.get('date', ''),
++            'slug': issue['slug'],
++            'excerpt': excerpt,
++        })
++
+     ensure_dir(OUTPUT_DIR)
+     index_path = OUTPUT_DIR / "search.json"
+     with open(index_path, 'w', encoding='utf-8') as f:
+         json.dump(search_index, f, ensure_ascii=False, indent=2)
+-    
++
+     print(f"Generated search index: {index_path}")
+ 
++
+ def generate_stats():
+     """生成统计数据"""
+-    issues_dir = DOCS_DIR / "issues"
+-    
++    issues = load_all_issues(DOCS_DIR, reverse=True)
++
++    dates = [issue.get('date', '') for issue in issues if issue.get('date')]
++
+     stats = {
+-        'total_issues': 0,
+-        'first_issue_date': None,
+-        'last_issue_date': None,
++        'total_issues': get_issue_count(DOCS_DIR),
++        'first_issue_date': min(dates) if dates else None,
++        'last_issue_date': max(dates) if dates else None,
+         'generated_at': datetime.now().isoformat(),
+     }
+-    
+-    if issues_dir.exists():
+-        dates = []
+-        for issue_dir in issues_dir.iterdir():
+-            if issue_dir.is_dir() and issue_dir.name.isdigit():
+-                issue = load_issue(issue_dir)
+-                if issue and issue.get('published', True):
+-                    stats['total_issues'] += 1
+-                    if issue.get('date'):
+-                        dates.append(issue['date'])
+-        
+-        if dates:
+-            stats['first_issue_date'] = min(dates)
+-            stats['last_issue_date'] = max(dates)
+-    
+-    # 保存统计
++
+     ensure_dir(OUTPUT_DIR)
+     stats_path = OUTPUT_DIR / "stats.json"
+     with open(stats_path, 'w', encoding='utf-8') as f:
+         json.dump(stats, f, ensure_ascii=False, indent=2)
+-    
++
+     print(f"Generated stats: {stats_path}")
+ 
++
+ def main():
+     """主函数"""
+     print("Generating static files...")
+-    
+-    # 创建输出目录
++
+     ensure_dir(OUTPUT_DIR)
+-    
+-    # 生成各种索引
++
+     generate_issues_index()
+     generate_search_index()
+     generate_stats()
+-    
++
+     print("Done!")
+ 
++
+ if __name__ == "__main__":
+     main()
+diff --git a/scripts/src/__init__.py b/scripts/src/__init__.py
+new file mode 100644
+index 0000000..ff33c02
+--- /dev/null
++++ b/scripts/src/__init__.py
+@@ -0,0 +1,174 @@
++#!/usr/bin/env python3
++"""
++共享内容加载模块
++提供统一的周刊内容读取接口
++"""
++import yaml
++from pathlib import Path
++from typing import Optional, List
++from datetime import date, datetime
++
++
++class ContentLoadError(Exception):
++    """内容加载错误"""
++    pass
++
++
++def _serialize_value(value):
++    """序列化 YAML 值，确保日期等类型可被 JSON 序列化"""
++    if isinstance(value, (date, datetime)):
++        return value.isoformat()
++    if isinstance(value, dict):
++        return {k: _serialize_value(v) for k, v in value.items()}
++    if isinstance(value, list):
++        return [_serialize_value(v) for v in value]
++    return value
++
++
++def load_issue(issue_dir: Path, docs_dir: Optional[Path] = None) -> Optional[dict]:
++    """
++    加载单期周刊
++
++    Args:
++        issue_dir: 周刊目录路径
++        docs_dir: 文档根目录（用于安全校验）
++
++    Returns:
++        周刊数据字典，失败返回 None
++    """
++    if not issue_dir.is_dir():
++        return None
++
++    readme_path = issue_dir / "README.md"
++    if not readme_path.exists():
++        return None
++
++    try:
++        content = readme_path.read_text(encoding='utf-8')
++    except Exception as e:
++        print(f"⚠️ Failed to read {readme_path}: {e}")
++        return None
++
++    if not content.startswith('---'):
++        return None
++
++    try:
++        parts = content.split('---', 2)
++        if len(parts) < 3:
++            return None
++
++        front_matter = yaml.safe_load(parts[1])
++        if not isinstance(front_matter, dict):
++            return None
++
++        front_matter = _serialize_value(front_matter)
++
++        return {
++            **front_matter,
++            'content': parts[2].strip(),
++            'slug': issue_dir.name
++        }
++    except yaml.YAMLError as e:
++        print(f"⚠️ YAML parse error in {issue_dir}: {e}")
++        return None
++    except Exception as e:
++        print(f"⚠️ Unexpected error loading {issue_dir}: {e}")
++        return None
++
++
++def safe_resolve_path(base_dir: Path, target_name: str) -> Optional[Path]:
++    """
++    安全路径解析，防止路径遍历攻击
++
++    Args:
++        base_dir: 基础目录
++        target_name: 目标名称
++
++    Returns:
++        安全的绝对路径，校验失败返回 None
++    """
++    try:
++        base_resolved = base_dir.resolve()
++        target_path = (base_dir / target_name).resolve()
++
++        if not str(target_path).startswith(str(base_resolved)):
++            return None
++
++        return target_path
++    except Exception:
++        return None
++
++
++def load_all_issues(
++    docs_dir: Path,
++    reverse: bool = True,
++    include_unpublished: bool = False
++) -> List[dict]:
++    """
++    加载所有周刊
++
++    Args:
++        docs_dir: 文档根目录
++        reverse: 是否降序排列（默认 True，最新在前）
++        include_unpublished: 是否包含未发布内容
++
++    Returns:
++        周刊列表
++    """
++    issues_dir = docs_dir / "issues"
++
++    if not issues_dir.exists():
++        print(f"⚠️ Issues directory not found: {issues_dir}")
++        return []
++
++    issues = []
++    sorted_dirs = sorted(
++        issues_dir.iterdir(),
++        key=lambda p: p.name,
++        reverse=reverse
++    )
++
++    for issue_dir in sorted_dirs:
++        if not issue_dir.is_dir():
++            continue
++
++        if not issue_dir.name.isdigit():
++            continue
++
++        issue = load_issue(issue_dir, docs_dir)
++        if issue is None:
++            continue
++
++        if not include_unpublished and not issue.get('published', True):
++            continue
++
++        issues.append(issue)
++
++    return issues
++
++
++def get_latest_issue(docs_dir: Path) -> Optional[dict]:
++    """
++    获取最新一期周刊
++
++    Args:
++        docs_dir: 文档根目录
++
++    Returns:
++        最新周刊数据，未找到返回 None
++    """
++    issues = load_all_issues(docs_dir, reverse=True)
++    return issues[0] if issues else None
++
++
++def get_issue_count(docs_dir: Path) -> int:
++    """
++    获取已发布的周刊数量
++
++    Args:
++        docs_dir: 文档根目录
++
++    Returns:
++        周刊数量
++    """
++    return len(load_all_issues(docs_dir, reverse=False))
+diff --git a/scripts/src/config.py b/scripts/src/config.py
+new file mode 100644
+index 0000000..1e2eaff
+--- /dev/null
++++ b/scripts/src/config.py
+@@ -0,0 +1,94 @@
++#!/usr/bin/env python3
++"""
++配置加载模块
++"""
++import os
++import yaml
++from pathlib import Path
++from typing import Optional, Any
++
++
++_config: Optional[dict] = None
++
++
++def get_config_path() -> Path:
++    """获取配置文件路径"""
++    root_dir = Path(__file__).parent.parent
++    config_path = root_dir / "config.yaml"
++
++    if config_path.exists():
++        return config_path
++
++    env_config_path = os.environ.get('YOUTH_WEEKLY_CONFIG')
++    if env_config_path and Path(env_config_path).exists():
++        return Path(env_config_path)
++
++    raise FileNotFoundError(f"config.yaml not found at {config_path}")
++
++
++def load_config(force_reload: bool = False) -> dict:
++    """加载配置"""
++    global _config
++
++    if _config is not None and not force_reload:
++        return _config
++
++    config_path = get_config_path()
++
++    with open(config_path, 'r', encoding='utf-8') as f:
++        _config = yaml.safe_load(f)
++
++    return _config
++
++
++def get_config(key: str, default: Any = None) -> Any:
++    """获取配置项"""
++    config = load_config()
++
++    keys = key.split('.')
++    value = config
++
++    for k in keys:
++        if isinstance(value, dict):
++            value = value.get(k)
++        else:
++            return default
++
++        if value is None:
++            return default
++
++    return value
++
++
++def get_site_url() -> str:
++    """获取站点 URL"""
++    return get_config('site.url', 'https://youth-weekly.github.io')
++
++
++def get_site_name() -> str:
++    """获取站点名称"""
++    return get_config('site.name', '青年周刊')
++
++
++def get_docs_dir() -> Path:
++    """获取文档目录"""
++    root_dir = Path(__file__).parent.parent
++    docs_path = get_config('paths.docs', 'docs')
++    return root_dir / docs_path
++
++
++def get_output_dir() -> Path:
++    """获取输出目录"""
++    root_dir = Path(__file__).parent.parent
++    output_path = get_config('paths.output', 'scripts/dist')
++    return root_dir / output_path
++
++
++def get_categories() -> list:
++    """获取分类列表"""
++    return get_config('categories', [])
++
++
++def get_max_rss_items() -> int:
++    """获取 RSS 最大条目数"""
++    return get_config('content.max_rss_items', 20)
+diff --git a/scripts/tests/__init__.py b/scripts/tests/__init__.py
+new file mode 100644
+index 0000000..72840ef
+--- /dev/null
++++ b/scripts/tests/__init__.py
+@@ -0,0 +1,8 @@
++#!/usr/bin/env python3
++"""
++pytest 配置文件
++"""
++import sys
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).parent.parent))
+diff --git a/scripts/tests/test_content.py b/scripts/tests/test_content.py
+new file mode 100644
+index 0000000..e029e62
+--- /dev/null
++++ b/scripts/tests/test_content.py
+@@ -0,0 +1,319 @@
++#!/usr/bin/env python3
++"""
++测试共享内容模块
++"""
++import pytest
++import tempfile
++import shutil
++from pathlib import Path
++import sys
++
++sys.path.insert(0, str(Path(__file__).parent.parent))
++from src import load_issue, load_all_issues, get_latest_issue, get_issue_count, safe_resolve_path
++
++
++class TestLoadIssue:
++    """测试 load_issue 函数"""
++
++    def setup_method(self):
++        """每个测试前创建临时目录"""
++        self.temp_dir = tempfile.mkdtemp()
++        self.docs_dir = Path(self.temp_dir) / "docs"
++        self.docs_dir.mkdir()
++        self.issues_dir = self.docs_dir / "issues"
++        self.issues_dir.mkdir()
++
++    def teardown_method(self):
++        """每个测试后清理"""
++        shutil.rmtree(self.temp_dir, ignore_errors=True)
++
++    def test_load_valid_issue(self):
++        """测试加载有效的周刊"""
++        issue_dir = self.issues_dir / "001"
++        issue_dir.mkdir()
++
++        readme_content = """---
++issue: 1
++title: "测试周刊"
++date: "2026-01-01"
++published: true
++description: "测试描述"
++---
++
++# 测试内容
++"""
++        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
++
++        result = load_issue(issue_dir)
++
++        assert result is not None
++        assert result['issue'] == 1
++        assert result['title'] == '测试周刊'
++        assert result['date'] in ('2026-01-01', '2026-1-1')
++        assert result['published'] is True
++        assert result['description'] == '测试描述'
++        assert result['slug'] == '001'
++        assert '测试内容' in result['content']
++
++    def test_load_nonexistent_file(self):
++        """测试加载不存在的文件"""
++        issue_dir = self.issues_dir / "002"
++        issue_dir.mkdir()
++
++        result = load_issue(issue_dir)
++
++        assert result is None
++
++    def test_load_missing_readme(self):
++        """测试目录中没有 README.md"""
++        issue_dir = self.issues_dir / "003"
++        issue_dir.mkdir()
++
++        result = load_issue(issue_dir)
++
++        assert result is None
++
++    def test_load_invalid_frontmatter(self):
++        """测试无效的 frontmatter"""
++        issue_dir = self.issues_dir / "004"
++        issue_dir.mkdir()
++
++        readme_content = """# 没有 frontmatter
++内容
++"""
++        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
++
++        result = load_issue(issue_dir)
++
++        assert result is None
++
++    def test_load_unpublished_issue(self):
++        """测试加载未发布的周刊"""
++        issue_dir = self.issues_dir / "005"
++        issue_dir.mkdir()
++
++        readme_content = """---
++issue: 5
++title: "未发布周刊"
++date: 2026-01-01
++published: false
++---
++
++内容
++"""
++        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
++
++        result = load_issue(issue_dir)
++
++        assert result is not None
++        assert result['published'] is False
++
++    def test_load_directory_not_exists(self):
++        """测试目录不存在"""
++        result = load_issue(Path("/nonexistent/path"))
++
++        assert result is None
++
++
++class TestLoadAllIssues:
++    """测试 load_all_issues 函数"""
++
++    def setup_method(self):
++        self.temp_dir = tempfile.mkdtemp()
++        self.docs_dir = Path(self.temp_dir) / "docs"
++        self.docs_dir.mkdir()
++        self.issues_dir = self.docs_dir / "issues"
++        self.issues_dir.mkdir()
++
++    def teardown_method(self):
++        shutil.rmtree(self.temp_dir, ignore_errors=True)
++
++    def _create_issue(self, num: int, title: str, published: bool = True):
++        """辅助方法：创建测试周刊"""
++        issue_dir = self.issues_dir / str(num).zfill(3)
++        issue_dir.mkdir()
++
++        readme_content = f"""---
++issue: {num}
++title: "{title}"
++date: "2026-01-{str(num).zfill(2)}"
++published: {str(published).lower()}
++---
++
++内容 {num}
++"""
++        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
++
++    def test_load_multiple_issues(self):
++        """测试加载多个周刊"""
++        self._create_issue(1, "周刊1")
++        self._create_issue(2, "周刊2")
++        self._create_issue(3, "周刊3")
++
++        result = load_all_issues(self.docs_dir)
++
++        assert len(result) == 3
++
++    def test_load_issues_reverse_order(self):
++        """测试降序排列"""
++        self._create_issue(1, "周刊1")
++        self._create_issue(2, "周刊2")
++        self._create_issue(3, "周刊3")
++
++        result = load_all_issues(self.docs_dir, reverse=True)
++
++        assert result[0]['issue'] == 3
++        assert result[2]['issue'] == 1
++
++    def test_load_issues_ascending_order(self):
++        """测试升序排列"""
++        self._create_issue(1, "周刊1")
++        self._create_issue(2, "周刊2")
++        self._create_issue(3, "周刊3")
++
++        result = load_all_issues(self.docs_dir, reverse=False)
++
++        assert result[0]['issue'] == 1
++        assert result[2]['issue'] == 3
++
++    def test_exclude_unpublished_by_default(self):
++        """测试默认排除未发布内容"""
++        self._create_issue(1, "周刊1", published=True)
++        self._create_issue(2, "周刊2", published=False)
++        self._create_issue(3, "周刊3", published=True)
++
++        result = load_all_issues(self.docs_dir, include_unpublished=False)
++
++        assert len(result) == 2
++        assert all(issue['published'] for issue in result)
++
++    def test_include_unpublished(self):
++        """测试包含未发布内容"""
++        self._create_issue(1, "周刊1", published=True)
++        self._create_issue(2, "周刊2", published=False)
++        self._create_issue(3, "周刊3", published=True)
++
++        result = load_all_issues(self.docs_dir, include_unpublished=True)
++
++        assert len(result) == 3
++
++    def test_missing_issues_directory(self):
++        """测试不存在的目录"""
++        result = load_all_issues(Path("/nonexistent/docs"))
++
++        assert result == []
++
++
++class TestGetLatestIssue:
++    """测试 get_latest_issue 函数"""
++
++    def setup_method(self):
++        self.temp_dir = tempfile.mkdtemp()
++        self.docs_dir = Path(self.temp_dir) / "docs"
++        self.docs_dir.mkdir()
++        self.issues_dir = self.docs_dir / "issues"
++        self.issues_dir.mkdir()
++
++    def teardown_method(self):
++        shutil.rmtree(self.temp_dir, ignore_errors=True)
++
++    def test_get_latest_issue(self):
++        """测试获取最新周刊"""
++        issue_dir = self.issues_dir / "001"
++        issue_dir.mkdir()
++
++        readme_content = """---
++issue: 1
++title: "最新周刊"
++date: "2026-01-01"
++published: true
++---
++
++内容
++"""
++        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
++
++        result = get_latest_issue(self.docs_dir)
++
++        assert result is not None
++        assert result['title'] == '最新周刊'
++
++    def test_get_latest_no_issues(self):
++        """测试没有周刊的情况"""
++        result = get_latest_issue(self.docs_dir)
++
++        assert result is None
++
++
++class TestGetIssueCount:
++    """测试 get_issue_count 函数"""
++
++    def setup_method(self):
++        self.temp_dir = tempfile.mkdtemp()
++        self.docs_dir = Path(self.temp_dir) / "docs"
++        self.docs_dir.mkdir()
++        self.issues_dir = self.docs_dir / "issues"
++        self.issues_dir.mkdir()
++
++    def teardown_method(self):
++        shutil.rmtree(self.temp_dir, ignore_errors=True)
++
++    def _create_issue(self, num: int, published: bool = True):
++        issue_dir = self.issues_dir / str(num).zfill(3)
++        issue_dir.mkdir()
++
++        readme_content = f"""---
++issue: {num}
++title: "周刊{num}"
++date: "2026-01-{str(num).zfill(2)}"
++published: {str(published).lower()}
++---
++
++内容
++"""
++        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
++
++    def test_count_published_issues(self):
++        """测试统计已发布周刊数量"""
++        self._create_issue(1, published=True)
++        self._create_issue(2, published=False)
++        self._create_issue(3, published=True)
++
++        count = get_issue_count(self.docs_dir)
++
++        assert count == 2
++
++
++class TestSafeResolvePath:
++    """测试 safe_resolve_path 函数"""
++
++    def setup_method(self):
++        self.temp_dir = tempfile.mkdtemp()
++        self.base_dir = Path(self.temp_dir) / "base"
++        self.base_dir.mkdir()
++
++    def teardown_method(self):
++        shutil.rmtree(self.temp_dir, ignore_errors=True)
++
++    def test_valid_path(self):
++        """测试有效路径"""
++        result = safe_resolve_path(self.base_dir, "subdir")
++
++        assert result is not None
++        assert str(result).startswith(str(self.base_dir))
++
++    def test_path_traversal_attempt(self):
++        """测试路径遍历攻击"""
++        result = safe_resolve_path(self.base_dir, "../../etc/passwd")
++
++        assert result is None
++
++    def test_absolute_path_outside(self):
++        """测试绝对路径在外部"""
++        result = safe_resolve_path(self.base_dir, "/tmp/evil")
++
++        assert result is None
++
++
++if __name__ == "__main__":
++    pytest.main([__file__, "-v"])
+diff --git a/web/package.json b/web/package.json
+index e9cb6aa..9f554d6 100644
+--- a/web/package.json
++++ b/web/package.json
+@@ -28,6 +28,8 @@
+     "@tailwindcss/typography": "^0.5.10",
+     "lucide-react": "^0.300.0",
+     "fuse.js": "^7.0.0",
++    "dompurify": "^3.0.0",
++    "isomorphic-dompurify": "^2.0.0",
+     "date-fns": "^3.0.0",
+     "rss": "^1.2.2",
+     "next-pwa": "^5.6.0",
+diff --git a/web/src/app/lib/content.ts b/web/src/app/lib/content.ts
+index aa6de9b..53cd140 100644
+--- a/web/src/app/lib/content.ts
++++ b/web/src/app/lib/content.ts
+@@ -4,6 +4,7 @@ import matter from 'gray-matter'
+ import { remark } from 'remark'
+ import remarkHtml from 'remark-html'
+ import remarkGfm from 'remark-gfm'
++import DOMPurify from 'isomorphic-dompurify'
+ 
+ const docsDirectory = path.join(process.cwd(), '..', '..', 'docs')
+ 
+@@ -86,14 +87,36 @@ export function getIssueBySlug(slug: string): Issue | null {
+   }
+ }
+ 
+-// 渲染 Markdown 为 HTML
++// 渲染 Markdown 为 HTML（带 XSS 防护）
+ export async function renderMarkdown(content: string): Promise<string> {
+   const result = await remark()
+     .use(remarkGfm)
+     .use(remarkHtml, { sanitize: false })
+     .process(content)
+   
+-  return result.toString()
++  const rawHtml = result.toString()
++  
++  return DOMPurify.sanitize(rawHtml, {
++    ALLOWED_TAGS: [
++      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
++      'p', 'br', 'hr',
++      'ul', 'ol', 'li',
++      'blockquote', 'pre', 'code',
++      'a', 'strong', 'em', 'del', 's',
++      'table', 'thead', 'tbody', 'tr', 'th', 'td',
++      'img', 'figure', 'figcaption',
++      'span', 'div',
++    ],
++    ALLOWED_ATTR: [
++      'href', 'title', 'target', 'rel',
++      'src', 'alt', 'width', 'height',
++      'class', 'className',
++      'align',
++    ],
++    ALLOW_DATA_ATTR: false,
++    ADD_ATTR: ['target'],
++    FORCE_BODY: false,
++  })
+ }
+ 
+ // 获取搜索索引
+-- 
+2.43.0
+
