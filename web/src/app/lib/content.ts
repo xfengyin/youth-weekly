@@ -4,6 +4,7 @@ import matter from 'gray-matter'
 import { remark } from 'remark'
 import remarkHtml from 'remark-html'
 import remarkGfm from 'remark-gfm'
+import DOMPurify from 'isomorphic-dompurify'
 
 const docsDirectory = path.join(process.cwd(), '..', '..', 'docs')
 
@@ -86,14 +87,36 @@ export function getIssueBySlug(slug: string): Issue | null {
   }
 }
 
-// 渲染 Markdown 为 HTML
+// 渲染 Markdown 为 HTML（带 XSS 防护）
 export async function renderMarkdown(content: string): Promise<string> {
   const result = await remark()
     .use(remarkGfm)
     .use(remarkHtml, { sanitize: false })
     .process(content)
   
-  return result.toString()
+  const rawHtml = result.toString()
+  
+  return DOMPurify.sanitize(rawHtml, {
+    ALLOWED_TAGS: [
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'p', 'br', 'hr',
+      'ul', 'ol', 'li',
+      'blockquote', 'pre', 'code',
+      'a', 'strong', 'em', 'del', 's',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      'img', 'figure', 'figcaption',
+      'span', 'div',
+    ],
+    ALLOWED_ATTR: [
+      'href', 'title', 'target', 'rel',
+      'src', 'alt', 'width', 'height',
+      'class', 'className',
+      'align',
+    ],
+    ALLOW_DATA_ATTR: false,
+    ADD_ATTR: ['target'],
+    FORCE_BODY: false,
+  })
 }
 
 // 获取搜索索引

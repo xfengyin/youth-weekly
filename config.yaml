@@ -1,0 +1,65 @@
+# 青年周刊配置文件
+# 所有配置项统一管理
+
+site:
+  name: "青年周刊"
+  description: "为年轻人打造的内容聚合周刊"
+  url: "https://youth-weekly.github.io"
+  email: "contact@youth-weekly.com"
+  language: "zh-CN"
+
+author:
+  name: "青年周刊编辑部"
+  email: "youth-weekly@example.com"
+  github: "https://github.com/xfengyin/youth-weekly"
+
+paths:
+  docs: "docs"
+  issues: "docs/issues"
+  assets: "docs/assets"
+  output: "scripts/dist"
+
+categories:
+  - id: "editorial"
+    name: "刊首语"
+    icon: "📝"
+  - id: "tech"
+    name: "科技新势力"
+    icon: "🚀"
+  - id: "anime"
+    name: "二次元次元壁"
+    icon: "🎨"
+  - id: "gaming"
+    name: "游戏研究所"
+    icon: "🎮"
+  - id: "stories"
+    name: "青春故事会"
+    icon: "📖"
+  - id: "tools"
+    name: "好工具"
+    icon: "🛠️"
+  - id: "watching"
+    name: "在看什么"
+    icon: "👀"
+  - id: "gallery"
+    name: "一周图鉴"
+    icon: "📷"
+  - id: "jobs"
+    name: "谁在招人"
+    icon: "💼"
+
+content:
+  max_excerpt_length: 500
+  max_search_excerpt: 200
+  max_rss_items: 20
+  newsletter_highlights_length: 1000
+
+rss:
+  title: "青年周刊"
+  description: "为年轻人打造的内容聚合周刊 - 融合科技、二次元、游戏、成长等多个领域"
+  subtitle: "每周精选科技、二次元、游戏、成长内容"
+
+build:
+  node_version: "20"
+  python_version: "3.11"
+  output_dir: "web/out"

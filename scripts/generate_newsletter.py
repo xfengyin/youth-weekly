@@ -2,19 +2,17 @@
 """
 生成邮件内容的脚本
 """
-import os
 import sys
-import yaml
 from pathlib import Path
-from datetime import datetime
 from jinja2 import Template
 
-# 项目根目录
+sys.path.insert(0, str(Path(__file__).parent))
+from src import get_latest_issue
+
 ROOT_DIR = Path(__file__).parent.parent
 DOCS_DIR = ROOT_DIR / "docs"
 OUTPUT_DIR = ROOT_DIR / "scripts" / "dist"
 
-# 邮件模板
 NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -113,15 +111,15 @@ NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
             <h1>青年周刊</h1>
             <p>第 {{ issue_number }} 期 | {{ date }}</p>
         </div>
-        
+
         <div class="content">
             <h2>{{ title }}</h2>
             <p>{{ description }}</p>
-            
+
             <div style="text-align: center; margin: 30px 0;">
                 <a href="{{ issue_url }}" class="cta-button">阅读完整内容</a>
             </div>
-            
+
             <h2>本期目录</h2>
             <ul>
                 <li>刊首语</li>
@@ -134,17 +132,17 @@ NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
                 <li>一周图鉴</li>
                 <li>谁在招人</li>
             </ul>
-            
+
             <h2>精彩看点</h2>
             <div class="section">
                 {{ highlights }}
             </div>
         </div>
-        
+
         <div class="footer">
             <p>青年周刊 - 为年轻人打造的内容聚合周刊</p>
             <p>
-                <a href="{{ unsubscribe_url }}">取消订阅</a> | 
+                <a href="{{ unsubscribe_url }}">取消订阅</a> |
                 <a href="{{ issue_url }}">在浏览器中查看</a>
             </p>
         </div>
@@ -153,87 +151,52 @@ NEWSLETTER_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
+
 def ensure_dir(path: Path):
     """确保目录存在"""
     path.mkdir(parents=True, exist_ok=True)
 
-def load_issue(issue_dir: Path) -> dict:
-    """加载单期周刊"""
-    readme_path = issue_dir / "README.md"
-    if not readme_path.exists():
-        return None
-    
-    content = readme_path.read_text(encoding='utf-8')
-    
-    # 解析 front matter
-    if content.startswith('---'):
-        parts = content.split('---', 2)
-        if len(parts) >= 3:
-            front_matter = yaml.safe_load(parts[1])
-            body = parts[2].strip()
-            return {
-                **front_matter,
-                'content': body,
-                'slug': issue_dir.name
-            }
-    
-    return None
 
 def generate_newsletter():
     """生成邮件内容"""
-    issues_dir = DOCS_DIR / "issues"
-    if not issues_dir.exists():
-        print("No issues directory found")
-        return
-    
-    # 找到最新一期
-    latest_issue = None
-    for issue_dir in sorted(issues_dir.iterdir(), reverse=True):
-        if issue_dir.is_dir() and issue_dir.name.isdigit():
-            issue = load_issue(issue_dir)
-            if issue and issue.get('published', True):
-                latest_issue = issue
-                break
-    
+    latest_issue = get_latest_issue(DOCS_DIR)
+
     if not latest_issue:
         print("No published issue found")
         return
-    
-    # 提取精彩片段（简单提取前1000字）
+
     content = latest_issue.get('content', '')
     highlights = content[:1000].replace('#', '').strip()
-    
-    # 渲染模板
+
     template = Template(NEWSLETTER_TEMPLATE)
     html = template.render(
-        title=latest_issue.get('title', f'第{latest_issue["slug"]}期'),
+        title=latest_issue.get('title', f"第{latest_issue['slug']}期"),
         issue_number=latest_issue.get('issue', latest_issue['slug']),
         date=latest_issue.get('date', ''),
         description=latest_issue.get('description', ''),
-        issue_url=f'https://youth-weekly.github.io/issues/{latest_issue["slug"]}/',
+        issue_url=f"https://youth-weekly.github.io/issues/{latest_issue['slug']}/",
         unsubscribe_url='https://youth-weekly.github.io/unsubscribe/',
         highlights=highlights
     )
-    
-    # 保存
+
     ensure_dir(OUTPUT_DIR)
     newsletter_path = OUTPUT_DIR / "newsletter.html"
     with open(newsletter_path, 'w', encoding='utf-8') as f:
         f.write(html)
-    
+
     print(f"Generated newsletter: {newsletter_path}")
+
 
 def main():
     """主函数"""
     print("Generating newsletter...")
-    
-    # 创建输出目录
+
     ensure_dir(OUTPUT_DIR)
-    
-    # 生成邮件内容
+
     generate_newsletter()
-    
+
     print("Done!")
+
 
 if __name__ == "__main__":
     main()
