@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
   schedule:
-    # 每周一早上 8 点自动部署（UTC 0:00 = 北京时间 8:00）
     - cron: '0 0 * * 1'
   workflow_dispatch:
 
@@ -47,29 +46,39 @@ jobs:
     - name: Generate content
       run: |
         cd scripts
-        python generate_static.py || echo "⚠️ Static generation skipped"
-        python generate_rss.py || echo "⚠️ RSS generation skipped"
+        python generate_static.py
+        python generate_rss.py
 
     - name: Build site
       run: |
         cd web
-        npm run build || true
+        npm run build
 
     - name: Prepare deployment
       run: |
         mkdir -p output
-        # Copy built site if available
         if [ -d "web/out" ]; then
+          echo "📦 Using Next.js static export (web/out)"
           cp -r web/out/* output/
-        elif [ -d "web/dist" ]; then
-          cp -r web/dist/* output/
+        elif [ -d "web/.next" ]; then
+          echo "📦 Using Next.js build output (web/.next)"
+          mkdir -p output/_next
+          cp -r web/.next/static/* output/_next/ 2>/dev/null || true
+          cp -r web/.next/server/* output/ 2>/dev/null || true
         else
-          # Fallback: copy docs as static site
-          cp -r docs/* output/
-          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=./issues/001/"></head><body><p>Redirecting...</p></body></html>' > output/index.html
+          echo "⚠️ No build output found, using fallback"
+          cp -r docs/* output/ 2>/dev/null || true
+          echo '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><p>Build required. Please run CI first.</p></body></html>' > output/index.html
         fi
-        # Add nojekyll
         touch output/.nojekyll
+
+    - name: Verify deployment
+      run: |
+        if [ ! -f "output/index.html" ] && [ ! -d "output/issues" ]; then
+          echo "❌ Deployment verification failed: no content found"
+          exit 1
+        fi
+        echo "✅ Deployment verification passed"
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
