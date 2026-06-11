@@ -197,16 +197,8 @@ def get_issue_count(docs_dir: Path) -> int:
 
 
 def get_next_issue_number() -> int:
-    """获取下一期的期数"""
-    from pathlib import Path
+    """获取下一期的期数（委托给 IssueGenerator 实现）"""
+    from .issue_generator import IssueGenerator
 
-    # 尝试从 docs 目录读取现有期数
-    root_dir = Path(__file__).parent.parent.parent
-    docs_dir = root_dir / "docs"
-    if docs_dir.exists():
-        issues = load_all_issues(docs_dir, include_unpublished=True)
-        if issues:
-            max_num = max(int(i.get("issue", 0)) for i in issues)
-            return max_num + 1
-
-    return 1
+    gen = IssueGenerator()
+    return gen._get_next_issue_number()

@@ -30,7 +30,7 @@ sources:
   - id: python_weekly
     name: Python Weekly
     type: rss
-    url: "https://www.pythonweekly.com/archives/"
+    url: "https://www.pythonweekly.com/feed/"
     category: dev
     enabled: false
     max_items: 10

@@ -216,7 +216,7 @@ python check_new_issue.py
 
 | 层级 | 技术 | 说明 |
 |------|------|------|
-| **前端框架** | Next.js 16 + React 19 | SSG 静态导出 |
+| **前端框架** | Next.js 14 + React 18 | SSG 静态导出 |
 | **类型系统** | TypeScript 5 | 全量类型覆盖 |
 | **样式方案** | Tailwind CSS | 原子化 CSS |
 | **内容处理** | gray-matter + remark | Markdown 解析 |

@@ -3,6 +3,7 @@
 内容采集器 - 从 RSS/HackerNews/GitHub 等源采集内容
 """
 import logging
+import re
 import time
 import hashlib
 from datetime import datetime
@@ -87,8 +88,8 @@ class RSSCollector(BaseCollector):
                 continue
 
             desc = entry.get("summary", entry.get("description", ""))
-            # 清理 HTML 标签
-            desc = "".join(c for c in desc if ord(c) < 128)[:300]
+            # 清理 HTML 标签（保留中文字符）
+            desc = re.sub(r'<[^>]+>', '', desc)[:300]
 
             pub_date = None
             if hasattr(entry, "published_parsed") and entry.published_parsed:

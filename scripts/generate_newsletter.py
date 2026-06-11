@@ -2,6 +2,7 @@
 """
 生成邮件内容的脚本
 """
+import sys
 import logging
 from pathlib import Path
 from jinja2 import Environment, BaseLoader
@@ -195,7 +196,7 @@ def generate_newsletter():
     template = env.from_string(load_template())
     html = template.render(
         title=latest_issue.get('title', f"第{latest_issue['slug']}期"),
-        issue_number=latest_issue.get('issue', latest_issue['slug']),
+        issue_number=latest_issue.get('number', latest_issue['slug']),
         date=latest_issue.get('date', ''),
         description=latest_issue.get('description', ''),
         issue_url=f"{config.site.url}/issues/{latest_issue['slug']}/",

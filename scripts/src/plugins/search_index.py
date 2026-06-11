@@ -10,16 +10,9 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from src.ocp import BasePlugin, register
 from src import load_all_issues
+from src.utils import safe_int
 
 logger = logging.getLogger(__name__)
-
-
-def _safe_int(s: str, default: int = 0) -> int:
-    """安全地将字符串转为整数，转换失败时返回默认值"""
-    try:
-        return int(s)
-    except (ValueError, TypeError):
-        return default
 
 
 @register()
@@ -59,7 +52,7 @@ class SearchIndexPlugin(BasePlugin):
             excerpt = excerpt_raw + '...' if len(content) > 500 else excerpt_raw
 
             search_index.append({
-                'issue': issue.get('issue', _safe_int(issue['slug'])),
+                'issue': issue.get('issue', safe_int(issue['slug'])),
                 'title': issue.get('title', ''),
                 'date': issue.get('date', ''),
                 'slug': issue['slug'],

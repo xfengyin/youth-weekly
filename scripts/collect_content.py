@@ -24,11 +24,11 @@ CONTENT_SOURCES_PATH = ROOT_DIR / "scripts" / "content_sources.yaml"
 CURATED_OUTPUT_PATH = _script_dir / ".curated_content.json"
 
 
-def load_content_sources() -> list[dict]:
-    """加载内容源配置"""
+def load_content_sources() -> tuple[list[dict], dict]:
+    """加载内容源配置，同时返回完整配置供下游使用"""
     if not CONTENT_SOURCES_PATH.exists():
         logger.error("Content sources config not found: %s", CONTENT_SOURCES_PATH)
-        return []
+        return [], {}
 
     with open(CONTENT_SOURCES_PATH, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
@@ -36,7 +36,7 @@ def load_content_sources() -> list[dict]:
     sources = config.get("sources", [])
     enabled_sources = [s for s in sources if s.get("enabled", True)]
     logger.info("Loaded %d enabled content sources", len(enabled_sources))
-    return enabled_sources
+    return enabled_sources, config
 
 
 def collect_all(sources: list[dict]) -> list[ContentItem]:
@@ -79,7 +79,7 @@ def main():
     logger.info("=" * 60)
 
     # 1. 加载内容源
-    sources = load_content_sources()
+    sources, full_config = load_content_sources()
     if not sources:
         logger.error("No content sources available")
         sys.exit(1)
@@ -91,10 +91,6 @@ def main():
         sys.exit(1)
 
     # 3. 去重
-    config_path = ROOT_DIR / "scripts" / "content_sources.yaml"
-    with open(config_path, "r", encoding="utf-8") as f:
-        full_config = yaml.safe_load(f)
-
     dedup_config = full_config.get("dedup", {})
     curator = ContentCurator(
         dedup_enabled=dedup_config.get("enabled", True),

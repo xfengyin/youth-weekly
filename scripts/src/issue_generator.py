@@ -107,7 +107,6 @@ class IssueGenerator:
             "published": False,
             "featured_count": total_items,
             "categories": list(categorized_items.keys()),
-            "draft": True,
         }
 
     def _build_body(
