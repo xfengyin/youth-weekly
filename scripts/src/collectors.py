@@ -181,12 +181,12 @@ class GitHubTrendingCollector(BaseCollector):
         logger.info("Collecting from %s", name)
 
         # 使用 GitHub API 获取热门仓库
-        # 搜索最近一周 stars 最多的仓库
+        # 搜索最近 stars 最多的仓库
         try:
             resp = self.session.get(
                 "https://api.github.com/search/repositories",
                 params={
-                    "q": "created:>=2026-05-01 stars:>100",
+                    "q": "stars:>500",
                     "sort": "stars",
                     "order": "desc",
                     "per_page": max_items,

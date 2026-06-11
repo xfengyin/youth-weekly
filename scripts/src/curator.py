@@ -79,7 +79,7 @@ class ContentCurator:
         seen_count = 0
 
         for item in items:
-            fp = item.fingerprint()
+            fp = item.fingerprint
 
             # 检查是否已存在
             cursor = db.execute(
