@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from feedgen.feed import FeedGenerator
+import markdown
 
 # 支持直接执行时找到 src 模块
 _script_dir = Path(__file__).parent
@@ -59,7 +60,8 @@ def generate_rss():
                 pass
 
         content = issue.get('content', '')
-        fe.content(content, type='html')
+        html_content = markdown.markdown(content, extensions=['tables', 'fenced_code'])
+        fe.content(html_content, type='html')
 
     ensure_dir(OUTPUT_DIR)
     rss_path = OUTPUT_DIR / "rss.xml"

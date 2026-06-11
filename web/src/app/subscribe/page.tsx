@@ -61,7 +61,11 @@ export default function SubscribePage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              <label htmlFor="email-input" className="sr-only">
+                邮箱地址
+              </label>
               <input
+                id="email-input"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

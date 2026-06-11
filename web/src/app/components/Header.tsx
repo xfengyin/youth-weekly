@@ -53,7 +53,8 @@ export default function Header() {
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 className="p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
-                aria-label="切换主题"
+                aria-label={theme === 'dark' ? '切换到亮色主题' : '切换到暗色主题'}
+                aria-pressed={theme === 'dark'}
               >
                 {theme === 'dark' ? (
                   <Sun className="w-5 h-5" />
@@ -76,6 +77,8 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
               aria-label="菜单"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {mobileMenuOpen ? (
                 <X className="w-5 h-5" />
@@ -88,7 +91,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
+          <div id="mobile-menu" role="dialog" className="md:hidden py-4 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
             <nav className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <Link

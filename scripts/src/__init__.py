@@ -3,6 +3,7 @@
 共享内容加载模块
 提供统一的周刊内容读取接口
 """
+import os
 import logging
 import yaml
 from pathlib import Path
@@ -21,10 +22,16 @@ def _serialize_value(value):
     """序列化 YAML 值，确保日期等类型可被 JSON 序列化"""
     if isinstance(value, (date, datetime)):
         return value.isoformat()
+    if isinstance(value, set):
+        return sorted(list(value))
+    if isinstance(value, bytes):
+        return value.decode('utf-8', errors='replace')
     if isinstance(value, dict):
         return {k: _serialize_value(v) for k, v in value.items()}
-    if isinstance(value, list):
+    if isinstance(value, (list, tuple)):
         return [_serialize_value(v) for v in value]
+    if not isinstance(value, (str, int, float, bool, type(None))):
+        return str(value)
     return value
 
 
@@ -55,20 +62,24 @@ def load_issue(issue_dir: Path, docs_dir: Optional[Path] = None) -> Optional[dic
     if not content.startswith('---'):
         return None
 
-    try:
-        parts = content.split('---', 2)
-        if len(parts) < 3:
-            return None
+    # 查找 frontmatter 的结束分隔符（从第四个字符开始查找）
+    end_pos = content.find('\n---', 3)
+    if end_pos == -1:
+        return None
 
-        front_matter = yaml.safe_load(parts[1])
+    try:
+        front_matter = yaml.safe_load(content[3:end_pos])
         if not isinstance(front_matter, dict):
             return None
 
         front_matter = _serialize_value(front_matter)
 
+        # 跳过 '\n---' 获取正文内容
+        body = content[end_pos + 4:].strip()
+
         return {
             **front_matter,
-            'content': parts[2].strip(),
+            'content': body,
             'slug': issue_dir.name
         }
     except yaml.YAMLError as e:
@@ -94,7 +105,8 @@ def safe_resolve_path(base_dir: Path, target_name: str) -> Optional[Path]:
         base_resolved = base_dir.resolve()
         target_path = (base_dir / target_name).resolve()
 
-        if not str(target_path).startswith(str(base_resolved)):
+        base_str = str(base_resolved) + os.sep
+        if not str(target_path).startswith(base_str) and target_path != base_resolved:
             return None
 
         return target_path

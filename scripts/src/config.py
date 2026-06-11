@@ -150,18 +150,18 @@ def get_config_value(key: str, default=None):
     """
     config = load_config()
     keys = key.split('.')
-    value = config.model_dump()
+    value = config
 
     for k in keys:
-        if isinstance(value, dict):
-            value = value.get(k)
+        if hasattr(value, k):
+            value = getattr(value, k)
         else:
             return default
 
         if value is None:
             return default
 
-    return value
+    return value if not isinstance(value, BaseModel) else value.model_dump()
 
 
 def get_site_url() -> str:

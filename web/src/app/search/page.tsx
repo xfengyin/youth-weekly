@@ -74,6 +74,7 @@ export default function SearchPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="搜索周刊内容..."
             className="input pl-12 pr-12 py-3.5 text-base"
+            aria-label="搜索周刊内容"
             autoFocus
           />
           {query && (

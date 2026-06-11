@@ -64,3 +64,15 @@ logs/
 # Temporary files
 tmp/
 temp/
+
+# Deploy output
+output/
+
+# Python packaging
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Generated dist
+scripts/dist/

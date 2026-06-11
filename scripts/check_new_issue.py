@@ -2,6 +2,7 @@
 """
 检查是否有新的周刊需要发布
 """
+import sys
 import os
 import logging
 from pathlib import Path
@@ -59,7 +60,7 @@ def main():
 
     if 'GITHUB_OUTPUT' in os.environ:
         with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-            f.write(f"ready={'true' if ready else 'false'}\n")
+            f.write(f"has_new={'true' if ready else 'false'}\n")
 
     sys.exit(0 if ready else 1)
 

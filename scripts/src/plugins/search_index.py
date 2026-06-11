@@ -14,6 +14,14 @@ from src import load_all_issues
 logger = logging.getLogger(__name__)
 
 
+def _safe_int(s: str, default: int = 0) -> int:
+    """安全地将字符串转为整数，转换失败时返回默认值"""
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        return default
+
+
 @register()
 class SearchIndexPlugin(BasePlugin):
     """生成搜索索引插件"""
@@ -42,7 +50,7 @@ class SearchIndexPlugin(BasePlugin):
         docs_dir = Path(params.get('docs_dir', ''))
         output_path = Path(params.get('output_path', ''))
 
-        issues = load_all_issues(docs_dir, reverse=True)
+        issues = params.get('issues') or load_all_issues(docs_dir, reverse=True)
 
         search_index = []
         for issue in issues:
@@ -51,7 +59,7 @@ class SearchIndexPlugin(BasePlugin):
             excerpt = excerpt_raw + '...' if len(content) > 500 else excerpt_raw
 
             search_index.append({
-                'issue': issue.get('issue', int(issue['slug'])),
+                'issue': issue.get('issue', _safe_int(issue['slug'])),
                 'title': issue.get('title', ''),
                 'date': issue.get('date', ''),
                 'slug': issue['slug'],

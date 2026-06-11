@@ -57,6 +57,8 @@
 4. 推送分支 (`git push origin feature/amazing-feature`)
 5. 创建 Pull Request
 
+> 💡 如需开发或扩展后端插件，请先阅读 [OCP 插件开发指南](./docs/OCP_GUIDE.md)。
+
 ## 开发指南
 
 ### 环境搭建
@@ -75,6 +77,12 @@ npm run dev
 cd scripts
 pip install -r requirements.txt
 ```
+
+### 配置说明
+
+项目使用 `config.yaml` 统一管理配置项（站点信息、分类、插件排除等）。
+如需自定义站点 URL、分类列表等，修改根目录的 `config.yaml` 文件即可。
+配置由 pydantic 验证，支持通过环境变量覆盖（如 `YOUTH_WEEKLY_SITE__URL=https://my-site.com`）。
 
 ### 代码规范
 

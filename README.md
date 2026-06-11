@@ -146,7 +146,7 @@ youth-weekly/
 │   └── package.json
 │
 ├── 📁 scripts/                 # 自动化脚本
-│   ├── generate_static.py      # 生成静态数据
+│   ├── generate_static_ocp.py  # 生成静态数据
 │   ├── generate_rss.py         # 生成 RSS Feed
 │   ├── generate_newsletter.py  # 生成邮件内容
 │   └── check_new_issue.py      # 检查新周刊
@@ -189,7 +189,7 @@ cd scripts
 pip install -r requirements.txt
 
 # 生成静态数据文件
-python generate_static.py
+python generate_static_ocp.py
 
 # 生成 RSS Feed
 python generate_rss.py
