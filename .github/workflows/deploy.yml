@@ -101,6 +101,9 @@ jobs:
       # 配置 Pages（即使已有配置也安全）
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          # 启用 Pages（自动 enablement）
+          enablement: true
 
       # 部署（不绑定 environment，避免 environment 保护规则）
       - name: Deploy to GitHub Pages
