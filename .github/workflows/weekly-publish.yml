@@ -7,10 +7,16 @@ on:
   workflow_dispatch:
     description: '手动触发周刊采集与发布'
 
+# 最小化权限：只给必要的权限
 permissions:
   contents: write
   pages: write
   id-token: write
+
+# 并发控制：避免重复触发
+concurrency:
+  group: "weekly-publish-${{ github.workflow }}"
+  cancel-in-progress: false  # 周刊生成不可打断
 
 jobs:
   weekly-publish:
@@ -23,6 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -72,6 +79,7 @@ jobs:
             git push
           fi
 
+      # 自动触发主站 deploy.yml 重新构建
       - name: Trigger site rebuild
         if: steps.commit.outputs.no_changes != 'true'
         run: |
@@ -81,33 +89,14 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
             -d '{"ref":"main"}'
 
-      - name: Generate static content
+      # 通知用户结果（成功/失败/无新内容）
+      - name: Notify result
+        if: always()
         run: |
-          cd scripts
-          python generate_static_ocp.py
-          python generate_rss.py
-
-      - name: Prepare deployment
-        run: |
-          mkdir -p deploy-output
-          # 复制 Python 生成的静态文件 (JSON, RSS)
-          if [ -d "scripts/dist" ]; then
-            cp scripts/dist/*.json deploy-output/ 2>/dev/null || true
-            cp scripts/dist/rss.xml deploy-output/ 2>/dev/null || true
+          if [ "${{ steps.commit.outputs.no_changes }}" = "true" ]; then
+            echo "ℹ️ No new content to publish this week"
+          elif [ "${{ steps.content_check.outputs.has_content }}" = "false" ]; then
+            echo "⚠️ Content collection failed, no new issue generated"
+          else
+            echo "✅ New weekly issue published and site rebuild triggered"
           fi
-          # 复制周刊 markdown 源文件
-          if [ -d "docs" ]; then
-            cp -r docs deploy-output/
-          fi
-          # 创建最小化 index.html (主站由 deploy.yml 构建)
-          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>青年周刊</title><meta http-equiv="refresh" content="0;url=https://xfengyin.github.io/youth-weekly"></head><body><p>Redirecting to <a href="https://xfengyin.github.io/youth-weekly">青年周刊</a>...</p></body></html>' > deploy-output/index.html
-          touch deploy-output/.nojekyll
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: deploy-output
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
