@@ -17,6 +17,9 @@ jobs:
     name: Weekly Auto-Publish
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repository
@@ -37,17 +40,30 @@ jobs:
 
       - name: Collect content from sources
         id: collect
+        continue-on-error: true
         run: |
           cd scripts
-          python collect_content.py
+          python collect_content.py || echo "collection_failed=true" >> $GITHUB_OUTPUT
+
+      - name: Check if collected content exists
+        id: content_check
+        run: |
+          if [ -f scripts/.curated_content.json ]; then
+            echo "has_content=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_content=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Generate new weekly issue
         id: generate
+        if: steps.content_check.outputs.has_content == 'true'
         run: |
           cd scripts
           python generate_issue.py
 
       - name: Commit generated issue
+        id: commit
+        if: steps.content_check.outputs.has_content == 'true'
         run: |
           git config user.email "action@github.com"
           git config user.name "青年周刊编辑部"
@@ -59,22 +75,33 @@ jobs:
             git push
           fi
 
-      - name: Check if issue was generated
-        if: steps.commit.outputs.no_changes != 'true'
-        id: check
-        run: |
-          echo "has_new=true" >> $GITHUB_OUTPUT
-
       - name: Generate static content
-        if: steps.check.outputs.has_new == 'true' || steps.commit.outputs.no_changes != 'true'
         run: |
           cd scripts
           python generate_static_ocp.py
           python generate_rss.py
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Prepare deployment
+        run: |
+          mkdir -p deploy-output
+          # 复制 Python 生成的静态文件 (JSON, RSS)
+          if [ -d "scripts/dist" ]; then
+            cp scripts/dist/*.json deploy-output/ 2>/dev/null || true
+            cp scripts/dist/rss.xml deploy-output/ 2>/dev/null || true
+          fi
+          # 复制周刊 markdown 源文件
+          if [ -d "docs" ]; then
+            cp -r docs deploy-output/
+          fi
+          # 创建最小化 index.html (主站由 deploy.yml 构建)
+          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>青年周刊</title><meta http-equiv="refresh" content="0;url=https://xfengyin.github.io/youth-weekly"></head><body><p>Redirecting to <a href="https://xfengyin.github.io/youth-weekly">青年周刊</a>...</p></body></html>' > deploy-output/index.html
+          touch deploy-output/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./scripts/dist
-          publish_branch: gh-pages
+          path: deploy-output
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
