@@ -1,7 +1,7 @@
 {
   "name": "youth-weekly-web",
   "version": "1.0.0",
-  "description": "青年周刊 Web 前端 - Next.js 16 + React 19",
+  "description": "青年周刊 Web 前端 - Next.js 14 + React 18",
   "private": true,
   "scripts": {
     "dev": "next dev",

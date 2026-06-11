@@ -75,6 +75,15 @@ jobs:
             git push
           fi
 
+      - name: Trigger site rebuild
+        if: steps.commit.outputs.no_changes != 'true'
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
+            -d '{"ref":"main"}'
+
       - name: Generate static content
         run: |
           cd scripts

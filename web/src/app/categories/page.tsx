@@ -130,14 +130,14 @@ export default function CategoriesPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="https://github.com/your-username/youth-weekly/blob/main/CONTRIBUTING.md"
+                href="https://github.com/xfengyin/youth-weekly/blob/main/CONTRIBUTING.md"
                 target="_blank"
                 className="btn-primary text-[15px]"
               >
                 查看投稿指南
               </Link>
               <Link
-                href="https://github.com/your-username/youth-weekly/issues"
+                href="https://github.com/xfengyin/youth-weekly/issues"
                 target="_blank"
                 className="btn-secondary text-[15px]"
               >
