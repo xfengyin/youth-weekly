@@ -19,6 +19,7 @@ const notoSerifSC = Noto_Serif_SC({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://xfengyin.github.io/youth-weekly'),
   title: '青年周刊 - 为年轻人打造的内容聚合周刊',
   description:
     '融合科技、二次元、游戏、成长等多个领域的综合性青年内容周刊。参考阮一峰科技爱好者周刊的开源模式，温暖、有趣、有深度。',
@@ -29,6 +30,14 @@ export const metadata: Metadata = {
     description: '为年轻人打造的内容聚合周刊',
     type: 'website',
     locale: 'zh_CN',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: '青年周刊',
+      },
+    ],
   },
 }
 

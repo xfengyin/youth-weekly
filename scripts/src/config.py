@@ -121,14 +121,22 @@ def load_config(force_reload: bool = False) -> AppConfig:
     if _config is not None and not force_reload:
         return _config
 
-    config_path = _get_config_path()
-    logger.info("Loading config from %s", config_path)
+    try:
+        config_path = _get_config_path()
+        logger.info("Loading config from %s", config_path)
 
-    with open(config_path, 'r', encoding='utf-8') as f:
-        raw_config = yaml.safe_load(f)
+        with open(config_path, 'r', encoding='utf-8') as f:
+            raw_config = yaml.safe_load(f)
 
-    _config = AppConfig.model_validate(raw_config)
-    logger.info("Config loaded successfully")
+        _config = AppConfig.model_validate(raw_config)
+        logger.info("Config loaded successfully")
+    except FileNotFoundError:
+        logger.warning("Config file not found, using defaults")
+        _config = AppConfig()
+    except Exception as e:
+        logger.error("Failed to load config: %s", e)
+        _config = AppConfig()
+
     return _config
 
 

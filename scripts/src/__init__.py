@@ -49,6 +49,13 @@ def load_issue(issue_dir: Path, docs_dir: Optional[Path] = None) -> Optional[dic
     if not issue_dir.is_dir():
         return None
 
+    # 安全校验：防止路径遍历
+    if docs_dir is not None:
+        resolved = safe_resolve_path(docs_dir, f"issues/{issue_dir.name}")
+        if resolved is None:
+            logger.warning("Path traversal attempt detected: %s", issue_dir)
+            return None
+
     readme_path = issue_dir / "README.md"
     if not readme_path.exists():
         return None
