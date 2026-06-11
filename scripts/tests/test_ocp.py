@@ -4,17 +4,27 @@ OCP 架构测试
 """
 
 import sys
+import logging
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# 支持直接执行时找到 src 模块
+_script_dir = Path(__file__).parent.parent
+if str(_script_dir) not in sys.path:
+    sys.path.insert(0, str(_script_dir))
 
 from src.ocp import Registry
-from src.plugins import *
+from src.plugins import *  # noqa: F401, F403
 
 
 def test_registry():
     """测试注册中心功能"""
-    print("Testing registry...")
+    logger.info("Testing registry...")
 
     # 检查插件是否已注册
     assert Registry.exists('issue_index'), "issue_index plugin should exist"
@@ -25,15 +35,15 @@ def test_registry():
 
     # 列出所有插件
     names = Registry.list_names()
-    print(f"Registered plugins: {names}")
+    logger.info("Registered plugins: %s", names)
     assert len(names) >= 4, "Should have at least 4 plugins"
 
-    print("✅ Registry tests passed!")
+    logger.info("Registry tests passed!")
 
 
 def test_plugin_execution():
     """测试插件执行"""
-    print("\nTesting plugin execution...")
+    logger.info("\nTesting plugin execution...")
 
     # 测试示例插件
     example = Registry.get('example')
@@ -42,38 +52,38 @@ def test_plugin_execution():
     result = example.execute({'message': 'Test', 'repeat': 2})
     assert result['status'] == 'success'
     assert result['message'] == 'TestTest'
-    print(f"✅ Example plugin result: {result}")
+    logger.info("Example plugin result: %s", result)
 
     # 测试 Hello World 插件
     hello = Registry.get('hello_world')
     result = hello.execute()
     assert result['greeting'] == 'Hello, World!'
-    print(f"✅ Hello World plugin result: {result}")
+    logger.info("Hello World plugin result: %s", result)
 
-    print("✅ Plugin execution tests passed!")
+    logger.info("Plugin execution tests passed!")
 
 
 def test_plugin_properties():
     """测试插件属性"""
-    print("\nTesting plugin properties...")
+    logger.info("\nTesting plugin properties...")
 
     all_plugins = Registry.get_all()
     for name, plugin in all_plugins.items():
         assert plugin.name == name, f"Plugin name mismatch: {plugin.name} != {name}"
-        print(f"  - {name}: {plugin.description or 'No description'}")
+        logger.info("  - %s: %s", name, plugin.description or 'No description')
 
-    print("✅ Plugin properties tests passed!")
+    logger.info("Plugin properties tests passed!")
 
 
 if __name__ == "__main__":
-    print("=" * 50)
-    print("OCP Architecture Tests")
-    print("=" * 50)
+    logger.info("=" * 50)
+    logger.info("OCP Architecture Tests")
+    logger.info("=" * 50)
 
     test_registry()
     test_plugin_execution()
     test_plugin_properties()
 
-    print("\n" + "=" * 50)
-    print("✅ All tests passed!")
-    print("=" * 50)
+    logger.info("=" * 50)
+    logger.info("All tests passed!")
+    logger.info("=" * 50)

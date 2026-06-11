@@ -5,10 +5,13 @@
 """
 
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 from src.ocp import BasePlugin, register
 from src import load_all_issues
+
+logger = logging.getLogger(__name__)
 
 
 @register()
@@ -57,6 +60,6 @@ class IssueIndexPlugin(BasePlugin):
             output_path.parent.mkdir(parents=True, exist_ok=True)
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(issues_data, f, ensure_ascii=False, indent=2)
-            print(f"Generated issues index: {output_path}")
+            logger.info("Generated issues index: %s", output_path)
 
         return {'issues': issues_data}

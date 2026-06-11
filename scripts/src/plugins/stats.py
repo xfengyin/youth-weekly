@@ -5,11 +5,14 @@
 """
 
 import json
+import logging
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
 from src.ocp import BasePlugin, register
 from src import load_all_issues, get_issue_count
+
+logger = logging.getLogger(__name__)
 
 
 @register()
@@ -54,6 +57,6 @@ class StatsPlugin(BasePlugin):
             output_path.parent.mkdir(parents=True, exist_ok=True)
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(stats, f, ensure_ascii=False, indent=2)
-            print(f"Generated stats: {output_path}")
+            logger.info("Generated stats: %s", output_path)
 
         return {'stats': stats}

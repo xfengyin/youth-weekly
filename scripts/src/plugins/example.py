@@ -4,8 +4,11 @@
 ✅ 符合 OCP 原则：新增功能只加新文件
 """
 
+import logging
 from typing import Dict, Any, Optional
 from src.ocp import BasePlugin, register
+
+logger = logging.getLogger(__name__)
 
 
 @register()
@@ -42,7 +45,7 @@ class ExamplePlugin(BasePlugin):
             'plugin': self.name
         }
 
-        print(f"Example plugin executed with message: {message}")
+        logger.info("Example plugin executed with message: %s", message)
         return result
 
 

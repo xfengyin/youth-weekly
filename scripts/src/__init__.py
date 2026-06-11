@@ -3,10 +3,13 @@
 共享内容加载模块
 提供统一的周刊内容读取接口
 """
+import logging
 import yaml
 from pathlib import Path
 from typing import Optional, List
 from datetime import date, datetime
+
+logger = logging.getLogger(__name__)
 
 
 class ContentLoadError(Exception):
@@ -46,7 +49,7 @@ def load_issue(issue_dir: Path, docs_dir: Optional[Path] = None) -> Optional[dic
     try:
         content = readme_path.read_text(encoding='utf-8')
     except Exception as e:
-        print(f"⚠️ Failed to read {readme_path}: {e}")
+        logger.warning("Failed to read %s: %s", readme_path, e)
         return None
 
     if not content.startswith('---'):
@@ -69,10 +72,10 @@ def load_issue(issue_dir: Path, docs_dir: Optional[Path] = None) -> Optional[dic
             'slug': issue_dir.name
         }
     except yaml.YAMLError as e:
-        print(f"⚠️ YAML parse error in {issue_dir}: {e}")
+        logger.warning("YAML parse error in %s: %s", issue_dir, e)
         return None
     except Exception as e:
-        print(f"⚠️ Unexpected error loading {issue_dir}: {e}")
+        logger.warning("Unexpected error loading %s: %s", issue_dir, e)
         return None
 
 
@@ -118,7 +121,7 @@ def load_all_issues(
     issues_dir = docs_dir / "issues"
 
     if not issues_dir.exists():
-        print(f"⚠️ Issues directory not found: {issues_dir}")
+        logger.warning("Issues directory not found: %s", issues_dir)
         return []
 
     issues = []

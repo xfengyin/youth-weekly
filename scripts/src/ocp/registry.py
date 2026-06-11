@@ -4,9 +4,13 @@ OCP 注册中心 - 统一管理所有实现
 ⚠️ 禁止修改此文件，除非需要调整注册机制
 """
 
+import threading
+import logging
 from typing import Dict, Type, Optional, Any
 from functools import wraps
 from .base import BasePlugin
+
+logger = logging.getLogger(__name__)
 
 
 class Registry:
@@ -21,6 +25,7 @@ class Registry:
 
     _plugins: Dict[str, Type[BasePlugin]] = {}
     _instances: Dict[str, BasePlugin] = {}
+    _lock = threading.Lock()
 
     @classmethod
     def register(cls, name: Optional[str] = None):
@@ -54,10 +59,11 @@ class Registry:
                         "or be registered with an explicit name"
                     )
 
-            if plugin_name in cls._plugins:
-                print(f"⚠️  Overwriting plugin: {plugin_name}")
+            with cls._lock:
+                if plugin_name in cls._plugins:
+                    logger.warning("Overwriting plugin: %s", plugin_name)
 
-            cls._plugins[plugin_name] = plugin_class
+                cls._plugins[plugin_name] = plugin_class
             return plugin_class
 
         return decorator
@@ -73,13 +79,14 @@ class Registry:
         Returns:
             插件实例，未找到返回 None
         """
-        if name not in cls._plugins:
-            return None
+        with cls._lock:
+            if name not in cls._plugins:
+                return None
 
-        if name not in cls._instances:
-            cls._instances[name] = cls._plugins[name]()
+            if name not in cls._instances:
+                cls._instances[name] = cls._plugins[name]()
 
-        return cls._instances[name]
+            return cls._instances[name]
 
     @classmethod
     def get_all(cls) -> Dict[str, BasePlugin]:
@@ -89,28 +96,32 @@ class Registry:
         Returns:
             {插件名: 插件实例} 的字典
         """
-        result = {}
-        for name in cls._plugins:
-            plugin = cls.get(name)
-            if plugin:
-                result[name] = plugin
-        return result
+        with cls._lock:
+            result = {}
+            for name in cls._plugins:
+                if name not in cls._instances:
+                    cls._instances[name] = cls._plugins[name]()
+                result[name] = cls._instances[name]
+            return result
 
     @classmethod
     def list_names(cls) -> list:
         """列出所有已注册的插件名称"""
-        return list(cls._plugins.keys())
+        with cls._lock:
+            return list(cls._plugins.keys())
 
     @classmethod
     def exists(cls, name: str) -> bool:
         """检查插件是否已注册"""
-        return name in cls._plugins
+        with cls._lock:
+            return name in cls._plugins
 
     @classmethod
     def clear(cls):
         """清空注册中心（用于测试）"""
-        cls._plugins.clear()
-        cls._instances.clear()
+        with cls._lock:
+            cls._plugins.clear()
+            cls._instances.clear()
 
 
 def register(name: Optional[str] = None):
