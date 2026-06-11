@@ -155,30 +155,6 @@ export const categories = [
   { id: 'jobs', name: '谁在招人', icon: '💼' },
 ]
 
-// 生成 RSS
-export function generateRSS(issues: Issue[]): string {
-  const siteUrl = 'https://youth-weekly.github.io'
-  
-  const rssItems = issues.map(issue => `
-    <item>
-      <title>${issue.title}</title>
-      <link>${siteUrl}/issues/${issue.slug}/</link>
-      <pubDate>${new Date(issue.date).toUTCString()}</pubDate>
-      <guid>${siteUrl}/issues/${issue.slug}/</guid>
-      <description>${issue.description || ''}</description>
-    </item>
-  `).join('')
-
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>青年周刊</title>
-    <link>${siteUrl}</link>
-    <description>为年轻人打造的内容聚合周刊</description>
-    <language>zh-CN</language>
-    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml"/>
-    ${rssItems}
-  </channel>
-</rss>`
-}
+// ⚠️ RSS 生成已迁移至 Python 端 (scripts/generate_rss.py)
+// 使用 feedgen 确保正确的 XML 转义，避免注入风险
+// 此函数保留仅供内部 API route 使用，如需 RSS 请运行 generate_rss.py

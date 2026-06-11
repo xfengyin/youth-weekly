@@ -63,3 +63,8 @@ build:
   node_version: "20"
   python_version: "3.11"
   output_dir: "web/out"
+
+ocp:
+  exclude_plugins:
+    - "example"
+    - "hello_world"

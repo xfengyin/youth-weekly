@@ -5,24 +5,30 @@
 """
 
 import sys
+import logging
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+# 支持直接执行时找到 src 模块
+_script_dir = Path(__file__).parent
+if str(_script_dir) not in sys.path:
+    sys.path.insert(0, str(_script_dir))
 
 from src.ocp import Registry
+from src.config import get_exclude_plugins
 from src.plugins import *  # 自动注册所有插件
 
+logger = logging.getLogger(__name__)
 
-ROOT_DIR = Path(__file__).parent.parent
+ROOT_DIR = _script_dir.parent
 DOCS_DIR = ROOT_DIR / "docs"
 OUTPUT_DIR = ROOT_DIR / "scripts" / "dist"
 
 
 def list_plugins():
     """列出所有可用插件"""
-    print("Available plugins:")
+    logger.info("Available plugins:")
     for name, plugin in Registry.get_all().items():
-        print(f"  - {name}: {plugin.description or 'No description'}")
+        logger.info("  - %s: %s", name, plugin.description or 'No description')
 
 
 def execute_plugins(plugins=None):
@@ -35,23 +41,27 @@ def execute_plugins(plugins=None):
     if plugins is None:
         plugins = Registry.list_names()
 
+    # 从配置中读取排除列表
+    exclude_list = get_exclude_plugins()
+
     results = {}
     for plugin_name in plugins:
         plugin = Registry.get(plugin_name)
         if not plugin:
-            print(f"⚠️  Plugin not found: {plugin_name}")
+            logger.warning("Plugin not found: %s", plugin_name)
             continue
 
-        # 只执行业务插件，跳过示例插件
-        if plugin_name in ['example', 'hello_world']:
+        # 跳过配置中排除的插件
+        if plugin_name in exclude_list:
+            logger.info("Skipping excluded plugin: %s", plugin_name)
             continue
 
-        print(f"\nExecuting plugin: {plugin_name}")
+        logger.info("Executing plugin: %s", plugin_name)
         result = plugin.execute({
             'docs_dir': DOCS_DIR,
             'output_path': OUTPUT_DIR / f"{plugin_name}.json"
         })
-        print(f"✅ Plugin {plugin_name} completed")
+        logger.info("Plugin %s completed", plugin_name)
         results[plugin_name] = result
 
     return results
@@ -59,17 +69,23 @@ def execute_plugins(plugins=None):
 
 def main():
     """主入口 - 永不修改"""
-    print("=" * 50)
-    print("OCP Static Generator")
-    print("=" * 50)
+    # 配置日志
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    logger.info("=" * 50)
+    logger.info("OCP Static Generator")
+    logger.info("=" * 50)
 
     list_plugins()
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     execute_plugins()
 
-    print("\n" + "=" * 50)
-    print("Done!")
+    logger.info("=" * 50)
+    logger.info("Done!")
 
 
 if __name__ == "__main__":

@@ -62,6 +62,12 @@ jobs:
         cd scripts
         python -m pytest tests/ -v --tb=short
 
+    - name: Security scan - pip-audit
+      run: |
+        cd scripts
+        pip install pip-audit
+        pip-audit --requirement requirements.txt --format columns
+
     - name: Verify scripts can be imported
       run: |
         cd scripts
