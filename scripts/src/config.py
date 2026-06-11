@@ -10,6 +10,9 @@ from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
+# 项目根目录 (scripts/src/config.py -> parent -> parent)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
 
 logger = logging.getLogger(__name__)
 

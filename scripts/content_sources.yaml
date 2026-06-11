@@ -1,0 +1,142 @@
+# 内容源配置 - 青年周刊自动采集系统
+# 每个源包含: id, name, type (rss/github/hackernews/website), url, category, enabled
+
+sources:
+  # ====== RSS 新闻源 ======
+  - id: hackernews
+    name: Hacker News
+    type: hackernews
+    url: "https://hnrss.org/frontpage"
+    category: tech
+    enabled: true
+    max_items: 15
+    min_score: 50  # HN 最低分数
+
+  - id: github_trending
+    name: GitHub Trending
+    type: github_trending
+    category: dev
+    enabled: true
+    max_items: 10
+
+  - id: arxiv_cs
+    name: arXiv CS (计算机科学)
+    type: rss
+    url: "http://export.arxiv.org/rss/cs"
+    category: research
+    enabled: true
+    max_items: 10
+
+  - id: python_weekly
+    name: Python Weekly
+    type: rss
+    url: "https://www.pythonweekly.com/archives/"
+    category: dev
+    enabled: false
+    max_items: 10
+
+  - id: javascript_weekly
+    name: JavaScript Weekly
+    type: rss
+    url: "https://javascriptweekly.com/rss"
+    category: dev
+    enabled: true
+    max_items: 10
+
+  - id: react_status
+    name: React Status
+    type: rss
+    url: "https://react.statuscode.com/feed/"
+    category: dev
+    enabled: false
+    max_items: 8
+
+  - id: oss_news
+    name: Open Source News
+    type: rss
+    url: "https://blog.opensource.org/feed/"
+    category: oss
+    enabled: true
+    max_items: 5
+
+  - id: google_ai
+    name: Google AI Blog
+    type: rss
+    url: "https://blog.google/technology/ai/rss/"
+    category: ai
+    enabled: false
+    max_items: 5
+
+  # ====== 科技新闻 ======
+  - id: techcrunch
+    name: TechCrunch
+    type: rss
+    url: "https://techcrunch.com/feed/"
+    category: tech
+    enabled: true
+    max_items: 5
+
+  - id: the_verge
+    name: The Verge - Tech
+    type: rss
+    url: "https://www.theverge.com/rss/index.xml"
+    category: tech
+    enabled: true
+    max_items: 5
+
+categories:
+  # 分类映射配置: 源 category → 周刊板块
+  tech:
+    id: tech
+    name: "科技新势力"
+    icon: "🚀"
+    min_items: 3
+    max_items: 5
+
+  dev:
+    id: dev
+    name: "开发者工具"
+    icon: "🛠️"
+    min_items: 3
+    max_items: 5
+
+  ai:
+    id: ai
+    name: "AI 前沿"
+    icon: "🤖"
+    min_items: 3
+    max_items: 5
+
+  research:
+    id: research
+    name: "技术趋势"
+    icon: "🔬"
+    min_items: 2
+    max_items: 4
+
+  oss:
+    id: oss
+    name: "开源精选"
+    icon: "📦"
+    min_items: 2
+    max_items: 4
+
+# 去重配置
+dedup:
+  # 使用 URL 的 MD5 指纹去重
+  enabled: true
+  # 去重数据库文件路径
+  db_path: "scripts/.content_dedup.db"
+  # 保留天数
+  retention_days: 30
+
+# 采集配置
+collection:
+  # HTTP 请求超时（秒）
+  timeout: 30
+  # 每源最大重试次数
+  max_retries: 3
+  # 请求间隔（秒），防止被封
+  delay_between_sources: 2
+  # User-Agent
+  user_agent: "YouthWeekly/1.0 (Content Aggregator)"
