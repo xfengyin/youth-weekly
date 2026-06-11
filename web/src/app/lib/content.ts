@@ -28,6 +28,10 @@ export interface SearchResult {
 }
 
 // 获取所有周刊
+/**
+ * ⚠️ 仅可在 Server Component 中使用（依赖 fs 模块）
+ * 不可在客户端组件或浏览器环境中调用
+ */
 export function getAllIssues(): Issue[] {
   const issuesDirectory = path.join(docsDirectory, 'issues')
   
@@ -66,7 +70,14 @@ export function getAllIssues(): Issue[] {
 }
 
 // 获取单期周刊
+/**
+ * ⚠️ 仅可在 Server Component 中使用（依赖 fs 模块）
+ * 不可在客户端组件或浏览器环境中调用
+ */
 export function getIssueBySlug(slug: string): Issue | null {
+  // 防止路径遍历攻击
+  if (!/^\d+$/.test(slug)) return null
+
   const fullPath = path.join(docsDirectory, 'issues', slug, 'README.md')
   
   if (!fs.existsSync(fullPath)) {
@@ -121,15 +132,19 @@ export async function renderMarkdown(content: string): Promise<string> {
 }
 
 // 获取搜索索引
+/**
+ * ⚠️ 仅可在 Server Component 中使用（依赖 fs 模块）
+ * 不可在客户端组件或浏览器环境中调用
+ */
 export function getSearchIndex(): SearchResult[] {
   const issues = getAllIssues()
-  
+
   return issues.map(issue => {
     const content = issue.content || ''
     // 提取前200个字符作为摘要
     const excerpt = content
       .replace(/#.*\n/g, '')
-      .replace(/\[.*?\]\(.*?\)/g, '$1')
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
       .slice(0, 200) + '...'
 
     return {

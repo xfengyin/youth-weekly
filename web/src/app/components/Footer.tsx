@@ -11,14 +11,14 @@ export default function Footer() {
       { label: '文章归档', href: '/archive/' },
     ],
     社区: [
-      { label: 'GitHub', href: 'https://github.com/your-username/youth-weekly' },
+      { label: 'GitHub', href: 'https://github.com/xfengyin/youth-weekly' },
       {
         label: '投稿指南',
-        href: 'https://github.com/your-username/youth-weekly/blob/main/CONTRIBUTING.md',
+        href: 'https://github.com/xfengyin/youth-weekly/blob/main/CONTRIBUTING.md',
       },
       {
         label: '问题反馈',
-        href: 'https://github.com/your-username/youth-weekly/issues',
+        href: 'https://github.com/xfengyin/youth-weekly/issues',
       },
     ],
     订阅: [
@@ -46,7 +46,7 @@ export default function Footer() {
             </p>
             <div className="mt-5 flex space-x-4">
               <a
-                href="https://github.com/your-username/youth-weekly"
+                href="https://github.com/xfengyin/youth-weekly"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#a39e98] hover:text-[#615d59] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"

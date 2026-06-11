@@ -43,7 +43,7 @@ class StatsPlugin(BasePlugin):
         docs_dir = Path(params.get('docs_dir', ''))
         output_path = Path(params.get('output_path', ''))
 
-        issues = load_all_issues(docs_dir, reverse=True)
+        issues = params.get('issues') or load_all_issues(docs_dir, reverse=True)
         dates = [issue.get('date', '') for issue in issues if issue.get('date')]
 
         stats = {

@@ -15,6 +15,7 @@ if str(_script_dir) not in sys.path:
 
 from src.ocp import Registry
 from src.config import get_exclude_plugins
+from src import load_all_issues
 from src.plugins import *  # 自动注册所有插件
 
 logger = logging.getLogger(__name__)
@@ -44,6 +45,9 @@ def execute_plugins(plugins=None):
     # 从配置中读取排除列表
     exclude_list = get_exclude_plugins()
 
+    # 预加载周刊数据，避免每个插件重复读取
+    issues = load_all_issues(DOCS_DIR, reverse=True)
+
     results = {}
     for plugin_name in plugins:
         plugin = Registry.get(plugin_name)
@@ -59,7 +63,8 @@ def execute_plugins(plugins=None):
         logger.info("Executing plugin: %s", plugin_name)
         result = plugin.execute({
             'docs_dir': DOCS_DIR,
-            'output_path': OUTPUT_DIR / f"{plugin_name}.json"
+            'output_path': OUTPUT_DIR / f"{plugin_name}.json",
+            'issues': issues,
         })
         logger.info("Plugin %s completed", plugin_name)
         results[plugin_name] = result

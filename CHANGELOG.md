@@ -5,6 +5,25 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 并且本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.0] - 架构重构与安全加固
+
+### Added
+
+- 🔒 添加 CI 安全扫描
+- 🔐 添加线程安全锁
+- 📧 添加邮件模板外置
+- 🛡️ 修复前端路径遍历漏洞
+- 🚫 修复 RSS 注入安全问题
+
+### Changed
+
+- 🏗️ 重构 Python 后端使用 OCP 插件架构
+- ⚙️ 配置系统使用 pydantic 进行类型验证
+- 📋 统一日志系统（logging 替代 print）
+- 🧹 删除重复代码
+
+---
+
 ## [1.0.0] - 2026-04-08
 
 ### Added

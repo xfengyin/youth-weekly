@@ -18,6 +18,7 @@ permissions:
 jobs:
   check-and-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
     - name: Checkout
@@ -30,19 +31,21 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        cache: 'pip'
 
     - name: Check for new content
       id: check
+      continue-on-error: true
       run: |
         cd scripts
         pip install -r requirements.txt
-        python check_new_issue.py || echo "No new issue found"
+        python check_new_issue.py
 
     - name: Generate static content
       if: steps.check.outputs.has_new == 'true'
       run: |
         cd scripts
-        python generate_static.py
+        python generate_static_ocp.py
         python generate_rss.py
 
     - name: Commit and push
@@ -51,7 +54,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add -A
-        git diff --staged --quiet || (git commit -m "📰 自动发布新一期周刊" && git push)
+        git diff --staged --quiet || (git commit -m "📰 自动发布新一期周刊 [skip ci]" && git push)
 
     - name: Create Issue notification
       if: steps.check.outputs.has_new == 'true'

@@ -4,7 +4,7 @@
 """
 import logging
 from pathlib import Path
-from jinja2 import Template
+from jinja2 import Environment, BaseLoader
 
 # 支持直接执行时找到 src 模块
 _script_dir = Path(__file__).parent
@@ -190,7 +190,9 @@ def generate_newsletter():
     content = latest_issue.get('content', '')
     highlights = content[:highlights_length].replace('#', '').strip()
 
-    template = Template(load_template())
+    # 使用带自动转义的环境防止 XSS 注入
+    env = Environment(loader=BaseLoader(), autoescape=True)
+    template = env.from_string(load_template())
     html = template.render(
         title=latest_issue.get('title', f"第{latest_issue['slug']}期"),
         issue_number=latest_issue.get('issue', latest_issue['slug']),
