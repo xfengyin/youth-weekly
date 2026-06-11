@@ -28,12 +28,13 @@ class Registry:
     _lock = threading.Lock()
 
     @classmethod
-    def register(cls, name: Optional[str] = None):
+    def register(cls, name: Optional[str] = None, allow_override: bool = False):
         """
         插件注册装饰器
 
         Args:
             name: 插件名称，不指定则使用类的 name 属性
+            allow_override: 是否允许覆盖已注册的同名插件，默认 False（抛出异常）
 
         Usage:
             @Registry.register()
@@ -61,8 +62,13 @@ class Registry:
 
             with cls._lock:
                 if plugin_name in cls._plugins:
-                    logger.warning("Overwriting plugin: %s", plugin_name)
-
+                    if allow_override:
+                        logger.warning("Overwriting plugin: %s", plugin_name)
+                    else:
+                        raise ValueError(
+                            f"Plugin '{plugin_name}' is already registered. "
+                            "Use allow_override=True to replace it."
+                        )
                 cls._plugins[plugin_name] = plugin_class
             return plugin_class
 
@@ -124,10 +130,10 @@ class Registry:
             cls._instances.clear()
 
 
-def register(name: Optional[str] = None):
+def register(name: Optional[str] = None, allow_override: bool = False):
     """
     便捷装饰器函数 - 用于注册插件
 
     与 Registry.register() 功能相同，更简洁的调用方式
     """
-    return Registry.register(name)
+    return Registry.register(name, allow_override)

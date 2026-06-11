@@ -21,8 +21,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return {
-    title: `${issue.title} | 青年周刊`,
+    title: `${issue.title} - 青年周刊`,
     description: issue.description,
+    openGraph: {
+      title: issue.title,
+      description: issue.description,
+      type: 'article',
+      publishedTime: issue.date,
+    },
   }
 }
 

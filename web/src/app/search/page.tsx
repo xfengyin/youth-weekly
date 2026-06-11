@@ -13,29 +13,47 @@ interface SearchResult {
   excerpt: string
 }
 
-// 搜索数据（实际应用中可以从 API 获取）
-const mockResults: SearchResult[] = [
-  {
-    issue: 1,
-    title: '青年周刊 · 创刊号',
-    date: '2026-04-08',
-    slug: '001',
-    excerpt:
-      '欢迎来到青年周刊！这是一份为年轻人打造的内容聚合周刊，涵盖科技、二次元、游戏、成长等多个领域...',
-  },
-]
-
 export default function SearchPage() {
   const [query, setQuery] = useState('')
+  const [searchData, setSearchData] = useState<SearchResult[]>([])
   const [results, setResults] = useState<SearchResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // 加载搜索索引数据
+  useEffect(() => {
+    let cancelled = false
+    setIsLoading(true)
+
+    fetch('/search-data.json')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch search data')
+        return res.json()
+      })
+      .then((data) => {
+        if (!cancelled) {
+          setSearchData(Array.isArray(data) ? data : [])
+          setIsLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSearchData([])
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const fuse = useMemo(() => {
-    return new Fuse(mockResults, {
+    return new Fuse(searchData, {
       keys: ['title', 'excerpt'],
       threshold: 0.4,
     })
-  }, [])
+  }, [searchData])
 
   useEffect(() => {
     if (query.trim()) {
@@ -87,39 +105,48 @@ export default function SearchPage() {
           )}
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-20">
+            <p className="text-[#a39e98] dark:text-[#615d59]">搜索数据加载中...</p>
+          </div>
+        )}
+
         {/* Search Status */}
-        {query && (
+        {!isLoading && query && (
           <div className="mb-6 text-sm text-[#a39e98] dark:text-[#615d59]">
             找到 {results.length} 个结果
           </div>
         )}
 
         {/* Results */}
-        <div className="space-y-4">
-          {results.map((result) => (
-            <Link
-              key={result.slug}
-              href={`/issues/${result.slug}/`}
-              className="card p-6 block group"
-            >
-              <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] mb-3">
-                <Calendar className="w-4 h-4" />
-                <span>{result.date}</span>
-                <span>·</span>
-                <span>第{result.issue}期</span>
-              </div>
-              <h2 className="text-xl font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
-                {result.title}
-              </h2>
-              <p className="text-[#615d59] dark:text-[#a39e98] text-sm leading-relaxed">
-                {result.excerpt}
-              </p>
-            </Link>
-          ))}
-        </div>
+        {!isLoading && (
+          <div className="space-y-4">
+            {results.map((result) => (
+              <Link
+                key={result.slug}
+                href={`/issues/${result.slug}/`}
+                className="card p-6 block group"
+              >
+                <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] mb-3">
+                  <Calendar className="w-4 h-4" />
+                  <span>{result.date}</span>
+                  <span>·</span>
+                  <span>第{result.issue}期</span>
+                </div>
+                <h2 className="text-xl font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
+                  {result.title}
+                </h2>
+                <p className="text-[#615d59] dark:text-[#a39e98] text-sm leading-relaxed">
+                  {result.excerpt}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
-        {query && results.length === 0 && !isSearching && (
+        {!isLoading && query && results.length === 0 && !isSearching && (
           <div className="text-center py-20">
             <Search className="w-14 h-14 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
             <h3 className="text-lg font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2">
@@ -132,7 +159,7 @@ export default function SearchPage() {
         )}
 
         {/* Initial State */}
-        {!query && (
+        {!isLoading && !query && (
           <div className="text-center py-20">
             <Search className="w-14 h-14 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
             <h3 className="text-lg font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2">

@@ -5,7 +5,14 @@ OCP 抽象层 - 定义统一接口规范
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, TypedDict
+
+
+class PluginParams(TypedDict, total=False):
+    """插件参数类型定义"""
+    docs_dir: str
+    output_path: str
+    issues: List[Dict[str, Any]]
 
 
 class BasePlugin(ABC):
