@@ -3,13 +3,12 @@
 OCP 架构测试
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -27,11 +26,11 @@ def test_registry():
     logger.info("Testing registry...")
 
     # 检查插件是否已注册
-    assert Registry.exists('issue_index'), "issue_index plugin should exist"
-    assert Registry.exists('search_index'), "search_index plugin should exist"
-    assert Registry.exists('stats'), "stats plugin should exist"
-    assert Registry.exists('example'), "example plugin should exist"
-    assert Registry.exists('hello_world'), "hello_world plugin should exist"
+    assert Registry.exists("issue_index"), "issue_index plugin should exist"
+    assert Registry.exists("search_index"), "search_index plugin should exist"
+    assert Registry.exists("stats"), "stats plugin should exist"
+    assert Registry.exists("example"), "example plugin should exist"
+    assert Registry.exists("hello_world"), "hello_world plugin should exist"
 
     # 列出所有插件
     names = Registry.list_names()
@@ -46,18 +45,18 @@ def test_plugin_execution():
     logger.info("\nTesting plugin execution...")
 
     # 测试示例插件
-    example = Registry.get('example')
+    example = Registry.get("example")
     assert example is not None, "Example plugin should be found"
 
-    result = example.execute({'message': 'Test', 'repeat': 2})
-    assert result['status'] == 'success'
-    assert result['message'] == 'TestTest'
+    result = example.execute({"message": "Test", "repeat": 2})
+    assert result["status"] == "success"
+    assert result["message"] == "TestTest"
     logger.info("Example plugin result: %s", result)
 
     # 测试 Hello World 插件
-    hello = Registry.get('hello_world')
+    hello = Registry.get("hello_world")
     result = hello.execute()
-    assert result['greeting'] == 'Hello, World!'
+    assert result["greeting"] == "Hello, World!"
     logger.info("Hello World plugin result: %s", result)
 
     logger.info("Plugin execution tests passed!")
@@ -70,7 +69,7 @@ def test_plugin_properties():
     all_plugins = Registry.get_all()
     for name, plugin in all_plugins.items():
         assert plugin.name == name, f"Plugin name mismatch: {plugin.name} != {name}"
-        logger.info("  - %s: %s", name, plugin.description or 'No description')
+        logger.info("  - %s: %s", name, plugin.description or "No description")
 
     logger.info("Plugin properties tests passed!")
 

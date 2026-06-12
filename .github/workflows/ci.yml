@@ -1,91 +1,181 @@
 name: CI
 
 on:
+  push:
+    branches: [ main, develop, 'trae/**' ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
-    description: '手动触发 CI 检查'
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
 
 jobs:
-  build-web:
+  lint:
+    name: Code Linting
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: web/package-lock.json
-
-    - name: Install dependencies
-      run: |
-        cd web
-        npm install
-
-    - name: Lint
-      run: |
-        cd web
-        npm run lint
-
-    - name: Type check
-      run: |
-        cd web
-        npm run type-check
-
-    - name: Build
-      run: |
-        cd web
-        npm run build
-
-  test-scripts:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.14'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: 'latest'
 
     - name: Install dependencies
+      working-directory: scripts
       run: |
-        cd scripts
-        pip install -r requirements.txt
-        pip install pytest
+        uv sync --all-extras
 
-    - name: Run unit tests
+    - name: Run black
+      working-directory: scripts
       run: |
-        cd scripts
-        python -m pytest tests/ -v --tb=short
+        uv run black --check src/youth_weekly/ tests/
 
-    - name: Security scan - pip-audit
+    - name: Run isort
+      working-directory: scripts
       run: |
-        cd scripts
-        pip install pip-audit
-        pip-audit --requirement requirements.txt --format columns
+        uv run isort --check-only src/youth_weekly/ tests/
 
-    - name: Verify scripts can be imported
+    - name: Run flake8
+      working-directory: scripts
       run: |
-        cd scripts
-        python -c "from src import load_all_issues, get_latest_issue; print('✅ Module import OK')"
+        uv run flake8 src/youth_weekly/ tests/
 
-  validate-content:
+    - name: Run mypy
+      working-directory: scripts
+      run: |
+        uv run mypy src/youth_weekly/
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.14']
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: 'latest'
+
+    - name: Install dependencies
+      working-directory: scripts
+      run: |
+        uv sync --all-extras
+
+    - name: Run tests
+      working-directory: scripts
+      run: |
+        uv run pytest --cov=youth_weekly --cov-report=xml --cov-report=term --cov-fail-under=70
+
+    - name: Upload coverage
+      if: matrix.python-version == '3.14'
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./scripts/coverage.xml
+        fail_ci_if_error: false
+
+  security:
+    name: Security Scan
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Check content structure
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: 'latest'
+
+    - name: Install dependencies
+      working-directory: scripts
       run: |
-        echo "📂 Checking content structure..."
-        test -d docs/issues && echo "✅ docs/issues/ exists" || { echo "❌ Missing docs/issues/"; exit 1; }
-        test -f docs/issues/001/README.md && echo "✅ Issue #001 exists" || { echo "❌ Missing Issue #001"; exit 1; }
-        echo ""
-        echo "📊 Content statistics:"
-        find docs/issues -name "README.md" | wc -l | xargs echo "  Total issues:"
+        uv sync --all-extras
+
+    - name: Run bandit
+      working-directory: scripts
+      run: |
+        uv run bandit -r src/youth_weekly/ -ll
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: 'latest'
+
+    - name: Build package
+      working-directory: scripts
+      run: |
+        uv build
+
+  cli-smoke:
+    name: CLI Smoke Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: 'latest'
+
+    - name: Install dependencies
+      working-directory: scripts
+      run: |
+        uv sync --all-extras
+
+    - name: CLI --help
+      working-directory: scripts
+      run: |
+        uv run youth-weekly --help
+
+    - name: CLI list
+      working-directory: scripts
+      run: |
+        uv run youth-weekly list
+
+    - name: CLI config
+      working-directory: scripts
+      run: |
+        uv run youth-weekly config
