@@ -1,0 +1,6 @@
+# uv 项目级配置文件
+# 参考文档: https://docs.astral.sh/uv/reference/settings/
+#
+# 注意:大部分行为配置通过环境变量 UV_XXX 或 pyproject.toml 维护
+# Python 版本通过 .python-version 文件管理
+# managed 等项目级配置请放置在 pyproject.toml 中
