@@ -2,14 +2,22 @@
 """
 测试共享内容模块
 """
-import pytest
-import tempfile
+
 import shutil
-from pathlib import Path
 import sys
+import tempfile
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from src import load_issue, load_all_issues, get_latest_issue, get_issue_count, safe_resolve_path
+from src import (
+    get_issue_count,
+    get_latest_issue,
+    load_all_issues,
+    load_issue,
+    safe_resolve_path,
+)
 
 
 class TestLoadIssue:
@@ -42,18 +50,18 @@ description: "测试描述"
 
 # 测试内容
 """
-        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
+        (issue_dir / "README.md").write_text(readme_content, encoding="utf-8")
 
         result = load_issue(issue_dir)
 
         assert result is not None
-        assert result['issue'] == 1
-        assert result['title'] == '测试周刊'
-        assert result['date'] in ('2026-01-01', '2026-1-1')
-        assert result['published'] is True
-        assert result['description'] == '测试描述'
-        assert result['slug'] == '001'
-        assert '测试内容' in result['content']
+        assert result["issue"] == 1
+        assert result["title"] == "测试周刊"
+        assert result["date"] in ("2026-01-01", "2026-1-1")
+        assert result["published"] is True
+        assert result["description"] == "测试描述"
+        assert result["slug"] == "001"
+        assert "测试内容" in result["content"]
 
     def test_load_nonexistent_file(self):
         """测试加载不存在的文件"""
@@ -81,7 +89,7 @@ description: "测试描述"
         readme_content = """# 没有 frontmatter
 内容
 """
-        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
+        (issue_dir / "README.md").write_text(readme_content, encoding="utf-8")
 
         result = load_issue(issue_dir)
 
@@ -101,12 +109,12 @@ published: false
 
 内容
 """
-        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
+        (issue_dir / "README.md").write_text(readme_content, encoding="utf-8")
 
         result = load_issue(issue_dir)
 
         assert result is not None
-        assert result['published'] is False
+        assert result["published"] is False
 
     def test_load_directory_not_exists(self):
         """测试目录不存在"""
@@ -142,7 +150,7 @@ published: {str(published).lower()}
 
 内容 {num}
 """
-        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
+        (issue_dir / "README.md").write_text(readme_content, encoding="utf-8")
 
     def test_load_multiple_issues(self):
         """测试加载多个周刊"""
@@ -162,8 +170,8 @@ published: {str(published).lower()}
 
         result = load_all_issues(self.docs_dir, reverse=True)
 
-        assert result[0]['issue'] == 3
-        assert result[2]['issue'] == 1
+        assert result[0]["issue"] == 3
+        assert result[2]["issue"] == 1
 
     def test_load_issues_ascending_order(self):
         """测试升序排列"""
@@ -173,8 +181,8 @@ published: {str(published).lower()}
 
         result = load_all_issues(self.docs_dir, reverse=False)
 
-        assert result[0]['issue'] == 1
-        assert result[2]['issue'] == 3
+        assert result[0]["issue"] == 1
+        assert result[2]["issue"] == 3
 
     def test_exclude_unpublished_by_default(self):
         """测试默认排除未发布内容"""
@@ -185,7 +193,7 @@ published: {str(published).lower()}
         result = load_all_issues(self.docs_dir, include_unpublished=False)
 
         assert len(result) == 2
-        assert all(issue['published'] for issue in result)
+        assert all(issue["published"] for issue in result)
 
     def test_include_unpublished(self):
         """测试包含未发布内容"""
@@ -231,12 +239,12 @@ published: true
 
 内容
 """
-        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
+        (issue_dir / "README.md").write_text(readme_content, encoding="utf-8")
 
         result = get_latest_issue(self.docs_dir)
 
         assert result is not None
-        assert result['title'] == '最新周刊'
+        assert result["title"] == "最新周刊"
 
     def test_get_latest_no_issues(self):
         """测试没有周刊的情况"""
@@ -271,7 +279,7 @@ published: {str(published).lower()}
 
 内容
 """
-        (issue_dir / "README.md").write_text(readme_content, encoding='utf-8')
+        (issue_dir / "README.md").write_text(readme_content, encoding="utf-8")
 
     def test_count_published_issues(self):
         """测试统计已发布周刊数量"""

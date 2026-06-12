@@ -1,18 +1,33 @@
 #!/usr/bin/env python3
 """
-插件实现层 - 所有功能实现放在这里
-✅ 只新增，不修改旧实现
-"""
+向后兼容层 - 重新导出 youth_weekly.plugins
 
-from .issue_index import IssueIndexPlugin
-from .search_index import SearchIndexPlugin
-from .stats import StatsPlugin
-from .example import ExamplePlugin, HelloWorldPlugin
+历史代码中 `from src.plugins import ...` 仍可工作。
+新代码请直接使用 `from youth_weekly.plugins import ...`。
+"""
+from __future__ import annotations
+
+# 导入即注册到 OCP Registry
+from youth_weekly.plugins import (
+    ExamplePlugin,
+    HelloWorldPlugin,
+    IssueIndexPlugin,
+    SearchIndexPlugin,
+    StatsPlugin,
+    example,
+    issue_index,
+    search_index,
+    stats,
+)
 
 __all__ = [
-    'IssueIndexPlugin',
-    'SearchIndexPlugin',
-    'StatsPlugin',
-    'ExamplePlugin',
-    'HelloWorldPlugin',
+    "ExamplePlugin",
+    "HelloWorldPlugin",
+    "IssueIndexPlugin",
+    "SearchIndexPlugin",
+    "StatsPlugin",
+    "example",
+    "issue_index",
+    "search_index",
+    "stats",
 ]

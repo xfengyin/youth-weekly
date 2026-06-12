@@ -1,20 +1,32 @@
 #!/usr/bin/env python3
 """测试 pydantic 配置系统"""
 
-import pytest
-import tempfile
-import shutil
-from pathlib import Path
-import sys
 import os
+import shutil
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.config import (
-    AppConfig, SiteConfig, AuthorConfig, PathsConfig,
-    CategoryConfig, ContentConfig, RssConfig, BuildConfig, OcpConfig,
-    load_config, get_config_value, get_site_url, get_site_name,
-    get_max_rss_items, get_exclude_plugins,
+    AppConfig,
+    AuthorConfig,
+    BuildConfig,
+    CategoryConfig,
+    ContentConfig,
+    OcpConfig,
+    PathsConfig,
+    RssConfig,
+    SiteConfig,
+    get_config_value,
+    get_exclude_plugins,
+    get_max_rss_items,
+    get_site_name,
+    get_site_url,
+    load_config,
 )
 
 

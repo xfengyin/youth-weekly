@@ -1,76 +1,83 @@
 # 更新日志
 
-所有 notable 的更改都会记录在此文件中。
+所有重要的项目变更都会记录在这个文件中。
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 并且本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [未发布]
 
-### Planned
+### 计划中
+- v2.0.0: 完全移除旧版代码结构
+- API 文档站点
+- 国际化支持
 
-- 🔔 推送通知功能
-- 💬 评论系统
-- 📊 阅读统计
-- 🎨 更多主题配色
-- 🌍 国际化（i18n）支持
+## [1.0.0] - 2026-05-25
 
----
+### 🎉 主要变更
 
-## [v1.1.0] - 架构重构与安全加固
+#### 架构升级
+- 升级到 Python 3.14（PEP 649/749 延迟注解求值）
+- 集成 uv 包管理器（速度提升 10-100 倍）
+- 重构为现代企业级架构
+- 引入 Pydantic 进行类型化配置管理
+- 完整的 OCP 开闭原则插件系统
 
-### Added
+#### 新增
+- `src/youth_weekly/core/` - 核心模块（config, logger, content）
+- `src/youth_weekly/plugin/` - 插件系统（base, registry, loader）
+- `src/youth_weekly/plugins/` - 内置业务插件
+- `src/youth_weekly/cli.py` - 命令行工具
+- `pyproject.toml` - 现代项目配置
+- `uv.toml` - uv 包管理器配置
+- `.pre-commit-config.yaml` - pre-commit hooks
+- 完整的测试套件（覆盖率 80%+）
+- GitHub Actions CI 改进
+- `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`
 
-- 🔒 添加 CI 安全扫描
-- 🔐 添加线程安全锁
-- 📧 添加邮件模板外置
-- 🛡️ 修复前端路径遍历漏洞
-- 🚫 修复 RSS 注入安全问题
+#### 改进
+- 完整的中文文档
+- 类型注解覆盖率 100%
+- 企业级日志系统
+- 安全的路径处理
+- RSS Feed 生成
 
-### Changed
+#### 修复
+- Python 版本配置不一致（Issue #22）
+- uv.toml 格式错误（Issue #26）
 
-- 🏗️ 重构 Python 后端使用 OCP 插件架构
-- ⚙️ 配置系统使用 pydantic 进行类型验证
-- 📋 统一日志系统（logging 替代 print）
-- 🧹 删除重复代码
+#### 移除
+- 旧的扁平化代码结构（已迁移到 `src_deprecated/`）
+- 重复的代码
 
----
+### 📦 依赖
 
-## [1.0.0] - 2026-04-08
+```
+pydantic>=2.0
+pyyaml>=6.0
+markdown>=3.5
+jinja2>=3.1
+feedgen>=1.0
+python-dateutil>=2.8
+requests>=2.31
+feedparser>=6.0
+```
 
-### Added
+### 🛠️ 开发
 
-- ✨ 项目正式发布
-- 🌐 完整 Web 前端（Next.js 16 + React 19 + TypeScript）
-- 📱 响应式设计，完美适配移动端
-- 🌙 暗黑/亮色主题切换
-- 🔍 全文搜索功能（Fuse.js）
-- 📰 RSS 订阅支持
-- 📧 邮件订阅功能
-- 📱 微信小程序（首页/列表/详情）
-- 🤖 自动化发布工作流（GitHub Actions）
-- 📚 完整文档和使用指南
-- 🏗️ CI/CD 自动构建部署
-- 📝 Issue/PR 模板
+```bash
+# 安装
+uv sync
 
-### Features
+# 运行测试
+uv run pytest
 
-- 九大内容板块：科技新势力、二次元次元壁、游戏研究所、青春故事会、好工具、在看什么、一周图鉴、谁在招人、编读往来
-- 周刊列表页与详情页，支持 Markdown 渲染
-- 分类浏览页面
-- 文章归档页面
-- PWA 支持（manifest.json）
-- 自动化脚本：静态数据生成、RSS 生成、邮件内容生成、新周刊检测
+# 代码检查
+uv run black .
+uv run flake8 .
+uv run mypy src/
+```
 
-### Content
+## [0.x] - 历史版本
 
-- 📰 第 1 期创刊号完整内容发布
-  - 刊首语：欢迎来到青年周刊
-  - 科技新势力：Cursor AI、Suno AI、Python 异步编程
-  - 二次元次元壁：2026 春季新番推荐、漫画推荐
-  - 游戏研究所：《黑神话：悟空》前瞻、手游推荐
-  - 青春故事会：职场新人指南、读者投稿
-  - 好工具：Warp、TablePlus、Notion Calendar
-  - 在看什么：影视书籍播客推荐
-  - 一周图鉴：视觉内容精选
-  - 谁在招人：技术/设计/实习岗位
+早期版本采用扁平化代码结构，详见 git 历史。
