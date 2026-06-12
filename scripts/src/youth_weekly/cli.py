@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+"""
+青年周刊 CLI 主入口
+==================
+
+使用 Typer(可选) 或 argparse 提供命令行能力
+"""
+
+from __future__ import annotations
+
+import argparse
+import logging
+import sys
+from pathlib import Path
+from typing import NoReturn
+
+# 路径配置
+_SCRIPT_DIR = Path(__file__).resolve().parent.parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from youth_weekly.core.config import (
+    get_docs_dir,
+    get_exclude_plugins,
+    get_output_dir,
+    load_config,
+)
+from youth_weekly.core.content import load_all_issues
+from youth_weekly.core.logger import get_logger, setup_logger
+from youth_weekly.plugin import Registry
+from youth_weekly.plugins import example, issue_index, search_index, stats  # noqa: F401
+
+
+def cmd_generate(args: argparse.Namespace) -> int:
+    """执行所有(或指定)插件生成静态文件"""
+    logger = get_logger("youth_weekly.cli")
+    plugins: list[str] = args.plugins if args.plugins else Registry.list_names()
+    exclude = get_exclude_plugins()
+    docs_dir = get_docs_dir()
+    output_dir = Path(args.output) if args.output else get_output_dir()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    issues = load_all_issues(docs_dir, reverse=True)
+    results: dict[str, object] = {}
+    for name in plugins:
+        if name in exclude:
+            logger.info("Skipping excluded plugin: %s", name)
+            continue
+        plugin = Registry.get(name)
+        if plugin is None:
+            logger.warning("Plugin not found: %s", name)
+            continue
+        logger.info("Executing plugin: %s", name)
+        result = plugin.execute(
+            {
+                "docs_dir": docs_dir,
+                "output_path": output_dir / f"{name}.json",
+                "issues": issues,
+            }
+        )
+        results[name] = result
+        logger.info("Plugin %s completed", name)
+
+    logger.info("All plugins completed (%d total)", len(results))
+    return 0
+
+
+def cmd_list(args: argparse.Namespace) -> int:
+    """列出所有已注册插件"""
+    logger = get_logger("youth_weekly.cli")
+    logger.info("Available plugins:")
+    for name in Registry.list_names():
+        meta = Registry.get(name)
+        desc = meta.description if meta else "No description"
+        logger.info("  - %s: %s", name, desc)
+    return 0
+
+
+def cmd_config(args: argparse.Namespace) -> int:
+    """打印当前配置"""
+    logger = get_logger("youth_weekly.cli")
+    cfg = load_config()
+    logger.info("Site: %s (%s)", cfg.site.name, cfg.site.url)
+    logger.info("Docs: %s", cfg.paths.docs)
+    logger.info("Output: %s", cfg.paths.output)
+    logger.info("Excluded plugins: %s", cfg.ocp.exclude_plugins)
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """构建 CLI 参数解析器"""
+    parser = argparse.ArgumentParser(
+        prog="youth-weekly",
+        description="青年周刊内容生成与发布工具集",
+    )
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p_generate = sub.add_parser("generate", help="执行 OCP 插件生成静态文件")
+    p_generate.add_argument("--output", "-o", help="输出目录")
+    p_generate.add_argument("plugins", nargs="*", help="指定插件名(默认全部)")
+    p_generate.set_defaults(func=cmd_generate)
+
+    p_list = sub.add_parser("list", help="列出所有已注册插件")
+    p_list.set_defaults(func=cmd_list)
+
+    p_config = sub.add_parser("config", help="查看当前配置")
+    p_config.set_defaults(func=cmd_config)
+
+    p_log = parser.add_argument_group("logging")
+    p_log.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="日志级别",
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI 主入口"""
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    setup_logger("youth_weekly", level=getattr(logging, args.log_level))
+
+    return int(args.func(args)) if hasattr(args, "func") else 0
+
+
+def cli() -> NoReturn:
+    """Console-script 入口(无返回值,直接退出)"""
+    sys.exit(main())
+
+
+if __name__ == "__main__":
+    cli()

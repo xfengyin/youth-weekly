@@ -4,13 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "youth-weekly-scripts"
-version = "1.0.0"
-description = "青年周刊静态文件生成与工具脚本"
-readme = "../README.md"
-license = {text = "MIT"}
+version = "2.0.0"
+description = "青年周刊静态文件生成与工具脚本 - Python 3.14 + uv + OCP 插件架构"
+readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.14"
 authors = [
-    {name = "青年周刊编辑部", email = "youth-weekly@example.com"},
+    { name = "青年周刊编辑部", email = "youth-weekly@example.com" },
+]
+keywords = ["newsletter", "youth-weekly", "ocp", "plugin", "uv"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
     "pydantic>=2.0",
@@ -25,23 +33,59 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "black>=23.0",
-    "flake8>=6.0",
-    "mypy>=1.0",
-    "isort>=5.0",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.12",
+    "black>=24.0",
+    "flake8>=7.0",
+    "mypy>=1.10",
+    "isort>=5.13",
+    "bandit[toml]>=1.7",
+    "pre-commit>=3.5",
+]
+
+# PEP 735 dependency groups(uv 原生支持)
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.12",
+    "black>=24.0",
+    "flake8>=7.0",
+    "mypy>=1.13",
+    "isort>=5.13",
+    "bandit[toml]>=1.7",
+    "pre-commit>=3.5",
+    "flake8-pyproject>=1.2.4",
+]
+lint = [
+    "black>=24.0",
+    "flake8>=7.0",
+    "mypy>=1.13",
+    "isort>=5.13",
+    "bandit[toml]>=1.7",
+]
+test = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-mock>=3.12",
 ]
 
 [project.scripts]
-generate-ocp = "scripts.generate_static_ocp:main"
+youth-weekly = "youth_weekly.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/xfengyin/youth-weekly"
+Repository = "https://github.com/xfengyin/youth-weekly"
+Issues = "https://github.com/xfengyin/youth-weekly/issues"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["src*"]
+where = ["src"]
+include = ["youth_weekly*"]
+exclude = ["src*", "tests*", "ocp*", "plugins*"]
 
 [tool.setuptools.package-data]
-"*" = ["templates/*.html"]
+youth_weekly = ["py.typed"]
 
 [tool.black]
 line-length = 88
@@ -51,6 +95,7 @@ target-version = ["py314"]
 profile = "black"
 line_length = 88
 multi_line_output = 3
+known_first_party = ["youth_weekly"]
 
 [tool.mypy]
 python_version = "3.14"
@@ -60,9 +105,60 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
 no_implicit_optional = true
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+namespace_packages = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["feedparser.*", "feedgen.*", "yaml", "sqlite3.*"]
+ignore_missing_imports = true
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = [
+    "E203",  # whitespace before ':'
+    "W503",  # line break before binary operator
+    "E402",  # module level import not at top - tests need sys.path manipulation
+]
+exclude = [
+    ".venv",
+    "dist",
+    "build",
+    "__pycache__",
+    ".pytest_cache",
+    "*.egg-info",
+]
+per-file-ignores = [
+    "tests/*:F401",  # 测试文件中的导入即注册,允许未使用
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+addopts = "-ra --strict-markers"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src/youth_weekly"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "scripts/dist"]
+skips = ["B101"]
