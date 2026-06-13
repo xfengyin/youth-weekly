@@ -1,38 +1,37 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/web"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      timezone: "Asia/Shanghai"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-
+  # Python 依赖（uv）
   - package-ecosystem: "pip"
     directory: "/scripts"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "09:00"
       timezone: "Asia/Shanghai"
     open-pull-requests-limit: 10
+    reviewers:
+      - "youth-weekly/maintainers"
     labels:
       - "dependencies"
+      - "python"
     commit-message:
       prefix: "chore"
       include: "scope"
 
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "09:00"
       timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "youth-weekly/maintainers"
     labels:
-      - "ci"
+      - "dependencies"
+      - "github-actions"
     commit-message:
       prefix: "ci"
+      include: "scope"

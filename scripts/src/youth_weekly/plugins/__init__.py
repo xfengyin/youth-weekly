@@ -12,12 +12,18 @@ from . import example  # noqa: F401
 from . import issue_index  # noqa: F401
 from . import search_index  # noqa: F401
 from . import stats  # noqa: F401
+from . import rss  # noqa: F401
+from . import collect  # noqa: F401
+from . import issue  # noqa: F401
 
 # 公共 API 重导出
 from .example import ExamplePlugin, HelloWorldPlugin
 from .issue_index import IssueIndexPlugin
 from .search_index import SearchIndexPlugin
 from .stats import StatsPlugin
+from .rss import RssPlugin
+from .collect import CollectPlugin
+from .issue import IssuePlugin
 
 __all__ = [
     "ExamplePlugin",
@@ -25,8 +31,14 @@ __all__ = [
     "IssueIndexPlugin",
     "SearchIndexPlugin",
     "StatsPlugin",
+    "RssPlugin",
+    "CollectPlugin",
+    "IssuePlugin",
     "example",
     "issue_index",
     "search_index",
     "stats",
+    "rss",
+    "collect",
+    "issue",
 ]
