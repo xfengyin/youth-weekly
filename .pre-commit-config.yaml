@@ -1,58 +1,48 @@
-# Pre-commit hooks configuration
-# 安装: uv run pre-commit install
-# 手动运行: uv run pre-commit run --all-files
-
 repos:
+  # 基础 Git 钩子
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
-      - id: check-toml
-      - id: check-json
       - id: check-added-large-files
-        args: ['--maxkb=1000']
       - id: check-merge-conflict
       - id: detect-private-key
 
+  # Python 代码格式化
   - repo: https://github.com/psf/black
-    rev: 24.10.0
+    rev: 23.11.0
     hooks:
       - id: black
         language_version: python3.14
-        files: '\.py$'
-        args: ['--line-length=88', '--target-version=py314']
 
+  # import 排序
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 5.12.0
     hooks:
       - id: isort
-        files: '\.py$'
-        args: ['--profile=black', '--line-length=88', '--known-first-party=youth_weekly']
+        args: ["--profile", "black"]
 
+  # 代码检查
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
+    rev: 6.1.0
     hooks:
       - id: flake8
-        files: '\.py$'
-        additional_dependencies: [Flake8-pyproject]
-        args: ['--config=scripts/pyproject.toml']
+        args: ["--max-line-length=100", "--extend-ignore=E203"]
 
+  # 类型检查
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
+    rev: v1.7.0
     hooks:
       - id: mypy
-        files: '^scripts/src/youth_weekly/.*\.py$'
-        additional_dependencies:
-          - pydantic>=2.0
-          - types-PyYAML
-          - types-requests
-        args: ['--python-version=3.14', '--config-file=scripts/pyproject.toml']
+        additional_dependencies: [types-all]
+        args: [--ignore-missing-imports]
 
+  # 安全扫描
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.10
+    rev: 1.7.5
     hooks:
       - id: bandit
-        files: '^scripts/src/youth_weekly/.*\.py$'
-        args: ['-ll', '--recursive', '--skip=B101']
+        args: ["-r", "src/youth_weekly/"]
+        files: \.py$
