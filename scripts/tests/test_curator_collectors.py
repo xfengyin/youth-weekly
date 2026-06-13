@@ -237,7 +237,7 @@ class TestIssueGenerator:
 
         (self.issues / "005").mkdir()
         gen = IssueGenerator(issues_dir=self.issues)
-        assert gen._get_next_issue_number() == 6
+        assert gen.get_next_issue_number() == 6
 
 
 # ---------------- PluginLoader ---------------- #

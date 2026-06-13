@@ -7,22 +7,41 @@ from __future__ import annotations
 
 import logging
 import os
+import threading
 from pathlib import Path
 from typing import Any
 
 import yaml
 from pydantic import BaseModel, Field
 
-# 项目根目录 (scripts/src/youth_weekly/core/config.py -> 4 级 -> ROOT)
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
-
-
-def _project_root() -> Path:
-    """获取项目根目录(可被测试 monkeypatch)"""
-    return ROOT_DIR
-
-
 logger = logging.getLogger(__name__)
+
+
+def _resolve_root_dir() -> Path:
+    """
+    解析项目根目录(按优先级):
+    1. 环境变量 YOUTH_WEEKLY_ROOT
+    2. 路径推算(向后兼容 fallback)
+    """
+    # 优先级 1: 环境变量
+    env_root = os.environ.get("YOUTH_WEEKLY_ROOT")
+    if env_root:
+        root_path = Path(env_root).resolve()
+        if root_path.exists():
+            logger.debug("ROOT_DIR from env: %s", root_path)
+            return root_path
+        logger.warning("YOUTH_WEEKLY_ROOT path not exists: %s", root_path)
+
+    # 优先级 2: 路径推算 fallback
+    fallback_root = (
+        Path(__file__).resolve().parent.parent.parent.parent.parent
+    )
+    logger.debug("ROOT_DIR from fallback: %s", fallback_root)
+    return fallback_root
+
+
+# 模块级 ROOT_DIR(可通过环境变量覆盖)
+ROOT_DIR: Path = _resolve_root_dir()
 
 
 class SiteConfig(BaseModel):
@@ -50,6 +69,9 @@ class PathsConfig(BaseModel):
     issues: str = "docs/issues"
     assets: str = "docs/assets"
     output: str = "scripts/dist"
+    content_sources: str = "scripts/content_sources.yaml"
+    curated_content: str = "scripts/.curated_content.json"
+    dedup_db: str = "scripts/.content_dedup.db"
 
 
 class CategoryConfig(BaseModel):
@@ -112,6 +134,7 @@ class AppConfig(BaseModel):
 
 
 _config: AppConfig | None = None
+_config_lock: threading.Lock = threading.Lock()
 
 
 def _get_config_path() -> Path:
@@ -121,8 +144,7 @@ def _get_config_path() -> Path:
     2. scripts 目录下的 config.yaml(向后兼容)
     3. 环境变量 YOUTH_WEEKLY_CONFIG 指向的路径
     """
-    root_dir = _project_root()
-    config_path = root_dir / "config.yaml"
+    config_path = ROOT_DIR / "config.yaml"
     if config_path.exists():
         return config_path
 
@@ -140,31 +162,40 @@ def _get_config_path() -> Path:
 
 def load_config(force_reload: bool = False) -> AppConfig:
     """
-    加载配置(单例,可通过 force_reload 强制重载)
+    加载配置(线程安全单例,可通过 force_reload 强制重载)
+
+    使用双重检查锁定(double-checked locking)确保多线程环境下
+    不会重复加载配置。
 
     Returns:
         完整应用配置对象
     """
     global _config
 
+    # 第一次检查(无锁,快速路径)
     if _config is not None and not force_reload:
         return _config
 
-    try:
-        config_path = _get_config_path()
-        logger.info("Loading config from %s", config_path)
-        with open(config_path, "r", encoding="utf-8") as f:
-            raw_config = yaml.safe_load(f)
-        _config = AppConfig.model_validate(raw_config or {})
-        logger.info("Config loaded successfully")
-    except FileNotFoundError:
-        logger.warning("Config file not found, using defaults")
-        _config = AppConfig()
-    except Exception as exc:
-        logger.error("Failed to load config: %s", exc)
-        _config = AppConfig()
+    with _config_lock:
+        # 第二次检查(持锁,防止并发重复加载)
+        if _config is not None and not force_reload:
+            return _config
 
-    return _config
+        try:
+            config_path = _get_config_path()
+            logger.info("Loading config from %s", config_path)
+            with open(config_path, "r", encoding="utf-8") as f:
+                raw_config = yaml.safe_load(f)
+            _config = AppConfig.model_validate(raw_config or {})
+            logger.info("Config loaded successfully")
+        except FileNotFoundError:
+            logger.warning("Config file not found, using defaults")
+            _config = AppConfig()
+        except Exception as exc:
+            logger.error("Failed to load config: %s", exc)
+            _config = AppConfig()
+
+        return _config
 
 
 def get_config() -> AppConfig:
@@ -207,18 +238,16 @@ def get_site_name() -> str:
 
 def get_docs_dir() -> Path:
     """获取文档目录"""
-    root_dir = _project_root()
     config = load_config()
     docs_path: str = config.paths.docs
-    return root_dir / docs_path
+    return ROOT_DIR / docs_path
 
 
 def get_output_dir() -> Path:
     """获取输出目录"""
-    root_dir = _project_root()
     config = load_config()
     output_path: str = config.paths.output
-    return root_dir / output_path
+    return ROOT_DIR / output_path
 
 
 def get_categories() -> list[dict[str, str]]:
@@ -235,6 +264,27 @@ def get_exclude_plugins() -> list[str]:
     """获取需要排除的插件列表"""
     value = get_config_value("ocp.exclude_plugins", [])
     return list(value) if value else []
+
+
+def get_content_sources_path() -> Path:
+    """获取内容源配置文件路径"""
+    config = load_config()
+    sources_path: str = config.paths.content_sources
+    return ROOT_DIR / sources_path
+
+
+def get_curated_content_path() -> Path:
+    """获取策展内容输出文件路径"""
+    config = load_config()
+    curated_path: str = config.paths.curated_content
+    return ROOT_DIR / curated_path
+
+
+def get_dedup_db_path() -> Path:
+    """获取去重数据库文件路径"""
+    config = load_config()
+    dedup_path: str = config.paths.dedup_db
+    return ROOT_DIR / dedup_path
 
 
 __all__ = [
@@ -258,4 +308,7 @@ __all__ = [
     "get_categories",
     "get_max_rss_items",
     "get_exclude_plugins",
+    "get_content_sources_path",
+    "get_curated_content_path",
+    "get_dedup_db_path",
 ]

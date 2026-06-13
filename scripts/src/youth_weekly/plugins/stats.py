@@ -22,17 +22,9 @@ logger = logging.getLogger(__name__)
 class StatsPlugin(BasePlugin):
     """生成统计数据插件"""
 
-    @property
-    def name(self) -> str:
-        return "stats"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "生成统计数据 JSON 文件"
+    name: str = "stats"
+    version: str = "1.0.0"
+    description: str = "生成统计数据 JSON 文件"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """

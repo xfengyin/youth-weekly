@@ -22,17 +22,9 @@ logger = logging.getLogger(__name__)
 class SearchIndexPlugin(BasePlugin):
     """生成搜索索引插件"""
 
-    @property
-    def name(self) -> str:
-        return "search_index"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "生成搜索索引 JSON 文件"
+    name: str = "search_index"
+    version: str = "1.0.0"
+    description: str = "生成搜索索引 JSON 文件"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """

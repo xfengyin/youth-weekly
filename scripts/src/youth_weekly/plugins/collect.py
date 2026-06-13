@@ -16,6 +16,11 @@ from youth_weekly.plugin.base import BasePlugin
 from youth_weekly.plugin.registry import register
 from youth_weekly.core.collectors import get_collector
 from youth_weekly.core.curator import ContentCurator
+from youth_weekly.core.config import (
+    get_content_sources_path,
+    get_curated_content_path,
+    get_dedup_db_path,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,17 +29,9 @@ logger = logging.getLogger(__name__)
 class CollectPlugin(BasePlugin):
     """采集内容"""
 
-    @property
-    def name(self) -> str:
-        return "collect"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "从配置的内容源采集内容"
+    name: str = "collect"
+    version: str = "1.0.0"
+    description: str = "从配置的内容源采集内容"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """
@@ -50,8 +47,13 @@ class CollectPlugin(BasePlugin):
         """
         params = params or {}
 
-        sources_path = Path(params.get("sources_path", "scripts/content_sources.yaml"))
-        output_path = Path(params.get("output_path", "scripts/.curated_content.json"))
+        # 从配置读取路径，支持参数覆盖
+        sources_path = Path(
+            params.get("sources_path", str(get_content_sources_path()))
+        )
+        output_path = Path(
+            params.get("output_path", str(get_curated_content_path()))
+        )
 
         if not sources_path.exists():
             logger.warning("Content sources config not found: %s", sources_path)
@@ -96,7 +98,7 @@ class CollectPlugin(BasePlugin):
         curator = ContentCurator(
             dedup_enabled=dedup_config.get("enabled", True),
             dedup_db_path=str(
-                Path(dedup_config.get("db_path", "scripts/.content_dedup.db"))
+                Path(dedup_config.get("db_path", str(get_dedup_db_path())))
             ),
             retention_days=dedup_config.get("retention_days", 30),
         )

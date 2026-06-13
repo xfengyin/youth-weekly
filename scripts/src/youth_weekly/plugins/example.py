@@ -18,17 +18,9 @@ logger = logging.getLogger(__name__)
 class ExamplePlugin(BasePlugin):
     """示例插件 - 演示 OCP 架构的使用"""
 
-    @property
-    def name(self) -> str:
-        return "example"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "示例插件,演示如何使用 OCP 架构"
+    name: str = "example"
+    version: str = "1.0.0"
+    description: str = "示例插件,演示如何使用 OCP 架构"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """
@@ -59,17 +51,9 @@ class ExamplePlugin(BasePlugin):
 class HelloWorldPlugin(BasePlugin):
     """Hello World 插件 - 最简单的实现示例"""
 
-    @property
-    def name(self) -> str:
-        return "hello_world"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "Hello World 示例插件"
+    name: str = "hello_world"
+    version: str = "1.0.0"
+    description: str = "Hello World 示例插件"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         return {

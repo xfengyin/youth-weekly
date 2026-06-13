@@ -9,6 +9,7 @@ import hashlib
 import logging
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
@@ -35,8 +36,8 @@ class ContentItem:
 
     @property
     def fingerprint(self) -> str:
-        """内容指纹(用于去重)"""
-        return hashlib.md5(f"{self.url}".encode()).hexdigest()[:12]
+        """内容指纹(基于 SHA256 的前 12 位 hex，用于去重)"""
+        return hashlib.sha256(f"{self.url}".encode()).hexdigest()[:12]
 
 
 class BaseCollector:
@@ -273,6 +274,55 @@ def register_collector(name: str, cls: type[BaseCollector]) -> None:
     logger.info("Registered collector: %s -> %s", name, cls.__name__)
 
 
+def collect_concurrent(
+    sources: list[dict[str, Any]],
+    max_workers: int = 3,
+    collector_kwargs: dict[str, Any] | None = None,
+) -> list[ContentItem]:
+    """
+    并发采集多个源(向后兼容:不影响原有单采集器接口)
+
+    Args:
+        sources: 源配置列表,每项需包含 'type' 字段,其余字段透传给采集器
+        max_workers: 最大并发线程数(默认 3)
+        collector_kwargs: 透传给采集器构造器的公共参数(如 timeout)
+
+    Returns:
+        所有源采集到的内容项合并列表
+    """
+    collector_kwargs = collector_kwargs or {}
+    all_items: list[ContentItem] = []
+
+    def _collect_one(source: dict[str, Any]) -> list[ContentItem]:
+        collector_type = source.get("type", "")
+        collector = get_collector(collector_type, **collector_kwargs)
+        if collector is None:
+            return []
+        try:
+            return collector.collect(source)
+        except Exception as exc:
+            logger.error("Collector %s failed: %s", collector_type, exc)
+            return []
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_source = {
+            executor.submit(_collect_one, src): src for src in sources
+        }
+        for future in as_completed(future_to_source):
+            source = future_to_source[future]
+            try:
+                items = future.result()
+                all_items.extend(items)
+            except Exception as exc:
+                logger.error(
+                    "Unexpected error collecting from %s: %s",
+                    source.get("type", "unknown"),
+                    exc,
+                )
+
+    return all_items
+
+
 __all__ = [
     "ContentItem",
     "BaseCollector",
@@ -282,4 +332,5 @@ __all__ = [
     "COLLECTOR_MAP",
     "get_collector",
     "register_collector",
+    "collect_concurrent",
 ]

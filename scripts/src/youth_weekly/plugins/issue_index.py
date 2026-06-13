@@ -22,17 +22,9 @@ logger = logging.getLogger(__name__)
 class IssueIndexPlugin(BasePlugin):
     """生成周刊索引 JSON 插件"""
 
-    @property
-    def name(self) -> str:
-        return "issue_index"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "生成周刊索引 JSON 文件"
+    name: str = "issue_index"
+    version: str = "1.0.0"
+    description: str = "生成周刊索引 JSON 文件"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """

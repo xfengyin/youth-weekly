@@ -21,17 +21,9 @@ from youth_weekly.core.content import load_all_issues
 class RssPlugin(BasePlugin):
     """生成 RSS feed"""
 
-    @property
-    def name(self) -> str:
-        return "rss"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "生成 RSS feed 文件"
+    name: str = "rss"
+    version: str = "1.0.0"
+    description: str = "生成 RSS feed 文件"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """
@@ -62,7 +54,7 @@ class RssPlugin(BasePlugin):
         fg.copyright(f"Copyright {datetime.now().year}, {config.author.name}")
 
         # 添加条目
-        max_items = get_config().content.max_rss_items
+        max_items = config.content.max_rss_items
         for issue in issues[:max_items]:
             fe = fg.add_entry()
             fe.title(issue.get("title", f"第{issue['slug']}期"))
