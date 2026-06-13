@@ -14,21 +14,16 @@ import sys
 from pathlib import Path
 from typing import NoReturn
 
-# 路径配置
-_SCRIPT_DIR = Path(__file__).resolve().parent.parent
-if str(_SCRIPT_DIR) not in sys.path:
-    sys.path.insert(0, str(_SCRIPT_DIR))
-
-from youth_weekly.core.config import (  # noqa: E402
+from youth_weekly.core.config import (
     get_docs_dir,
     get_exclude_plugins,
     get_output_dir,
     load_config,
 )
-from youth_weekly.core.content import load_all_issues  # noqa: E402
-from youth_weekly.core.logger import get_logger, setup_logger  # noqa: E402
-from youth_weekly.plugin import Registry  # noqa: E402
-from youth_weekly.plugins import (  # noqa: E402, F401
+from youth_weekly.core.content import load_all_issues
+from youth_weekly.core.logger import get_logger, setup_logger
+from youth_weekly.plugin import Registry
+from youth_weekly.plugins import (
     example,
     issue_index,
     search_index,

@@ -33,6 +33,45 @@ class Registry:
     _instances: dict[str, BasePlugin] = {}
     _lock = threading.RLock()
 
+    # ---------------- 辅助方法 ---------------- #
+
+    @classmethod
+    def _extract_plugin_name(cls, plugin_class: Type[BasePlugin]) -> str | None:
+        """
+        从插件类中提取名称，优先从类属性获取，property 回退到轻量实例化
+
+        尝试顺序：
+        1. 类属性（字符串）—— 无需实例化
+        2. property —— 创建临时实例获取（向后兼容）
+
+        Args:
+            plugin_class: 插件类
+
+        Returns:
+            插件名称，无法获取时返回 None
+        """
+        # 遍历 MRO 查找 name 属性（跳过基类 BasePlugin 本身的抽象定义）
+        for klass in plugin_class.__mro__:
+            if "name" not in klass.__dict__:
+                continue
+            # 跳过 BasePlugin 自身的抽象 property 定义
+            if klass.__name__ == "BasePlugin":
+                continue
+
+            name_attr = klass.__dict__["name"]
+            # 如果是类属性（字符串），直接返回，无需实例化
+            if isinstance(name_attr, str):
+                return name_attr
+            # 如果是 property，回退到轻量实例化（向后兼容）
+            if isinstance(name_attr, property):
+                try:
+                    temp_instance = plugin_class()
+                    return temp_instance.name
+                except Exception:
+                    return None
+
+        return None
+
     # ---------------- 注册 ---------------- #
 
     @classmethod
@@ -61,14 +100,14 @@ class Registry:
             plugin_name = name
 
             if not plugin_name:
-                try:
-                    temp_instance = plugin_class()
-                    plugin_name = temp_instance.name
-                except Exception as exc:
-                    raise ValueError(
-                        f"Plugin {plugin_class.__name__} must have a name "
-                        f"property or be registered with an explicit name: {exc}"
-                    ) from exc
+                # 尝试从类属性或 property 获取 name，避免创建临时实例
+                plugin_name = cls._extract_plugin_name(plugin_class)
+
+            if not plugin_name:
+                raise ValueError(
+                    f"Plugin {plugin_class.__name__} must have a name "
+                    "property or be registered with an explicit name"
+                )
 
             with cls._lock:
                 if plugin_name in cls._plugins:

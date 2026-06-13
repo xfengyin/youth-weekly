@@ -75,16 +75,6 @@ class TestLogger:
         # 只有一个 handler (file)
         assert len(logger.handlers) == 1
 
-    def test_convenience_functions(self):
-        """测试便捷日志函数"""
-        from youth_weekly.core import logger as logger_module
-
-        # 这些函数不应该抛出异常
-        logger_module.debug("debug message")
-        logger_module.info("info message")
-        logger_module.warning("warning message")
-        logger_module.error("error message")
-
     def test_colored_formatter(self):
         """测试彩色格式化器"""
         import logging

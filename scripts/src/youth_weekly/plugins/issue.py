@@ -22,17 +22,9 @@ logger = logging.getLogger(__name__)
 class IssuePlugin(BasePlugin):
     """生成周刊"""
 
-    @property
-    def name(self) -> str:
-        return "issue"
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"
-
-    @property
-    def description(self) -> str:
-        return "从采集的内容生成新一期周刊"
+    name: str = "issue"
+    version: str = "1.0.0"
+    description: str = "从采集的内容生成新一期周刊"
 
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """

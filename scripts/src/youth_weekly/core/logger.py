@@ -129,37 +129,6 @@ def get_logger(name: str | None = None) -> logging.Logger:
     return logger
 
 
-# 便捷函数:模块顶部调用即可使用 logger.debug/info/warning/error
-
-
-def _build_module_logger() -> logging.Logger:
-    """构建模块级 logger"""
-    return get_logger("youth_weekly.core")
-
-
-_module_logger = _build_module_logger()
-
-
-def debug(msg: str, *args: Any, **kwargs: Any) -> None:
-    """DEBUG 级别日志"""
-    _module_logger.debug(msg, *args, **kwargs)
-
-
-def info(msg: str, *args: Any, **kwargs: Any) -> None:
-    """INFO 级别日志"""
-    _module_logger.info(msg, *args, **kwargs)
-
-
-def warning(msg: str, *args: Any, **kwargs: Any) -> None:
-    """WARNING 级别日志"""
-    _module_logger.warning(msg, *args, **kwargs)
-
-
-def error(msg: str, *args: Any, **kwargs: Any) -> None:
-    """ERROR 级别日志"""
-    _module_logger.error(msg, *args, **kwargs)
-
-
 def log_execution_time(
     logger: logging.Logger | None = None,
     level: int = logging.INFO,
@@ -241,8 +210,4 @@ __all__ = [
     "get_logger",
     "log_execution_time",
     "log_exception",
-    "debug",
-    "info",
-    "warning",
-    "error",
 ]

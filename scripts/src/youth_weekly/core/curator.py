@@ -12,21 +12,33 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from .collectors import ContentItem
+from .config import get_dedup_db_path
 
 logger = logging.getLogger(__name__)
 
 
 class ContentCurator:
-    """内容策展器"""
+    """
+    内容策展器
+
+    支持上下文管理器协议，确保数据库连接在退出时自动关闭：
+
+        with ContentCurator() as curator:
+            items = curator.deduplicate(items)
+            items = curator.score_items(items)
+    """
 
     def __init__(
         self,
         dedup_enabled: bool = True,
-        dedup_db_path: str = "scripts/.content_dedup.db",
+        dedup_db_path: str | None = None,
         retention_days: int = 30,
     ) -> None:
         self.dedup_enabled = dedup_enabled
-        self.dedup_db_path = dedup_db_path
+        # 若未显式传入路径，则从配置读取；保持向后兼容
+        self.dedup_db_path = (
+            dedup_db_path if dedup_db_path is not None else str(get_dedup_db_path())
+        )
         self.retention_days = retention_days
         self._db: sqlite3.Connection | None = None
 
@@ -253,6 +265,19 @@ class ContentCurator:
         if self._db is not None:
             self._db.close()
             self._db = None
+
+    def __enter__(self) -> ContentCurator:
+        """进入上下文管理器"""
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Any,
+    ) -> None:
+        """退出上下文管理器，确保数据库连接关闭"""
+        self.close()
 
 
 __all__ = ["ContentCurator"]

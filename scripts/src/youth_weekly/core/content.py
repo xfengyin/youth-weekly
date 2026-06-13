@@ -9,38 +9,15 @@ from __future__ import annotations
 import logging
 import os
 from datetime import date, datetime
+from functools import lru_cache
 from pathlib import Path
 
 import yaml
 
 logger = logging.getLogger(__name__)
 
-
-class ContentLoadError(Exception):
-    """内容加载错误"""
-
-    pass
-
-
-def _serialize_value(value: object) -> object:
-    """
-    序列化 YAML 值,确保日期等类型可被 JSON 序列化
-
-    递归处理 dict/list/tuple/set/bytes/date 等特殊类型。
-    """
-    if isinstance(value, (date, datetime)):
-        return value.isoformat()
-    if isinstance(value, set):
-        return sorted(list(value))
-    if isinstance(value, bytes):
-        return value.decode("utf-8", errors="replace")
-    if isinstance(value, dict):
-        return {k: _serialize_value(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [_serialize_value(v) for v in value]
-    if not isinstance(value, (str, int, float, bool, type(None))):
-        return str(value)
-    return value
+# 缓存统计信息
+_cache_stats: dict[str, int] = {"hits": 0, "misses": 0}
 
 
 def safe_resolve_path(base_dir: Path, target_name: str) -> Path | None:
@@ -128,13 +105,14 @@ def load_issue(issue_dir: Path, docs_dir: Path | None = None) -> dict | None:
     }
 
 
+@lru_cache(maxsize=32)
 def load_all_issues(
     docs_dir: Path,
     reverse: bool = True,
     include_unpublished: bool = False,
 ) -> list[dict]:
     """
-    加载所有周刊
+    加载所有周刊(带 LRU 缓存, maxsize=32)
 
     Args:
         docs_dir: 文档根目录
@@ -168,6 +146,18 @@ def load_all_issues(
         issues.append(issue)
 
     return issues
+
+
+def clear_cache() -> None:
+    """清除 load_all_issues 的 LRU 缓存(用于测试或内容更新后)"""
+    load_all_issues.cache_clear()
+    logger.debug("load_all_issues cache cleared")
+
+
+def get_cache_info() -> dict[str, int]:
+    """获取缓存命中/未命中统计"""
+    info = load_all_issues.cache_info()
+    return {"hits": info.hits, "misses": info.misses, "size": info.currsize, "maxsize": info.maxsize}
 
 
 def get_latest_issue(docs_dir: Path) -> dict | None:
@@ -205,10 +195,11 @@ def get_next_issue_number() -> int:
 
 
 __all__ = [
-    "ContentLoadError",
     "safe_resolve_path",
     "load_issue",
     "load_all_issues",
+    "clear_cache",
+    "get_cache_info",
     "get_latest_issue",
     "get_issue_count",
     "get_next_issue_number",

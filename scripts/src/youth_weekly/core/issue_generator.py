@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import logging
+import threading
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -19,10 +20,35 @@ logger = logging.getLogger(__name__)
 # 周刊存放目录
 ISSUES_DIR = ROOT_DIR / "docs" / "issues"
 
+# 期号缓存（线程安全）
+_issue_number_cache: dict[str, int] = {}
+_cache_lock = threading.Lock()
 
-def get_next_issue_number() -> int:
-    """获取下一期期号(模块级函数,供外部调用)"""
-    return IssueGenerator()._get_next_issue_number()
+
+def get_next_issue_number(issues_dir: Path | None = None) -> int:
+    """
+    获取下一期期号(模块级函数,供外部调用)
+
+    Args:
+        issues_dir: 周刊存放目录,默认使用 ISSUES_DIR
+
+    Returns:
+        下一期期号
+    """
+    target_dir = issues_dir or ISSUES_DIR
+    return IssueGenerator(issues_dir=target_dir).get_next_issue_number()
+
+
+def clear_issue_number_cache(issues_dir: Path | None = None) -> None:
+    """
+    清除期号缓存(生成新期后调用)
+
+    Args:
+        issues_dir: 周刊存放目录,默认使用 ISSUES_DIR
+    """
+    cache_key = str(issues_dir or ISSUES_DIR)
+    with _cache_lock:
+        _issue_number_cache.pop(cache_key, None)
 
 
 class IssueGenerator:
@@ -50,7 +76,7 @@ class IssueGenerator:
             return None
 
         # 1. 确定期号
-        issue_number = self._get_next_issue_number()
+        issue_number = self.get_next_issue_number()
         issue_slug = f"{issue_number:03d}"
         issue_dir = self.issues_dir / issue_slug
         issue_dir.mkdir(parents=True, exist_ok=True)
@@ -76,14 +102,34 @@ class IssueGenerator:
 
         return issue_dir
 
-    def _get_next_issue_number(self) -> int:
-        """获取下一期期号"""
+    def get_next_issue_number(self) -> int:
+        """
+        获取下一期期号(带缓存机制)
+
+        Returns:
+            下一期期号
+        """
+        cache_key = str(self.issues_dir)
+
+        # 尝试从缓存获取
+        with _cache_lock:
+            if cache_key in _issue_number_cache:
+                return _issue_number_cache[cache_key]
+
+        # 缓存未命中，计算期号
         max_num = 0
         if self.issues_dir.exists():
             for d in self.issues_dir.iterdir():
                 if d.is_dir() and d.name.isdigit():
                     max_num = max(max_num, int(d.name))
-        return max_num + 1
+
+        next_num = max_num + 1
+
+        # 写入缓存
+        with _cache_lock:
+            _issue_number_cache[cache_key] = next_num
+
+        return next_num
 
     def _build_frontmatter(
         self,

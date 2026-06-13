@@ -3,15 +3,10 @@
 插件系统测试
 """
 
-import sys
-from pathlib import Path
-
 import pytest
 
-# 支持直接执行时找到 src 模块
-_script_dir = Path(__file__).parent.parent
-if str(_script_dir / "src") not in sys.path:
-    sys.path.insert(0, str(_script_dir / "src"))
+# 导入插件模块以触发注册
+from youth_weekly.plugins import example  # noqa: F401
 
 
 class TestPluginRegistry:
