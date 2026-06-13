@@ -20,7 +20,6 @@ class TestPluginRegistry:
     def test_registry_exists(self):
         """测试插件存在性检查"""
         from youth_weekly.plugin import Registry
-        from youth_weekly.plugins import example
 
         # 至少 example 插件应该被注册
         assert Registry.exists("example")
@@ -28,7 +27,6 @@ class TestPluginRegistry:
     def test_registry_get(self):
         """测试获取插件"""
         from youth_weekly.plugin import Registry
-        from youth_weekly.plugins import example
 
         plugin = Registry.get("example")
         assert plugin is not None
@@ -44,7 +42,6 @@ class TestPluginRegistry:
     def test_registry_list(self):
         """测试列出插件"""
         from youth_weekly.plugin import Registry
-        from youth_weekly.plugins import example
 
         names = Registry.list_names()
         assert isinstance(names, list)
@@ -53,7 +50,6 @@ class TestPluginRegistry:
     def test_registry_metadata(self):
         """测试获取元数据"""
         from youth_weekly.plugin import Registry
-        from youth_weekly.plugins import example
 
         metadata = Registry.list_metadata()
         assert isinstance(metadata, list)
@@ -65,7 +61,6 @@ class TestPluginRegistry:
     def test_execute_plugin_success(self):
         """测试成功执行插件"""
         from youth_weekly.plugin import Registry
-        from youth_weekly.plugins import example
 
         result = Registry.execute_plugin("example", {"message": "Hello", "repeat": 3})
         assert result["status"] == "success"
@@ -142,7 +137,6 @@ class TestPluginExecution:
     def test_example_plugin(self):
         """测试示例插件"""
         from youth_weekly.plugin import Registry
-        from youth_weekly.plugins import example
 
         plugin = Registry.get("example")
         result = plugin.execute({"message": "Test", "repeat": 1})
@@ -152,7 +146,6 @@ class TestPluginExecution:
     def test_hello_world_plugin(self):
         """测试 Hello World 插件"""
         from youth_weekly.plugin import Registry
-        from youth_weekly.plugins import example
 
         plugin = Registry.get("hello_world")
         result = plugin.execute()

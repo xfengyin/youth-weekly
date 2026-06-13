@@ -19,16 +19,24 @@ _SCRIPT_DIR = Path(__file__).resolve().parent.parent
 if str(_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR))
 
-from youth_weekly.core.config import (
+from youth_weekly.core.config import (  # noqa: E402
     get_docs_dir,
     get_exclude_plugins,
     get_output_dir,
     load_config,
 )
-from youth_weekly.core.content import load_all_issues
-from youth_weekly.core.logger import get_logger, setup_logger
-from youth_weekly.plugin import Registry
-from youth_weekly.plugins import example, issue_index, search_index, stats  # noqa: F401
+from youth_weekly.core.content import load_all_issues  # noqa: E402
+from youth_weekly.core.logger import get_logger, setup_logger  # noqa: E402
+from youth_weekly.plugin import Registry  # noqa: E402
+from youth_weekly.plugins import (  # noqa: E402, F401
+    example,
+    issue_index,
+    search_index,
+    stats,
+    rss,
+    collect,
+    issue,
+)
 
 
 def cmd_generate(args: argparse.Namespace) -> int:
@@ -87,6 +95,75 @@ def cmd_config(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_collect(args: argparse.Namespace) -> int:
+    """执行内容采集"""
+    logger = get_logger("youth_weekly.cli")
+    plugin = Registry.get("collect")
+    if plugin is None:
+        logger.error("Collect plugin not found")
+        return 1
+
+    params = {}
+    if args.sources:
+        params["sources_path"] = args.sources
+    if args.output:
+        params["output_path"] = args.output
+
+    result = plugin.execute(params)
+    logger.info(
+        "Collected %d items, curated %d items",
+        result.get("collected", 0),
+        result.get("curated", 0),
+    )
+    return 0
+
+
+def cmd_issue(args: argparse.Namespace) -> int:
+    """生成新一期周刊"""
+    logger = get_logger("youth_weekly.cli")
+    plugin = Registry.get("issue")
+    if plugin is None:
+        logger.error("Issue plugin not found")
+        return 1
+
+    params = {}
+    if args.curated:
+        params["curated_path"] = args.curated
+    if args.issues_dir:
+        params["issues_dir"] = args.issues_dir
+
+    result = plugin.execute(params)
+    if result.get("success"):
+        logger.info("Issue generated: %s", result.get("issue_dir"))
+        return 0
+    else:
+        logger.error("Failed to generate issue: %s", result.get("error"))
+        return 1
+
+
+def cmd_rss(args: argparse.Namespace) -> int:
+    """生成 RSS feed"""
+    logger = get_logger("youth_weekly.cli")
+    plugin = Registry.get("rss")
+    if plugin is None:
+        logger.error("RSS plugin not found")
+        return 1
+
+    params = {}
+    if args.docs_dir:
+        params["docs_dir"] = args.docs_dir
+    if args.output:
+        params["output_path"] = args.output
+
+    result = plugin.execute(params)
+    logger.info(
+        "RSS generated: %s (%d entries)",
+        result.get("rss_path"),
+        result.get("entry_count", 0),
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """构建 CLI 参数解析器"""
     parser = argparse.ArgumentParser(
@@ -95,17 +172,39 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
+    # generate 命令
     p_generate = sub.add_parser("generate", help="执行 OCP 插件生成静态文件")
     p_generate.add_argument("--output", "-o", help="输出目录")
     p_generate.add_argument("plugins", nargs="*", help="指定插件名(默认全部)")
     p_generate.set_defaults(func=cmd_generate)
 
+    # list 命令
     p_list = sub.add_parser("list", help="列出所有已注册插件")
     p_list.set_defaults(func=cmd_list)
 
+    # config 命令
     p_config = sub.add_parser("config", help="查看当前配置")
     p_config.set_defaults(func=cmd_config)
 
+    # collect 命令
+    p_collect = sub.add_parser("collect", help="执行内容采集")
+    p_collect.add_argument("--sources", "-s", help="内容源配置文件路径")
+    p_collect.add_argument("--output", "-o", help="输出文件路径")
+    p_collect.set_defaults(func=cmd_collect)
+
+    # issue 命令
+    p_issue = sub.add_parser("issue", help="生成新一期周刊")
+    p_issue.add_argument("--curated", "-c", help="策展内容文件路径")
+    p_issue.add_argument("--issues-dir", "-d", help="周刊输出目录")
+    p_issue.set_defaults(func=cmd_issue)
+
+    # rss 命令
+    p_rss = sub.add_parser("rss", help="生成 RSS feed")
+    p_rss.add_argument("--docs-dir", "-d", help="文档根目录")
+    p_rss.add_argument("--output", "-o", help="输出文件路径")
+    p_rss.set_defaults(func=cmd_rss)
+
+    # 日志级别参数
     p_log = parser.add_argument_group("logging")
     p_log.add_argument(
         "--log-level",

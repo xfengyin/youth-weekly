@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from src import (
+from youth_weekly.core.content import (
     get_issue_count,
     get_latest_issue,
     load_all_issues,
