@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: 'latest'
+        enable-cache: true
+        cache-dependency-glob: 'scripts/uv.lock'
+
+    - name: Install dependencies
+      working-directory: scripts
+      run: |
+        uv sync --all-extras
+
+    - name: Run tests
+      working-directory: scripts
+      run: |
+        uv run pytest --cov=youth_weekly --cov-report=xml --cov-report=term
+
+    - name: Build package
+      working-directory: scripts
+      run: |
+        uv build
+
+    - name: Extract release notes
+      id: extract
+      run: |
+        # 从 CHANGELOG.md 提取当前版本的更新日志
+        VERSION=${GITHUB_REF#refs/tags/v}
+        if [ -f CHANGELOG.md ]; then
+          # 提取版本对应的更新内容
+          awk "/## \[${VERSION}\]/{flag=1; next} /## \[/{flag=0} flag" CHANGELOG.md > release_notes.txt
+        else
+          echo "Release ${VERSION}" > release_notes.txt
+        fi
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: release_notes.txt
+        files: |
+          scripts/dist/*.tar.gz
+          scripts/dist/*.whl
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish to PyPI (optional)
+      if: contains(github.ref, 'tags/')
+      working-directory: scripts
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: |
+        # 仅在配置了 PyPI token 时发布
+        if [ -n "$TWINE_PASSWORD" ]; then
+          uv pip install twine
+          twine upload dist/*
+        else
+          echo "PyPI token not configured, skipping publish"
+        fi
