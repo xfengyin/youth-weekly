@@ -38,21 +38,26 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: '3.14'
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "scripts/uv.lock"
 
       - name: Install dependencies
         run: |
           cd web
           npm install
           cd ../scripts
-          pip install -r requirements.txt
+          uv sync --no-dev
 
       - name: Generate content
         run: |
           cd scripts
-          python generate_static_ocp.py
-          python generate_rss.py
+          uv run youth-weekly generate
+          uv run youth-weekly rss
 
       - name: Build site
         run: |
