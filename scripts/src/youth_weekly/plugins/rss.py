@@ -73,7 +73,7 @@ class RssPlugin(BasePlugin):
                 try:
                     pub_date = datetime.strptime(issue["date"], "%Y-%m-%d")
                     fe.published(pub_date.isoformat() + "Z")
-                except ValueError, TypeError:
+                except (ValueError, TypeError):
                     pass
 
         # 写入文件

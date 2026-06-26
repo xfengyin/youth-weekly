@@ -21,7 +21,7 @@ def safe_int(s: str | None, default: int = 0) -> int:
         return default
     try:
         return int(s)
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         return default
 
 
@@ -40,7 +40,7 @@ def safe_float(s: str | float | None, default: float = 0.0) -> float:
         return default
     try:
         return float(s)
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         return default
 
 

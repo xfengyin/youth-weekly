@@ -105,7 +105,7 @@ class BuildConfig(BaseModel):
     """构建配置"""
 
     node_version: str = "20"
-    python_version: str = "3.14"
+    python_version: str = "3.12"
     output_dir: str = "web/out"
 
 
