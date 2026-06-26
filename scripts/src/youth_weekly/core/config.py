@@ -243,6 +243,13 @@ def get_docs_dir() -> Path:
     return ROOT_DIR / docs_path
 
 
+def get_issues_dir() -> Path:
+    """获取周刊目录"""
+    config = load_config()
+    issues_path: str = config.paths.issues
+    return ROOT_DIR / issues_path
+
+
 def get_output_dir() -> Path:
     """获取输出目录"""
     config = load_config()
@@ -304,6 +311,7 @@ __all__ = [
     "get_site_url",
     "get_site_name",
     "get_docs_dir",
+    "get_issues_dir",
     "get_output_dir",
     "get_categories",
     "get_max_rss_items",
