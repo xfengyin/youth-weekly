@@ -43,7 +43,7 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "scripts/uv.lock"
 
-      - name: Install Python dependencies
+      - name: Install Python dependencies (uv)
         working-directory: scripts
         run: |
           uv sync --frozen
@@ -53,15 +53,17 @@ jobs:
         continue-on-error: true
         working-directory: scripts
         run: |
-          uv run youth-weekly collect || echo "collection_failed=true" >> $GITHUB_OUTPUT
+          uv run youth-weekly collect
 
       - name: Check if collected content exists
         id: content_check
         run: |
           if [ -f scripts/.curated_content.json ]; then
             echo "has_content=true" >> $GITHUB_OUTPUT
+            echo "Curated content found"
           else
             echo "has_content=false" >> $GITHUB_OUTPUT
+            echo "No curated content found"
           fi
 
       - name: Generate new weekly issue
@@ -80,9 +82,11 @@ jobs:
           git add docs/issues/
           if git diff --staged --quiet; then
             echo "no_changes=true" >> $GITHUB_OUTPUT
+            echo "No changes to commit"
           else
             git commit -m "📰 自动生成新一期周刊 [skip ci]"
             git push
+            echo "Changes committed and pushed"
           fi
 
       # 自动触发主站 deploy.yml 重新构建
