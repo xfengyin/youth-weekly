@@ -13,6 +13,7 @@ from typing import Any
 from youth_weekly.plugin.base import BasePlugin
 from youth_weekly.plugin.registry import register
 from youth_weekly.core.collectors import ContentItem
+from youth_weekly.core.config import get_curated_content_path, get_issues_dir
 from youth_weekly.core.issue_generator import IssueGenerator
 
 logger = logging.getLogger(__name__)
@@ -39,8 +40,12 @@ class IssuePlugin(BasePlugin):
             生成结果数据
         """
         params = params or {}
-        curated_path = Path(params.get("curated_path", "scripts/.curated_content.json"))
-        issues_dir = Path(params.get("issues_dir", "docs/issues"))
+        curated_path = Path(
+            params.get("curated_path", str(get_curated_content_path()))
+        )
+        issues_dir = Path(
+            params.get("issues_dir", str(get_issues_dir()))
+        )
 
         if not curated_path.exists():
             logger.error("Curated content not found. Run 'collect' first.")
