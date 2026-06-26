@@ -112,7 +112,7 @@ class RSSCollector(BaseCollector):
                     pub_date = datetime(*entry.published_parsed[:6]).strftime(
                         "%Y-%m-%d"
                     )
-                except ValueError, TypeError:
+                except (ValueError, TypeError):
                     pub_date = None
 
             items.append(
@@ -163,7 +163,7 @@ class HackerNewsCollector(BaseCollector):
             if "points" in score_text:
                 try:
                     score = int(score_text.split(" points")[0].split()[-1])
-                except ValueError, IndexError:
+                except (ValueError, IndexError):
                     score = 0
 
             if score < min_score:
