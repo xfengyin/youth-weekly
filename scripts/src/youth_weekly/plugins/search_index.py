@@ -41,7 +41,13 @@ class SearchIndexPlugin(BasePlugin):
         """
         params = params or {}
         docs_dir = Path(params.get("docs_dir", ""))
-        output_path = Path(params["output_path"]) if "output_path" in params else None
+        # 默认输出到 web/public/search-data.json:前端期望文件名为 search-data.json,
+        # 且 Next.js 会自动把 web/public/ 复制到 out/(部署产物)。
+        output_path = (
+            Path(params["output_path"])
+            if "output_path" in params
+            else Path("web/public/search-data.json")
+        )
 
         issues = params.get("issues") or load_all_issues(docs_dir, reverse=True)
 

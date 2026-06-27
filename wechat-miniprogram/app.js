@@ -32,6 +32,6 @@ App({
 
   globalData: {
     userInfo: null,
-    apiBaseUrl: 'https://youth-weekly.github.io/api'
+    apiBaseUrl: 'https://xfengyin.github.io/youth-weekly/api'
   }
 })

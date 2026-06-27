@@ -26,7 +26,7 @@ class TestPydanticModels:
     def test_site_config_defaults(self):
         config = SiteConfig()
         assert config.name == "青年周刊"
-        assert config.url == "https://youth-weekly.github.io"
+        assert config.url == "https://xfengyin.github.io/youth-weekly"
         assert config.language == "zh-CN"
 
     def test_app_config_defaults(self):

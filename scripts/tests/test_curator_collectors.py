@@ -79,9 +79,11 @@ class TestRSSCollector:
         from youth_weekly.core.collectors import RSSCollector
 
         collector = RSSCollector(delay=0)
-        with patch("youth_weekly.core.collectors.feedparser.parse") as mock:
-            mock.return_value = MagicMock(entries=[])
-            result = collector.collect({"url": "http://x", "name": "t"})
+        mock_resp = MagicMock(content=b"<rss></rss>")
+        with patch.object(collector, "_fetch_with_retry", return_value=mock_resp):
+            with patch("youth_weekly.core.collectors.feedparser.parse") as mock:
+                mock.return_value = MagicMock(entries=[])
+                result = collector.collect({"url": "http://x", "name": "t"})
         assert result == []
 
     def test_collect_with_items(self):
@@ -106,9 +108,13 @@ class TestRSSCollector:
             description="",
             published_parsed=(2026, 1, 1, 0, 0, 0, 0, 0, 0),
         )
-        with patch("youth_weekly.core.collectors.feedparser.parse") as mock:
-            mock.return_value = SimpleNamespace(entries=[entry])
-            result = collector.collect({"url": "http://x", "name": "t", "max_items": 5})
+        mock_resp = MagicMock(content=b"<rss></rss>")
+        with patch.object(collector, "_fetch_with_retry", return_value=mock_resp):
+            with patch("youth_weekly.core.collectors.feedparser.parse") as mock:
+                mock.return_value = SimpleNamespace(entries=[entry])
+                result = collector.collect(
+                    {"url": "http://x", "name": "t", "max_items": 5}
+                )
         assert len(result) == 1
         assert result[0].title == "Title"
         assert result[0].published_date == "2026-01-01"

@@ -101,20 +101,7 @@ export default function Footer() {
               <Heart className="w-4 h-4 mx-1 text-[#dd5b00]" />
               为年轻人创作
             </p>
-            <div className="flex space-x-6 text-sm">
-              <Link
-                href="/privacy/"
-                className="text-[#a39e98] dark:text-[#615d59] hover:text-[rgba(0,0,0,0.95)] dark:hover:text-[rgba(255,255,255,0.95)]"
-              >
-                隐私政策
-              </Link>
-              <Link
-                href="/terms/"
-                className="text-[#a39e98] dark:text-[#615d59] hover:text-[rgba(0,0,0,0.95)] dark:hover:text-[rgba(255,255,255,0.95)]"
-              >
-                使用条款
-              </Link>
-            </div>
+            {/* 隐私政策与使用条款页面尚未建立，待真正需要时再创建（YAGNI） */}
           </div>
         </div>
       </div>

@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from datetime import date, datetime
 from functools import lru_cache
 from pathlib import Path
@@ -35,8 +34,9 @@ def safe_resolve_path(base_dir: Path, target_name: str) -> Path | None:
         base_resolved = base_dir.resolve()
         target_path = (base_dir / target_name).resolve()
 
-        base_str = str(base_resolved) + os.sep
-        if not str(target_path).startswith(base_str) and target_path != base_resolved:
+        # 使用标准库 is_relative_to 替代手写字符串前缀匹配,杜绝边界绕过
+        if not target_path.is_relative_to(base_resolved):
+            logger.warning("Path traversal blocked: %s", target_path)
             return None
 
         return target_path
@@ -187,13 +187,6 @@ def get_issue_count(docs_dir: Path) -> int:
     return len(load_all_issues(docs_dir, reverse=False))
 
 
-def get_next_issue_number() -> int:
-    """获取下一期的期数(委托给 IssueGenerator 实现)"""
-    from .issue_generator import IssueGenerator
-
-    return IssueGenerator()._get_next_issue_number()
-
-
 __all__ = [
     "safe_resolve_path",
     "load_issue",
@@ -202,5 +195,4 @@ __all__ = [
     "get_cache_info",
     "get_latest_issue",
     "get_issue_count",
-    "get_next_issue_number",
 ]

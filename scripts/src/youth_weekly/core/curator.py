@@ -65,9 +65,10 @@ class ContentCurator:
             """)
         db.commit()
         cutoff = datetime.now() - timedelta(days=self.retention_days)
+        # SQLite CURRENT_TIMESTAMP 格式为 "YYYY-MM-DD HH:MM:SS",必须用相同格式比较
         db.execute(
             "DELETE FROM content_fingerprints WHERE created_at < ?",
-            (cutoff.isoformat(),),
+            (cutoff.strftime("%Y-%m-%d %H:%M:%S"),),
         )
         db.commit()
 

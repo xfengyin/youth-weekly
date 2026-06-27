@@ -49,7 +49,7 @@ class SiteConfig(BaseModel):
 
     name: str = "青年周刊"
     description: str = "为年轻人打造的内容聚合周刊"
-    url: str = "https://youth-weekly.github.io"
+    url: str = "https://xfengyin.github.io/youth-weekly"
     email: str = "contact@youth-weekly.com"
     language: str = "zh-CN"
 
@@ -189,11 +189,13 @@ def load_config(force_reload: bool = False) -> AppConfig:
             _config = AppConfig.model_validate(raw_config or {})
             logger.info("Config loaded successfully")
         except FileNotFoundError:
+            # 配置文件缺失属于可降级场景，回退默认配置并告警
             logger.warning("Config file not found, using defaults")
             _config = AppConfig()
-        except Exception as exc:
+        except (yaml.YAMLError, ValidationError) as exc:
+            # YAML 语法错误 / Pydantic 校验错误属于致命问题，必须抛出
             logger.error("Failed to load config: %s", exc)
-            _config = AppConfig()
+            raise
 
         return _config
 
@@ -228,7 +230,7 @@ def get_config_value(key: str, default: Any = None) -> Any:
 
 def get_site_url() -> str:
     """获取站点 URL"""
-    return str(get_config_value("site.url", "https://youth-weekly.github.io"))
+    return str(get_config_value("site.url", "https://xfengyin.github.io/youth-weekly"))
 
 
 def get_site_name() -> str:

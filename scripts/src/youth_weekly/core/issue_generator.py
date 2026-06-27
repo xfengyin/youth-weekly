@@ -20,8 +20,7 @@ logger = logging.getLogger(__name__)
 # 周刊存放目录
 ISSUES_DIR = ROOT_DIR / "docs" / "issues"
 
-# 期号缓存（线程安全）
-_issue_number_cache: dict[str, int] = {}
+# 期号计算锁（保证扫描+计算原子性）
 _cache_lock = threading.Lock()
 
 
@@ -37,18 +36,6 @@ def get_next_issue_number(issues_dir: Path | None = None) -> int:
     """
     target_dir = issues_dir or ISSUES_DIR
     return IssueGenerator(issues_dir=target_dir).get_next_issue_number()
-
-
-def clear_issue_number_cache(issues_dir: Path | None = None) -> None:
-    """
-    清除期号缓存(生成新期后调用)
-
-    Args:
-        issues_dir: 周刊存放目录,默认使用 ISSUES_DIR
-    """
-    cache_key = str(issues_dir or ISSUES_DIR)
-    with _cache_lock:
-        _issue_number_cache.pop(cache_key, None)
 
 
 class IssueGenerator:
@@ -104,32 +91,18 @@ class IssueGenerator:
 
     def get_next_issue_number(self) -> int:
         """
-        获取下一期期号(带缓存机制)
+        获取下一期期号(扫描目录实时计算,持锁保证原子性)
 
         Returns:
             下一期期号
         """
-        cache_key = str(self.issues_dir)
-
-        # 尝试从缓存获取
         with _cache_lock:
-            if cache_key in _issue_number_cache:
-                return _issue_number_cache[cache_key]
-
-        # 缓存未命中，计算期号
-        max_num = 0
-        if self.issues_dir.exists():
-            for d in self.issues_dir.iterdir():
-                if d.is_dir() and d.name.isdigit():
-                    max_num = max(max_num, int(d.name))
-
-        next_num = max_num + 1
-
-        # 写入缓存
-        with _cache_lock:
-            _issue_number_cache[cache_key] = next_num
-
-        return next_num
+            max_num = 0
+            if self.issues_dir.exists():
+                for d in self.issues_dir.iterdir():
+                    if d.is_dir() and d.name.isdigit():
+                        max_num = max(max_num, int(d.name))
+            return max_num + 1
 
     def _build_frontmatter(
         self,
