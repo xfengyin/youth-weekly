@@ -35,8 +35,9 @@ class TestContentItem:
 class TestRSSCollector:
     """测试 RSS 采集器"""
 
+    @patch("youth_weekly.core.collectors.RSSCollector._fetch_with_retry")
     @patch("youth_weekly.core.collectors.feedparser.parse")
-    def test_collect_success(self, mock_parse):
+    def test_collect_success(self, mock_parse, mock_fetch):
         """测试成功采集 RSS"""
         # 模拟 feedparser 返回的数据
         mock_feed = MagicMock()
@@ -50,6 +51,7 @@ class TestRSSCollector:
         mock_entry.published_parsed = None
         mock_feed.entries = [mock_entry]
         mock_parse.return_value = mock_feed
+        mock_fetch.return_value = MagicMock(content=b"<rss></rss>")
 
         collector = RSSCollector(delay=0)
         result = collector.collect(
@@ -66,8 +68,9 @@ class TestRSSCollector:
         assert result[0].url == "https://example.com/article"
         assert result[0].category == "tech"
 
+    @patch("youth_weekly.core.collectors.RSSCollector._fetch_with_retry")
     @patch("youth_weekly.core.collectors.feedparser.parse")
-    def test_collect_with_published_date(self, mock_parse):
+    def test_collect_with_published_date(self, mock_parse, mock_fetch):
         """测试带发布日期的 RSS"""
         mock_feed = MagicMock()
         mock_entry = MagicMock()
@@ -81,6 +84,7 @@ class TestRSSCollector:
         mock_entry.published_parsed = (2024, 1, 15, 0, 0, 0, 0, 0, 0)
         mock_feed.entries = [mock_entry]
         mock_parse.return_value = mock_feed
+        mock_fetch.return_value = MagicMock(content=b"<rss></rss>")
 
         collector = RSSCollector(delay=0)
         result = collector.collect({"url": "https://example.com/rss"})
@@ -88,22 +92,26 @@ class TestRSSCollector:
         assert len(result) == 1
         assert result[0].published_date == "2024-01-15"
 
+    @patch("youth_weekly.core.collectors.RSSCollector._fetch_with_retry")
     @patch("youth_weekly.core.collectors.feedparser.parse")
-    def test_collect_empty_feed(self, mock_parse):
+    def test_collect_empty_feed(self, mock_parse, mock_fetch):
         """测试空 RSS 源"""
         mock_feed = MagicMock()
         mock_feed.entries = []
         mock_parse.return_value = mock_feed
+        mock_fetch.return_value = MagicMock(content=b"<rss></rss>")
 
         collector = RSSCollector(delay=0)
         result = collector.collect({"url": "https://example.com/rss"})
 
         assert result == []
 
+    @patch("youth_weekly.core.collectors.RSSCollector._fetch_with_retry")
     @patch("youth_weekly.core.collectors.feedparser.parse")
-    def test_collect_parse_error(self, mock_parse):
+    def test_collect_parse_error(self, mock_parse, mock_fetch):
         """测试 RSS 解析错误"""
         mock_parse.side_effect = Exception("Parse error")
+        mock_fetch.return_value = MagicMock(content=b"<rss></rss>")
 
         collector = RSSCollector(delay=0)
         result = collector.collect({"url": "https://example.com/rss"})
@@ -114,9 +122,11 @@ class TestRSSCollector:
 class TestHackerNewsCollector:
     """测试 Hacker News 采集器"""
 
+    @patch("youth_weekly.core.collectors.HackerNewsCollector._fetch_with_retry")
     @patch("youth_weekly.core.collectors.feedparser.parse")
-    def test_collect_with_score_filter(self, mock_parse):
+    def test_collect_with_score_filter(self, mock_parse, mock_fetch):
         """测试分数过滤"""
+        mock_fetch.return_value = MagicMock(content=b"<rss></rss>")
         mock_feed = MagicMock()
 
         # 高分条目
@@ -152,9 +162,11 @@ class TestHackerNewsCollector:
         assert result[0].title == "High Score Article"
         assert result[0].score == 100
 
+    @patch("youth_weekly.core.collectors.HackerNewsCollector._fetch_with_retry")
     @patch("youth_weekly.core.collectors.feedparser.parse")
-    def test_collect_max_items_limit(self, mock_parse):
+    def test_collect_max_items_limit(self, mock_parse, mock_fetch):
         """测试最大条目数限制"""
+        mock_fetch.return_value = MagicMock(content=b"<rss></rss>")
         mock_feed = MagicMock()
         entries = []
         for i in range(20):

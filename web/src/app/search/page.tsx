@@ -25,7 +25,7 @@ export default function SearchPage() {
     let cancelled = false
     setIsLoading(true)
 
-    fetch('/search-data.json')
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/search-data.json`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch search data')
         return res.json()

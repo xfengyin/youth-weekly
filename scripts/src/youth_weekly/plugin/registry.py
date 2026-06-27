@@ -230,4 +230,26 @@ def register(
     return Registry.register(name, allow_override)
 
 
-__all__ = ["Registry", "register"]
+def create_registry() -> Registry:
+    """
+    创建独立的 Registry 实例(用于测试隔离)
+
+    返回的实例拥有独立的 _plugins / _instances / _lock,
+    与全局 Registry 互不影响。复用全部类级方法,无需改动现有 API。
+
+    实现思路:每次调用创建一个 Registry 子类,使其类级可变属性
+    (_plugins/_instances/_lock)在子类上独立存在;继承的类方法通过
+    cls 访问子类状态,从而实现实例间隔离(满足"开闭原则",不修改主流程)。
+
+    Returns:
+        拥有独立状态的 Registry 实例
+    """
+    class _IsolatedRegistry(Registry):
+        _plugins: dict[str, Type[BasePlugin]] = {}
+        _instances: dict[str, BasePlugin] = {}
+        _lock = threading.RLock()
+
+    return _IsolatedRegistry()
+
+
+__all__ = ["Registry", "register", "create_registry"]

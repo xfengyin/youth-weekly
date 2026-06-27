@@ -93,63 +93,61 @@ class CollectPlugin(BasePlugin):
         if not all_items:
             return {"collected": 0, "curated": 0}
 
-        # 策展
+        # 策展:使用 with 语句确保 SQLite 连接在任何情况下都被关闭
         dedup_config = sources_config.get("dedup", {})
-        curator = ContentCurator(
+        with ContentCurator(
             dedup_enabled=dedup_config.get("enabled", True),
             dedup_db_path=str(
                 Path(dedup_config.get("db_path", str(get_dedup_db_path())))
             ),
             retention_days=dedup_config.get("retention_days", 30),
-        )
+        ) as curator:
+            unique_items = curator.deduplicate(all_items)
+            if not unique_items:
+                logger.info("All items were duplicates")
+                return {"collected": len(all_items), "curated": 0}
 
-        unique_items = curator.deduplicate(all_items)
-        if not unique_items:
-            logger.info("All items were duplicates")
-            curator.close()
-            return {"collected": len(all_items), "curated": 0}
+            scored_items = curator.score_items(unique_items)
+            category_config = sources_config.get("categories", {})
+            categorized = curator.categorize(scored_items, category_config)
 
-        scored_items = curator.score_items(unique_items)
-        category_config = sources_config.get("categories", {})
-        categorized = curator.categorize(scored_items, category_config)
+            # 选择 Top items
+            final_items = {}
+            for cat_id, items in categorized.items():
+                cat_cfg = category_config.get(cat_id, {})
+                max_items = cat_cfg.get("max_items", 5)
+                final_items[cat_id] = curator.select_top_items(items, max_items)
 
-        # 选择 Top items
-        final_items = {}
-        for cat_id, items in categorized.items():
-            cat_cfg = category_config.get(cat_id, {})
-            max_items = cat_cfg.get("max_items", 5)
-            final_items[cat_id] = curator.select_top_items(items, max_items)
+            # 保存结果
+            output_data = {}
+            for cat_id, items in final_items.items():
+                output_data[cat_id] = [
+                    {
+                        "title": item.title,
+                        "url": item.url,
+                        "description": item.description,
+                        "source": item.source,
+                        "score": item.score,
+                    }
+                    for item in items
+                ]
 
-        # 保存结果
-        output_data = {}
-        for cat_id, items in final_items.items():
-            output_data[cat_id] = [
-                {
-                    "title": item.title,
-                    "url": item.url,
-                    "description": item.description,
-                    "source": item.source,
-                    "score": item.score,
-                }
-                for item in items
-            ]
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(
+                json.dumps(output_data, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
 
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(
-            json.dumps(output_data, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+            total = sum(len(items) for items in final_items.values())
+            logger.info(
+                "Final curated: %d items in %d categories", total, len(final_items)
+            )
 
-        total = sum(len(items) for items in final_items.values())
-        logger.info("Final curated: %d items in %d categories", total, len(final_items))
-
-        curator.close()
-
-        return {
-            "collected": len(all_items),
-            "curated": total,
-            "output_path": str(output_path),
-        }
+            return {
+                "collected": len(all_items),
+                "curated": total,
+                "output_path": str(output_path),
+            }
 
 
 __all__ = ["CollectPlugin"]

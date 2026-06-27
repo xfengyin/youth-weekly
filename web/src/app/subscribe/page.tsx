@@ -2,19 +2,20 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Mail, Rss, Bell, CheckCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Mail, Rss, Bell, AlertCircle } from 'lucide-react'
 
 export default function SubscribePage() {
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'info' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (email && email.includes('@')) {
-      setStatus('success')
-      setMessage('订阅成功！感谢您的关注，我们会将最新周刊发送到您的邮箱。')
+      // 订阅 API 尚未实现，先用提示信息如实告知用户，避免欺骗式“订阅成功”
+      setStatus('info')
+      setMessage('订阅功能即将上线，敬请期待。')
       setEmail('')
     } else {
       setStatus('error')
@@ -81,10 +82,10 @@ export default function SubscribePage() {
               </button>
             </form>
 
-            {status === 'success' && (
-              <div className="callout mt-5 !bg-[rgba(26,174,57,0.06)] !border-[rgba(26,174,57,0.15)]">
-                <CheckCircle className="w-5 h-5 text-[#1aae39] flex-shrink-0" />
-                <p className="callout-content text-[#1aae39]">{message}</p>
+            {status === 'info' && (
+              <div className="callout mt-5 !bg-[rgba(0,117,222,0.06)] !border-[rgba(0,117,222,0.15)]">
+                <Bell className="w-5 h-5 text-[#0075de] flex-shrink-0" />
+                <p className="callout-content text-[#0075de]">{message}</p>
               </div>
             )}
 
@@ -118,14 +119,14 @@ export default function SubscribePage() {
 
             <div className="bg-[#f6f5f4] dark:bg-[rgba(255,255,255,0.06)] rounded-notion p-3.5 mb-5 border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
               <code className="text-sm text-[#615d59] dark:text-[#a39e98] break-all font-mono">
-                https://youth-weekly.github.io/rss.xml
+                {`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`}
               </code>
             </div>
 
             <button
               onClick={() => {
                 navigator.clipboard.writeText(
-                  'https://youth-weekly.github.io/rss.xml'
+                  `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`
                 )
               }}
               className="w-full btn-secondary"

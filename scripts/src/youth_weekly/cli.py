@@ -44,27 +44,38 @@ def cmd_generate(args: argparse.Namespace) -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     issues = load_all_issues(docs_dir, reverse=True)
-    results: dict[str, object] = {}
+    # 汇总各插件成功/失败状态,单个插件异常不影响其他插件执行
+    results: dict[str, dict[str, object]] = {}
     for name in plugins:
         if name in exclude:
             logger.info("Skipping excluded plugin: %s", name)
             continue
-        plugin = Registry.get(name)
-        if plugin is None:
+        if Registry.get(name) is None:
             logger.warning("Plugin not found: %s", name)
+            results[name] = {"status": "not_found"}
             continue
-        logger.info("Executing plugin: %s", name)
-        result = plugin.execute(
-            {
-                "docs_dir": docs_dir,
-                "output_path": output_dir / f"{name}.json",
-                "issues": issues,
-            }
-        )
-        results[name] = result
-        logger.info("Plugin %s completed", name)
 
-    logger.info("All plugins completed (%d total)", len(results))
+        params = {
+            "docs_dir": docs_dir,
+            "output_path": output_dir / f"{name}.json",
+            "issues": issues,
+        }
+        # 复用 Registry.execute_plugin 的异常包装与日志
+        try:
+            result = Registry.execute_plugin(name, params)
+            results[name] = {"status": "success", "result": result}
+        except Exception as exc:
+            # execute_plugin 已记录 error 日志(含堆栈),此处仅汇总状态
+            results[name] = {"status": "failed", "error": str(exc)}
+
+    succeeded = sum(1 for r in results.values() if r.get("status") == "success")
+    failed = sum(1 for r in results.values() if r.get("status") == "failed")
+    logger.info(
+        "Plugins summary: %d succeeded, %d failed (%d total)",
+        succeeded,
+        failed,
+        len(results),
+    )
     return 0
 
 

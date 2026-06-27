@@ -88,8 +88,14 @@ class RSSCollector(BaseCollector):
 
         logger.info("Collecting RSS from %s (%s)", name, url)
 
+        # 复用基类超时+重试机制获取响应,再交给 feedparser 解析字节内容
+        resp = self._fetch_with_retry(url)
+        if resp is None:
+            logger.warning("Failed to fetch RSS feed: %s", url)
+            return []
+
         try:
-            feed = feedparser.parse(url)
+            feed = feedparser.parse(resp.content)
         except Exception as exc:
             logger.error("Failed to parse RSS feed %s: %s", url, exc)
             return []
@@ -127,7 +133,6 @@ class RSSCollector(BaseCollector):
             )
 
         logger.info("Collected %d items from %s", len(items), name)
-        time.sleep(self.delay)
         return items
 
 
@@ -145,8 +150,15 @@ class HackerNewsCollector(BaseCollector):
 
         items: list[ContentItem] = []
         rss_url = "https://hnrss.org/frontpage"
+
+        # 复用基类超时+重试机制获取响应,再交给 feedparser 解析字节内容
+        resp = self._fetch_with_retry(rss_url)
+        if resp is None:
+            logger.warning("Failed to fetch HN feed: %s", rss_url)
+            return []
+
         try:
-            feed = feedparser.parse(rss_url)
+            feed = feedparser.parse(resp.content)
         except Exception as exc:
             logger.error("Failed to parse HN feed: %s", exc)
             return []
@@ -186,7 +198,6 @@ class HackerNewsCollector(BaseCollector):
                 break
 
         logger.info("Collected %d items from %s", len(items), name)
-        time.sleep(self.delay)
         return items
 
 
@@ -232,7 +243,6 @@ class GitHubTrendingCollector(BaseCollector):
         ]
 
         logger.info("Collected %d items from %s", len(items), name)
-        time.sleep(self.delay)
         return items
 
 
