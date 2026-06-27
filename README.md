@@ -51,7 +51,7 @@
 - 🎓 **毕业季特别策划** — 职场生存指南与面试技巧
 - 🎮 **《黑神话：悟空》** — 最终前瞻，离发售还有3个月
 
-📖 [阅读第6期全文](./docs/issues/006/README.md)
+📖 [阅读第6期全文](https://xfengyin.github.io/youth-weekly/issues/006/)
 
 ---
 
