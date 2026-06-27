@@ -8,10 +8,16 @@ on:
 permissions:
   contents: write
 
+# 并发控制：同一 tag 只运行一个发布
+concurrency:
+  group: "release-${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
     - name: Checkout
@@ -69,7 +75,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Publish to PyPI (optional)
-      if: contains(github.ref, 'tags/')
       working-directory: scripts
       env:
         TWINE_USERNAME: __token__
