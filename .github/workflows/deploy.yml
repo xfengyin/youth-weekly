@@ -80,6 +80,11 @@ jobs:
             cp -r docs/. output/ 2>/dev/null || true
             echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>青年周刊</title></head><body><p>Build required.</p></body></html>' > output/index.html
           fi
+          # 复制 RSS 文件到网站根目录
+          if [ -f "scripts/dist/rss.xml" ]; then
+            echo "📰 Copying RSS feed"
+            cp scripts/dist/rss.xml output/rss.xml
+          fi
           touch output/.nojekyll
 
       - name: Verify deployment
