@@ -17,6 +17,7 @@ from youth_weekly.plugin.registry import register
 from youth_weekly.core.collectors import get_collector
 from youth_weekly.core.curator import ContentCurator
 from youth_weekly.core.config import (
+    ROOT_DIR,
     get_content_sources_path,
     get_curated_content_path,
     get_dedup_db_path,
@@ -95,11 +96,15 @@ class CollectPlugin(BasePlugin):
 
         # 策展:使用 with 语句确保 SQLite 连接在任何情况下都被关闭
         dedup_config = sources_config.get("dedup", {})
+        raw_db_path = dedup_config.get("db_path", str(get_dedup_db_path()))
+        db_path = (
+            ROOT_DIR / raw_db_path
+            if not Path(raw_db_path).is_absolute()
+            else Path(raw_db_path)
+        )
         with ContentCurator(
             dedup_enabled=dedup_config.get("enabled", True),
-            dedup_db_path=str(
-                Path(dedup_config.get("db_path", str(get_dedup_db_path())))
-            ),
+            dedup_db_path=str(db_path),
             retention_days=dedup_config.get("retention_days", 30),
         ) as curator:
             unique_items = curator.deduplicate(all_items)

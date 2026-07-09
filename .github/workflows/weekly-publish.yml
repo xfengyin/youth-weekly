@@ -5,10 +5,15 @@ on:
     # 每周一 UTC 13:00 (北京时间 21:00) 自动采集并发布
     - cron: '0 13 * * 1'
   workflow_dispatch:
-    description: '手动触发周刊采集与发布'
+    inputs:
+      reason:
+        description: '手动触发原因'
+        required: false
+        default: '手动触发周刊采集与发布'
 
 # 最小化权限：只给必要的权限
 permissions:
+  actions: write
   contents: write
   pages: write
   id-token: write
@@ -48,12 +53,16 @@ jobs:
         run: |
           uv sync --frozen
 
+      - name: Ensure output directories exist
+        run: |
+          mkdir -p scripts/dist
+
       - name: Collect content from sources
         id: collect
-        continue-on-error: true
         working-directory: scripts
         run: |
-          uv run youth-weekly collect || echo "collection_failed=true" >> $GITHUB_OUTPUT
+          uv run youth-weekly collect
+          echo "collection_done=true" >> $GITHUB_OUTPUT
 
       - name: Check if collected content exists
         id: content_check
@@ -88,21 +97,26 @@ jobs:
       # 自动触发主站 deploy.yml 重新构建
       - name: Trigger site rebuild
         if: steps.commit.outputs.no_changes != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          gh api \
+            --method POST \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
-            -d '{"ref":"main"}'
+            "/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" \
+            -f ref="${{ github.ref_name }}"
 
       # 通知用户结果（成功/失败/无新内容）
       - name: Notify result
         if: always()
         run: |
-          if [ "${{ steps.commit.outputs.no_changes }}" = "true" ]; then
-            echo "ℹ️ No new content to publish this week"
+          if [ "${{ steps.collect.outcome }}" = "failure" ]; then
+            echo "❌ Content collection failed; check the 'Collect content from sources' step logs"
+            exit 1
           elif [ "${{ steps.content_check.outputs.has_content }}" = "false" ]; then
-            echo "⚠️ Content collection failed, no new issue generated"
+            echo "⚠️ No curated content available, skipping issue generation"
+          elif [ "${{ steps.commit.outputs.no_changes }}" = "true" ]; then
+            echo "ℹ️ No new content to publish this week"
           else
             echo "✅ New weekly issue published and site rebuild triggered"
           fi
