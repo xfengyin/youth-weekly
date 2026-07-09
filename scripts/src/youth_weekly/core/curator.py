@@ -9,6 +9,7 @@ import logging
 import sqlite3
 from collections import defaultdict
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 from .collectors import ContentItem
@@ -48,7 +49,11 @@ class ContentCurator:
     def _get_db(self) -> sqlite3.Connection:
         """获取数据库连接(懒加载)"""
         if self._db is None:
-            self._db = sqlite3.connect(self.dedup_db_path)
+            db_path = Path(self.dedup_db_path)
+            if not db_path.is_absolute():
+                db_path = Path.cwd() / db_path
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            self._db = sqlite3.connect(str(db_path))
             self._db.execute("PRAGMA journal_mode=WAL")
         return self._db
 
