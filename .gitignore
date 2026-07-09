@@ -79,3 +79,7 @@ scripts/dist/
 # Content dedup database
 .content_dedup.db
 scripts/.content_dedup.db
+
+# Curated content (transient)
+.curated_content.json
+scripts/.curated_content.json
