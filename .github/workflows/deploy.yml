@@ -110,7 +110,7 @@ jobs:
     steps:
       # 配置 Pages（即使已有配置也安全）
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
         with:
           # 启用 Pages（自动 enablement）
           enablement: true
