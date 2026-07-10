@@ -60,6 +60,8 @@ jobs:
       - name: Collect content from sources
         id: collect
         working-directory: scripts
+        env:
+          YOUTH_WEEKLY_LLM_API_KEY: ${{ secrets.YOUTH_WEEKLY_LLM_API_KEY }}
         run: |
           uv run youth-weekly collect
           echo "collection_done=true" >> $GITHUB_OUTPUT
@@ -77,6 +79,8 @@ jobs:
         id: generate
         if: steps.content_check.outputs.has_content == 'true'
         working-directory: scripts
+        env:
+          YOUTH_WEEKLY_LLM_API_KEY: ${{ secrets.YOUTH_WEEKLY_LLM_API_KEY }}
         run: |
           uv run youth-weekly issue
 

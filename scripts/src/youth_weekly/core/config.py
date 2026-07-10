@@ -33,9 +33,7 @@ def _resolve_root_dir() -> Path:
         logger.warning("YOUTH_WEEKLY_ROOT path not exists: %s", root_path)
 
     # 优先级 2: 路径推算 fallback
-    fallback_root = (
-        Path(__file__).resolve().parent.parent.parent.parent.parent
-    )
+    fallback_root = Path(__file__).resolve().parent.parent.parent.parent.parent
     logger.debug("ROOT_DIR from fallback: %s", fallback_root)
     return fallback_root
 
@@ -115,6 +113,29 @@ class OcpConfig(BaseModel):
     exclude_plugins: list[str] = Field(default_factory=list)
 
 
+class LLMPromptsConfig(BaseModel):
+    """LLM 提示词配置"""
+
+    editorial: str = ""
+    article: str = ""
+
+
+class LLMConfig(BaseModel):
+    """LLM 扩展配置"""
+
+    enabled: bool = False
+    provider: str = "openai"
+    api_key: str = ""
+    api_key_env: str = "YOUTH_WEEKLY_LLM_API_KEY"
+    base_url: str = ""
+    model: str = ""
+    timeout: int = 60
+    max_retries: int = 3
+    temperature: float = 0.7
+    max_tokens: int = 2048
+    prompts: LLMPromptsConfig = Field(default_factory=LLMPromptsConfig)
+
+
 class AppConfig(BaseModel):
     """顶层应用配置"""
 
@@ -126,6 +147,7 @@ class AppConfig(BaseModel):
     rss: RssConfig = Field(default_factory=RssConfig)
     build: BuildConfig = Field(default_factory=BuildConfig)
     ocp: OcpConfig = Field(default_factory=OcpConfig)
+    llm: LLMConfig = Field(default_factory=LLMConfig)
 
     model_config: dict[str, object] = {  # type: ignore[assignment,misc]
         "env_prefix": "YOUTH_WEEKLY_",
@@ -275,6 +297,12 @@ def get_exclude_plugins() -> list[str]:
     return list(value) if value else []
 
 
+def get_llm_config() -> dict[str, Any]:
+    """获取 LLM 配置字典"""
+    config = load_config()
+    return config.llm.model_dump()
+
+
 def get_content_sources_path() -> Path:
     """获取内容源配置文件路径"""
     config = load_config()
@@ -307,6 +335,8 @@ __all__ = [
     "RssConfig",
     "BuildConfig",
     "OcpConfig",
+    "LLMConfig",
+    "LLMPromptsConfig",
     "load_config",
     "get_config",
     "get_config_value",
@@ -318,6 +348,7 @@ __all__ = [
     "get_categories",
     "get_max_rss_items",
     "get_exclude_plugins",
+    "get_llm_config",
     "get_content_sources_path",
     "get_curated_content_path",
     "get_dedup_db_path",

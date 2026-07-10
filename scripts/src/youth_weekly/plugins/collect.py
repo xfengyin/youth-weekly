@@ -49,12 +49,8 @@ class CollectPlugin(BasePlugin):
         params = params or {}
 
         # 从配置读取路径，支持参数覆盖
-        sources_path = Path(
-            params.get("sources_path", str(get_content_sources_path()))
-        )
-        output_path = Path(
-            params.get("output_path", str(get_curated_content_path()))
-        )
+        sources_path = Path(params.get("sources_path", str(get_content_sources_path())))
+        output_path = Path(params.get("output_path", str(get_curated_content_path())))
 
         if not sources_path.exists():
             logger.warning("Content sources config not found: %s", sources_path)

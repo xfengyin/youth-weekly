@@ -23,7 +23,7 @@ from youth_weekly.core.config import (
 from youth_weekly.core.content import load_all_issues
 from youth_weekly.core.logger import get_logger, setup_logger
 from youth_weekly.plugin import Registry
-from youth_weekly.plugins import (
+from youth_weekly.plugins import (  # noqa: F401
     example,
     issue_index,
     search_index,

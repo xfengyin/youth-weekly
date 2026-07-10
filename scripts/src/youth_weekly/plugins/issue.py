@@ -40,12 +40,8 @@ class IssuePlugin(BasePlugin):
             生成结果数据
         """
         params = params or {}
-        curated_path = Path(
-            params.get("curated_path", str(get_curated_content_path()))
-        )
-        issues_dir = Path(
-            params.get("issues_dir", str(get_issues_dir()))
-        )
+        curated_path = Path(params.get("curated_path", str(get_curated_content_path())))
+        issues_dir = Path(params.get("issues_dir", str(get_issues_dir())))
 
         if not curated_path.exists():
             logger.error("Curated content not found. Run 'collect' first.")

@@ -244,6 +244,7 @@ def create_registry() -> Registry:
     Returns:
         拥有独立状态的 Registry 实例
     """
+
     class _IsolatedRegistry(Registry):
         _plugins: dict[str, Type[BasePlugin]] = {}
         _instances: dict[str, BasePlugin] = {}

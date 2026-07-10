@@ -20,7 +20,7 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Any, Callable, ParamSpec, TypeVar
+from typing import Callable, ParamSpec, TypeVar
 
 # 类型变量用于装饰器签名保留
 P = ParamSpec("P")
