@@ -1,86 +1,211 @@
 ---
-categories:
-- dev
-- research
-- oss
-- tech
-date: '2026-07-09'
-date_range: 07.06-07.12
-featured_count: 18
-number: 7
+cover: ./assets/cover.png
+date: '2026-07-10'
+description: 本期关注 codecrafters-io/build-your-own-x - ⭐ 523833
+issue: 7
 published: false
-slug: '007'
-title: 青年周刊 第 7 期
+title: 青年周刊 · 第 7 期
 ---
 
-## 🛠️ 开发者工具
+# 青年周刊 · 第 7 期
 
-1. [codecrafters-io/build-your-own-x - ⭐ 523685](https://github.com/codecrafters-io/build-your-own-x)
-   > Master programming by recreating your favorite technologies from scratch.
-   — via *GitHub Trending*
-2. [sindresorhus/awesome - ⭐ 483295](https://github.com/sindresorhus/awesome)
-   > 😎 Awesome lists about all kinds of interesting topics
-   — via *GitHub Trending*
-3. [freeCodeCamp/freeCodeCamp - ⭐ 451356](https://github.com/freeCodeCamp/freeCodeCamp)
-   > freeCodeCamp.org's open-source codebase and curriculum. Learn math, programming, and computer science for free.
-   — via *GitHub Trending*
-4. [public-apis/public-apis - ⭐ 448295](https://github.com/public-apis/public-apis)
-   > A collective list of free APIs
-   — via *GitHub Trending*
-5. [EbookFoundation/free-programming-books - ⭐ 391512](https://github.com/EbookFoundation/free-programming-books)
-   > :books: Freely available programming books
-   — via *GitHub Trending*
+> 2026-07-10 | 第7期 | 每周更新
 
-## 🔬 技术趋势
+---
 
-1. [Calibration-Family Overfit: Why Trusted Sabotage Monitors Don't Transfer Across Lineages](https://arxiv.org/abs/2607.06596)
-   > arXiv:2607.06596v1 Announce Type: new 
-Abstract: Trusted monitoring is a central defense in AI control: a cheaper trusted model scores an untrusted...
-   — via *arXiv CS (计算机科学)*
-2. [Pixel-Precise Explainable Stress Indexing: A Semantic Segmentation Framework for Disease Severity Quantification in Field Crops](https://arxiv.org/abs/2607.06585)
-   > arXiv:2607.06585v1 Announce Type: new 
-Abstract: Plant diseases, resulting from both biotic and abiotic stresses, cause an estimated 20-40% loss in...
-   — via *arXiv CS (计算机科学)*
-3. [AI for Cultural Heritage Textiles: Fine-Tuned Latent Diffusion for Novel Ulos Motif Synthesis](https://arxiv.org/abs/2607.06590)
-   > arXiv:2607.06590v1 Announce Type: new 
-Abstract: Preserving and revitalising traditional textiles such as Ulos, a cultural heritage of the Batak...
-   — via *arXiv CS (计算机科学)*
-4. [LipSSD: Lipschitz-Constrained Single-Shot Detection for Adversarially Robust Object Detection](https://arxiv.org/abs/2607.06592)
-   > arXiv:2607.06592v1 Announce Type: new 
-Abstract: Object detectors have many applications in safety-critical systems, but they are known to be...
-   — via *arXiv CS (计算机科学)*
+## 本期目录
 
-## 📦 开源精选
+1. [刊首语](#刊首语)
+2. [科技新势力](#科技新势力)
+3. [二次元次元壁](#二次元次元壁)
+4. [游戏研究所](#游戏研究所)
+5. [青春故事会](#青春故事会)
+6. [好工具](#好工具)
+7. [在看什么](#在看什么)
+8. [一周图鉴](#一周图鉴)
+9. [谁在招人](#谁在招人)
 
-1. [UN Open Source Week, AI Fellowship, and 2025 Annual Report](https://opensource.org/blog/un-open-source-week-ai-fellowship-and-2025-annual-report)
-   > Members Newsletter – July 2026: Two weeks ago, I was joined by several staff and board members at UN Open Source Week. It’s remarkable to think about...
-   — via *Open Source News*
-2. [Open Source AI Fellowship Announced at UN Open Source Week](https://opensource.org/blog/open-source-ai-fellowship-announced-at-un-open-source-week)
-   > The OSI is pleased to announce the launch of the Open Source AI Fellowship at UN Open Source Week.
-   — via *Open Source News*
-3. [The OSI 2025 Annual Report Is Now Available](https://opensource.org/blog/the-osi-2025-annual-report-is-now-available)
-   > The Open Source Initiative's 2025 Annual Report documents a year in which Open Source found itself at the center of major debates around AI,...
-   — via *Open Source News*
-4. [From G7’s Vision on AI Openness to EU’s Tech Sovereignty Package](https://opensource.org/blog/from-g7s-vision-on-ai-openness-to-eus-tech-sovereignty-package)
-   > Members Newsletter – June 2026
-If you look at the G7’s Vision on AI Openness or the European Union’s Tech Sovereignty Package, you can see where the...
-   — via *Open Source News*
+---
 
-## 🚀 科技新势力
+## 刊首语
 
-1. [Feds demand autonomous vehicle companies stop interfering with first responders](https://techcrunch.com/2026/07/08/feds-demand-autonomous-vehicle-companies-stop-interfering-with-first-responders/)
-   > The National Highway Traffic Safety Administration said emergency scenes are not "edge cases."
-   — via *TechCrunch*
-2. [Google’s deepfake detector system used to debunk McConnell hoax pic](https://techcrunch.com/2026/07/08/googles-deepfake-detector-system-used-to-debunk-mcconnell-hoax-pic/)
-   > Earlier this week, a picture seemed to show Kentucky Senator Mitch McConnell covered in tubes in a hospital bed in a state of extreme distress. It...
-   — via *TechCrunch*
-3. [Meta is reportedly working on smart glasses that would be recording all the time](https://www.theverge.com/tech/963138/meta-smart-glasses-recording-super-sensing-ai)
-   > Meta might be the next company to make an always-on AI wearable. The company is working on prototype "super sensing" always-aware smart glasses that...
-   — via *The Verge - Tech*
-4. [Microsoft&#8217;s Xbox reset is pivoting Obsidian to make Fallout instead of Avowed](https://www.theverge.com/games/963024/microsoft-xbox-reset-obsidian-fallout-layoffs)
-   > As part of Microsoft's big Xbox "reset," which includes layoffs affecting 3,200 staffers, jettisoning studios, and shifting investments to focus on...
-   — via *The Verge - Tech*
-5. [Truecaller clashes with India’s telecom regulator over anti-spam rules](https://techcrunch.com/2026/07/08/truecaller-clashes-with-indias-telecom-regulator-over-anti-spam-rules/)
-   > The caller ID company says users are increasingly ignoring and blocking calls from India's dedicated business number series.
-   — via *TechCrunch*
+**欢迎来到《青年周刊》第 7 期！**
+
+本期发布于 2026-07-10。我们为你整理了本周值得关注的科技、工具和成长内容,希望这些精选能给你带来新的启发。阅读愉快！
+
+——《青年周刊》编辑部
+
+---
+
+## 科技新势力
+
+> AI 工具、编程技巧、效率软件、前沿技术
+
+### The ChatGPT browser is already dead
+
+OpenAI is already shutting down ChatGPT Atlas, its browser that could do tasks for you on your behalf, less than a year after launching it. Atlas was announced in October, but as part of its wave of n
+
+[阅读原文](https://www.theverge.com/ai-artificial-intelligence/963654/openai-chatgpt-atlas-ai-browser-shut-down-sunset)
+
+— via *The Verge - Tech*
+
+---
+
+### OpenAI says GPT 5.6 is the ‘preferred model’ for Microsoft Copilot 365 amid breakup chatter
+
+OpenAI's new family of models will continue to power Microsoft's suite of workplace and productivity apps.
+
+[阅读原文](https://techcrunch.com/2026/07/09/openai-says-gpt-5-6-is-the-preferred-model-for-microsoft-copilot-amid-breakup-chatter/)
+
+— via *TechCrunch*
+
+---
+
+### Fidji Simo steps down from OpenAI’s no. 2 role
+
+OpenAI's No. 2 executive, Fidji Simo, is stepping down from her full-time role after her medical leave proved longer than expected — a leadership vacuum that comes at a tricky time as the company eyes
+
+[阅读原文](https://techcrunch.com/2026/07/09/fidji-simo-steps-down-from-openais-no-2-role/)
+
+— via *TechCrunch*
+
+---
+
+### OpenAI launches its new family of models with GPT-5.6
+
+OpenAI's latest family of models promises improvements across a range of areas, including cybersecurity.
+
+[阅读原文](https://techcrunch.com/2026/07/09/openai-launches-its-new-family-of-models-with-gpt-5-6/)
+
+— via *TechCrunch*
+
+---
+
+### An AI agent startup just let its agent run its $100M fundraise
+
+Lyzr, a startup that builds AI agents for enterprises, used its own AI agent to raise a $100 million round — proof, evidently, that the product actually works.
+
+[阅读原文](https://techcrunch.com/2026/07/09/an-ai-agent-startup-just-let-its-agent-run-its-100-million-fundraise/)
+
+— via *TechCrunch*
+
+---
+
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。
+
+---
+
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。
+
+---
+
+## 青春故事会
+
+> 成长故事、职场指南、学习心得
+
+本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。
+
+---
+
+## 好工具
+
+> 生产力工具、生活助手推荐
+
+### codecrafters-io/build-your-own-x - ⭐ 523833
+
+Master programming by recreating your favorite technologies from scratch.
+
+[阅读原文](https://github.com/codecrafters-io/build-your-own-x)
+
+— via *GitHub Trending*
+
+---
+
+### sindresorhus/awesome - ⭐ 483447
+
+😎 Awesome lists about all kinds of interesting topics
+
+[阅读原文](https://github.com/sindresorhus/awesome)
+
+— via *GitHub Trending*
+
+---
+
+### freeCodeCamp/freeCodeCamp - ⭐ 451391
+
+freeCodeCamp.org's open-source codebase and curriculum. Learn math, programming, and computer science for free.
+
+[阅读原文](https://github.com/freeCodeCamp/freeCodeCamp)
+
+— via *GitHub Trending*
+
+---
+
+### public-apis/public-apis - ⭐ 448388
+
+A collective list of free APIs
+
+[阅读原文](https://github.com/public-apis/public-apis)
+
+— via *GitHub Trending*
+
+---
+
+### EbookFoundation/free-programming-books - ⭐ 391538
+
+:books: Freely available programming books
+
+[阅读原文](https://github.com/EbookFoundation/free-programming-books)
+
+— via *GitHub Trending*
+
+---
+
+## 在看什么
+
+> 影视、书籍、播客推荐
+
+本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。
+
+---
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。
+
+---
+
+## 谁在招人
+
+> 本周招聘信息精选
+
+本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。
+
+---
+
+## 编读往来
+
+**下期预告:** 第 8 期将于 2026-07-17 发布
+
+**本期话题:** 你对本期哪个内容最感兴趣?欢迎在评论区分享!
+
+---
+
+> "保持好奇,保持年轻。"
+
+**往期回顾:**
+- [第3期](https://github.com/xfengyin/youth-weekly/blob/main/docs/issues/003/README.md)
+- [第4期](https://github.com/xfengyin/youth-weekly/blob/main/docs/issues/004/README.md)
+- [第5期](https://github.com/xfengyin/youth-weekly/blob/main/docs/issues/005/README.md)
+- [第6期](https://github.com/xfengyin/youth-weekly/blob/main/docs/issues/006/README.md)
 

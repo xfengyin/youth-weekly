@@ -11,9 +11,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from youth_weekly.core.config import (
     AppConfig,
     CategoryConfig,
+    LLMConfig,
     SiteConfig,
     get_config_value,
     get_exclude_plugins,
+    get_llm_config,
     get_max_rss_items,
     get_site_name,
     get_site_url,
@@ -52,6 +54,18 @@ class TestPydanticModels:
         cat = CategoryConfig(id="tech", name="科技", icon="🚀")
         assert cat.id == "tech"
 
+    def test_llm_config_defaults(self):
+        config = LLMConfig()
+        assert config.enabled is False
+        assert config.provider == "openai"
+        assert config.model == ""
+
+    def test_app_config_with_llm(self):
+        raw = {"llm": {"enabled": True, "model": "gpt-4o-mini"}}
+        config = AppConfig.model_validate(raw)
+        assert config.llm.enabled is True
+        assert config.llm.model == "gpt-4o-mini"
+
 
 class TestConfigFunctions:
     """测试配置加载函数"""
@@ -72,6 +86,11 @@ class TestConfigFunctions:
     def test_get_exclude_plugins(self):
         excluded = get_exclude_plugins()
         assert isinstance(excluded, list)
+
+    def test_get_llm_config(self):
+        cfg = get_llm_config()
+        assert isinstance(cfg, dict)
+        assert "enabled" in cfg
 
     def test_get_config_value_dot_path(self):
         value = get_config_value("site.name")

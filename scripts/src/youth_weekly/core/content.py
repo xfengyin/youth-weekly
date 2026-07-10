@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime
 from functools import lru_cache
 from pathlib import Path
 
@@ -157,7 +156,12 @@ def clear_cache() -> None:
 def get_cache_info() -> dict[str, int]:
     """获取缓存命中/未命中统计"""
     info = load_all_issues.cache_info()
-    return {"hits": info.hits, "misses": info.misses, "size": info.currsize, "maxsize": info.maxsize}
+    return {
+        "hits": info.hits,
+        "misses": info.misses,
+        "size": info.currsize,
+        "maxsize": info.maxsize or 0,
+    }
 
 
 def get_latest_issue(docs_dir: Path) -> dict | None:

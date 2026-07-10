@@ -68,3 +68,21 @@ ocp:
   exclude_plugins:
     - "example"
     - "hello_world"
+
+# LLM 杂志化扩展配置
+# 启用后,采集到的链接会自动调用大模型改写成杂志式文章
+llm:
+  enabled: true
+  provider: "openai"          # openai / openai_compatible / anthropic
+  api_key: ""                 # 建议留空,通过环境变量 YOUTH_WEEKLY_LLM_API_KEY 传入
+  api_key_env: "YOUTH_WEEKLY_LLM_API_KEY"
+  base_url: ""                # 自定义端点,如 DeepSeek/Moonshot/Azur
+  model: "gpt-4o-mini"        # 或 claude-3-5-sonnet-20241022 等
+  timeout: 60
+  max_retries: 3
+  temperature: 0.7
+  max_tokens: 2048
+  prompts:
+    # 留空则使用内置默认提示词;可在此覆盖
+    editorial: ""
+    article: ""

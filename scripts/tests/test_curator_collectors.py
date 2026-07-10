@@ -47,9 +47,13 @@ class TestBaseCollector:
     """测试基类采集器"""
 
     def test_retry_success(self):
-        from youth_weekly.core.collectors import BaseCollector
+        from youth_weekly.core.collectors import BaseCollector, ContentItem
 
-        collector = BaseCollector(max_retries=2)
+        class _DummyCollector(BaseCollector):
+            def collect(self, source_config):
+                return [ContentItem(title="t", url="u")]
+
+        collector = _DummyCollector(max_retries=2)
         mock_resp = MagicMock(status_code=200)
         with patch.object(collector.session, "get", return_value=mock_resp) as m:
             resp = collector._fetch_with_retry("http://x")
@@ -59,9 +63,13 @@ class TestBaseCollector:
     def test_retry_eventually_fails(self):
         import requests
 
-        from youth_weekly.core.collectors import BaseCollector
+        from youth_weekly.core.collectors import BaseCollector, ContentItem
 
-        collector = BaseCollector(max_retries=2)
+        class _DummyCollector(BaseCollector):
+            def collect(self, source_config):
+                return [ContentItem(title="t", url="u")]
+
+        collector = _DummyCollector(max_retries=2)
         with patch.object(
             collector.session, "get", side_effect=requests.ConnectionError("boom")
         ):

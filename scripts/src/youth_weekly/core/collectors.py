@@ -9,6 +9,7 @@ import hashlib
 import logging
 import re
 import time
+from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -40,7 +41,7 @@ class ContentItem:
         return hashlib.sha256(f"{self.url}".encode()).hexdigest()[:12]
 
 
-class BaseCollector:
+class BaseCollector(ABC):
     """采集器基类"""
 
     def __init__(
@@ -55,6 +56,11 @@ class BaseCollector:
         self.delay = delay
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": user_agent})
+
+    @abstractmethod
+    def collect(self, source_config: dict[str, Any]) -> list[ContentItem]:
+        """执行内容采集(子类必须实现)"""
+        raise NotImplementedError
 
     def _fetch_with_retry(self, url: str) -> requests.Response | None:
         """带指数退避的 HTTP 请求"""
@@ -315,9 +321,7 @@ def collect_concurrent(
             return []
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_source = {
-            executor.submit(_collect_one, src): src for src in sources
-        }
+        future_to_source = {executor.submit(_collect_one, src): src for src in sources}
         for future in as_completed(future_to_source):
             source = future_to_source[future]
             try:
