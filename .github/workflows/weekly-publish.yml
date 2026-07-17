@@ -11,16 +11,15 @@ on:
         required: false
         default: '手动触发周刊采集与发布'
 
-# 最小化权限：只给必要的权限
+# 最小化权限：周刊只需写仓库内容 + 触发主站 deploy
 permissions:
-  actions: write
   contents: write
-  pages: write
-  id-token: write
+  actions: write
 
 # 并发控制：避免重复触发
+# 同 workflow 在不同 ref 下可并行，但同一 ref 上串行（保证周刊原子性）
 concurrency:
-  group: "weekly-publish-${{ github.workflow }}"
+  group: "weekly-publish-${{ github.ref }}"
   cancel-in-progress: false  # 周刊生成不可打断
 
 jobs:
@@ -57,6 +56,7 @@ jobs:
         run: |
           mkdir -p scripts/dist
 
+      # 1. 采集阶段
       - name: Collect content from sources
         id: collect
         working-directory: scripts
@@ -64,7 +64,6 @@ jobs:
           YOUTH_WEEKLY_LLM_API_KEY: ${{ secrets.YOUTH_WEEKLY_LLM_API_KEY }}
         run: |
           uv run youth-weekly collect
-          echo "collection_done=true" >> $GITHUB_OUTPUT
 
       - name: Check if collected content exists
         id: content_check
@@ -75,6 +74,7 @@ jobs:
             echo "has_content=false" >> $GITHUB_OUTPUT
           fi
 
+      # 2. 生成阶段
       - name: Generate new weekly issue
         id: generate
         if: steps.content_check.outputs.has_content == 'true'
@@ -84,6 +84,7 @@ jobs:
         run: |
           uv run youth-weekly issue
 
+      # 3. 提交阶段：将新一期推送到 main
       - name: Commit generated issue
         id: commit
         if: steps.content_check.outputs.has_content == 'true'
@@ -96,11 +97,12 @@ jobs:
           else
             git commit -m "📰 自动生成新一期周刊 [skip ci]"
             git push
+            echo "no_changes=false" >> $GITHUB_OUTPUT
           fi
 
-      # 自动触发主站 deploy.yml 重新构建
+      # 4. 触发主站 rebuild（仅在有变更时）
       - name: Trigger site rebuild
-        if: steps.commit.outputs.no_changes != 'true'
+        if: steps.commit.outputs.no_changes == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -110,7 +112,7 @@ jobs:
             "/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" \
             -f ref="${{ github.ref_name }}"
 
-      # 通知用户结果（成功/失败/无新内容）
+      # 5. 汇总结果
       - name: Notify result
         if: always()
         run: |

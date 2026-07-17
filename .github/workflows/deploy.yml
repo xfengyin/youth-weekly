@@ -5,13 +5,15 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# 最小化权限原则：明确声明，避免权限污染
+# 最小化权限：仅授予 Pages 部署所需的最小权限
+# 注意：GITHUB_TOKEN 无法启用 Pages，需在仓库设置中手动启用
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 并发控制：同 workflow+ref+event 下只允许一个 deploy 运行
+# 并发控制：同 workflow+ref 下只允许一个 deploy 运行，
+# 避免多次部署互相覆盖或抢资源
 concurrency:
   group: "pages-deploy-${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
@@ -49,7 +51,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd web
-          npm install
+          npm install --no-audit --no-fund
           cd ../scripts
           uv sync --no-dev
 
@@ -64,37 +66,42 @@ jobs:
           cd web
           npm run build
 
-      - name: Prepare deployment
+      - name: Prepare deployment artifact
         id: prepare
         run: |
+          # 清理旧产物，避免污染
+          rm -rf output
           mkdir -p output
-          if [ -d "web/out" ]; then
+
+          # 优先使用 Next.js 静态导出（next.config.js 中 output: 'export'）
+          if [ -d "web/out" ] && [ -f "web/out/index.html" ]; then
             echo "📦 Using Next.js static export (web/out)"
             cp -r web/out/. output/
-          elif [ -d "web/.next" ]; then
-            echo "📦 Using Next.js build output (web/.next)"
-            mkdir -p output/_next
-            cp -r web/.next/static/. output/_next/static/ 2>/dev/null || true
           else
-            echo "⚠️ No build output found, using fallback"
-            cp -r docs/. output/ 2>/dev/null || true
-            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>青年周刊</title></head><body><p>Build required.</p></body></html>' > output/index.html
+            echo "❌ Build output not found or invalid: web/out/index.html missing"
+            echo "---- web/out contents ----"
+            ls -la web/out 2>&1 || echo "(no web/out directory)"
+            exit 1
           fi
-          # 复制 RSS 文件到网站根目录
+
+          # 复制 RSS 文件到网站根目录（如有）
           if [ -f "scripts/dist/rss.xml" ]; then
             echo "📰 Copying RSS feed"
             cp scripts/dist/rss.xml output/rss.xml
           fi
+
+          # 关键：禁用 Jekyll，否则以 _ 开头的文件（如 _next）会被忽略
           touch output/.nojekyll
 
-      - name: Verify deployment
+          echo "artifact_ready=true" >> $GITHUB_OUTPUT
+
+      - name: Verify deployment artifact
         run: |
           if [ ! -f "output/index.html" ]; then
-            echo "❌ Deployment verification failed: no index.html found"
-            ls -la output/ 2>&1 || true
+            echo "❌ Verification failed: output/index.html not found"
             exit 1
           fi
-          echo "✅ Deployment verification passed: $(ls output/ | wc -l) files ready"
+          echo "✅ Verification passed: $(find output -type f | wc -l) files ready"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -106,16 +113,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 10
+    # 不绑定 environment，避免 environment 保护规则阻塞部署
 
     steps:
-      # 配置 Pages（即使已有配置也安全）
+      # 配置 Pages（不传 enablement，因为 GITHUB_TOKEN 无 admin 权限）
+      # 若 Pages 未启用，此步骤会失败，需用户先在仓库设置中启用
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-        with:
-          # 启用 Pages（自动 enablement）
-          enablement: true
 
-      # 部署（不绑定 environment，避免 environment 保护规则）
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
