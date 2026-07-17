@@ -2,202 +2,147 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop, 'trae/**' ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
+# 最小化权限：CI 流水线只读仓库
 permissions:
   contents: read
 
+# 并发控制：同 ref 上取消旧的运行，避免重复浪费
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  lint:
-    name: Code Linting
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-      with:
-        version: 'latest'
-        enable-cache: true
-        cache-dependency-glob: 'scripts/uv.lock'
-
-    - name: Install dependencies
-      working-directory: scripts
-      run: |
-        uv sync --all-extras
-
-    - name: Run black
-      working-directory: scripts
-      run: |
-        uv run black --check src/youth_weekly/ tests/
-
-    - name: Run isort
-      working-directory: scripts
-      run: |
-        uv run isort --check-only src/youth_weekly/ tests/
-
-    - name: Run flake8
-      working-directory: scripts
-      run: |
-        uv run flake8 src/youth_weekly/ tests/
-
-    - name: Run mypy
-      working-directory: scripts
-      run: |
-        uv run mypy src/youth_weekly/
-
-  test:
-    name: Unit Tests
+  # 合并 lint + test + build + cli-smoke 为单一矩阵作业
+  # 共享一次 Setup Python / Install uv / uv sync
+  quality:
+    name: Quality (lint/test/build/cli-smoke)
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ['3.12']
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-      with:
-        version: 'latest'
-        enable-cache: true
-        cache-dependency-glob: 'scripts/uv.lock'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: 'latest'
+          enable-cache: true
+          cache-dependency-glob: 'scripts/uv.lock'
 
-    - name: Install dependencies
-      working-directory: scripts
-      run: |
-        uv sync --all-extras
+      - name: Install dependencies
+        working-directory: scripts
+        run: |
+          uv sync --all-extras
 
-    - name: Run tests
-      working-directory: scripts
-      run: |
-        uv run pytest --cov=youth_weekly --cov-report=xml --cov-report=term --cov-fail-under=70
+      # 1) 代码风格与静态检查：本地必须先跑 black/isort，CI 仅作最终防线
+      - name: Run black
+        working-directory: scripts
+        run: |
+          uv run black --check src/youth_weekly/ tests/
 
-    - name: Upload coverage
-      if: matrix.python-version == '3.12'
-      uses: codecov/codecov-action@v4
-      with:
-        files: ./scripts/coverage.xml
-        fail_ci_if_error: false
+      - name: Run isort
+        working-directory: scripts
+        run: |
+          uv run isort --check-only src/youth_weekly/ tests/
 
+      - name: Run flake8
+        working-directory: scripts
+        run: |
+          uv run flake8 src/youth_weekly/ tests/
+
+      - name: Run mypy
+        working-directory: scripts
+        run: |
+          uv run mypy src/youth_weekly/
+
+      # 2) 单元测试 + 覆盖率
+      - name: Run tests
+        working-directory: scripts
+        run: |
+          uv run pytest --cov=youth_weekly --cov-report=xml --cov-report=term --cov-fail-under=70
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.12'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./scripts/coverage.xml
+          fail_ci_if_error: false
+
+      # 3) 构建验证
+      - name: Build package
+        working-directory: scripts
+        run: |
+          uv build
+
+      # 4) CLI 烟雾测试：冒烟命令失败将阻塞 PR
+      - name: CLI --help
+        working-directory: scripts
+        run: |
+          uv run youth-weekly --help
+
+      - name: CLI list
+        working-directory: scripts
+        run: |
+          uv run youth-weekly list
+
+      - name: CLI config
+        working-directory: scripts
+        run: |
+          uv run youth-weekly config
+
+  # 安全扫描：仅产生警告不阻塞 PR，由 nightly 兜底
   security:
-    name: Security Scan
+    name: Security Scan (warning only)
     runs-on: ubuntu-latest
+    continue-on-error: true  # 漏洞不阻塞 PR，每日全量扫描见 nightly.yml
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-      with:
-        version: 'latest'
-        enable-cache: true
-        cache-dependency-glob: 'scripts/uv.lock'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: 'latest'
+          enable-cache: true
+          cache-dependency-glob: 'scripts/uv.lock'
 
-    - name: Install dependencies
-      working-directory: scripts
-      run: |
-        uv sync --all-extras
+      - name: Install dependencies
+        working-directory: scripts
+        run: |
+          uv sync --all-extras
 
-    - name: Run bandit
-      working-directory: scripts
-      run: |
-        uv run bandit -r src/youth_weekly/ -ll
+      - name: Run bandit
+        working-directory: scripts
+        run: |
+          uv run bandit -r src/youth_weekly/ -ll
 
-    - name: Run pip-audit
-      working-directory: scripts
-      run: |
-        uv pip install pip-audit
-        pip-audit --desc
+      - name: Run pip-audit
+        working-directory: scripts
+        run: |
+          uv run pip-audit --strict
 
-  build:
-    name: Build Check
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-      with:
-        version: 'latest'
-        enable-cache: true
-        cache-dependency-glob: 'scripts/uv.lock'
-
-    - name: Build package
-      working-directory: scripts
-      run: |
-        uv build
-
-  cli-smoke:
-    name: CLI Smoke Test
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-      with:
-        version: 'latest'
-        enable-cache: true
-        cache-dependency-glob: 'scripts/uv.lock'
-
-    - name: Install dependencies
-      working-directory: scripts
-      run: |
-        uv sync --all-extras
-
-    - name: CLI --help
-      working-directory: scripts
-      run: |
-        uv run youth-weekly --help
-
-    - name: CLI list
-      working-directory: scripts
-      run: |
-        uv run youth-weekly list
-
-    - name: CLI config
-      working-directory: scripts
-      run: |
-        uv run youth-weekly config
-
+  # 前端：独立 Node 环境
   frontend:
-    name: Frontend Lint & Build
+    name: Frontend (lint/type-check/test/build)
     runs-on: ubuntu-latest
 
     steps:
