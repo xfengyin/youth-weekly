@@ -12,18 +12,48 @@ from typing import Any
 
 import yaml
 
-from youth_weekly.plugin.base import BasePlugin
-from youth_weekly.plugin.registry import register
 from youth_weekly.core.collectors import get_collector
-from youth_weekly.core.curator import ContentCurator
 from youth_weekly.core.config import (
     ROOT_DIR,
+    get_categories,
     get_content_sources_path,
     get_curated_content_path,
     get_dedup_db_path,
 )
+from youth_weekly.core.curator import ContentCurator
+from youth_weekly.core.expander import CATEGORY_TO_SECTION
+from youth_weekly.plugin.base import BasePlugin
+from youth_weekly.plugin.registry import register
 
 logger = logging.getLogger(__name__)
+
+
+def _validate_source_categories(
+    source_categories: dict[str, Any],
+    site_categories: list[dict[str, str]],
+) -> None:
+    """
+    校验 content_sources.yaml 的 source_categories 与 config.yaml 的 categories 一致性。
+
+    校验规则(仅 warning,不影响主流程):
+    1. 源分类 ID 应出现在 CATEGORY_TO_SECTION 中(即能被映射到板块)
+    2. 若源分类 ID 与 config.yaml#categories 的 ID 重名,需提示其走"直通"映射
+    """
+    known_ids: set[str] = set(CATEGORY_TO_SECTION.keys())
+    site_category_ids: set[str] = {c.get("id", "") for c in site_categories}
+    for cat_id in source_categories:
+        if cat_id not in known_ids:
+            logger.warning(
+                "Source category '%s' has no mapping in CATEGORY_TO_SECTION; "
+                "items may not be rendered into any section. "
+                "Add it to youth_weekly/core/expander.py.",
+                cat_id,
+            )
+        elif cat_id in site_category_ids:
+            logger.info(
+                "Source category '%s' is also a section category (pass-through).",
+                cat_id,
+            )
 
 
 @register()
@@ -64,6 +94,18 @@ class CollectPlugin(BasePlugin):
             s for s in sources_config.get("sources", []) if s.get("enabled", True)
         ]
         logger.info("Loaded %d enabled content sources", len(sources))
+
+        # 校验 source_categories 与 config.yaml 的一致性
+        # 向后兼容: 若使用旧的 categories 字段,自动 fallback
+        source_categories_raw = sources_config.get("source_categories")
+        if source_categories_raw is None:
+            source_categories_raw = sources_config.get("categories", {})
+            if source_categories_raw:
+                logger.warning(
+                    "content_sources.yaml uses deprecated 'categories' field; "
+                    "please rename to 'source_categories'."
+                )
+        _validate_source_categories(source_categories_raw or {}, get_categories())
 
         # 采集
         collection_config = {"timeout": 30, "max_retries": 3, "delay": 2.0}
@@ -109,13 +151,12 @@ class CollectPlugin(BasePlugin):
                 return {"collected": len(all_items), "curated": 0}
 
             scored_items = curator.score_items(unique_items)
-            category_config = sources_config.get("categories", {})
-            categorized = curator.categorize(scored_items, category_config)
+            categorized = curator.categorize(scored_items, source_categories_raw or {})
 
             # 选择 Top items
             final_items = {}
             for cat_id, items in categorized.items():
-                cat_cfg = category_config.get(cat_id, {})
+                cat_cfg = (source_categories_raw or {}).get(cat_id, {})
                 max_items = cat_cfg.get("max_items", 5)
                 final_items[cat_id] = curator.select_top_items(items, max_items)
 
