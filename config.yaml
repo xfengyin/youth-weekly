@@ -7,6 +7,12 @@ site:
   url: "https://xfengyin.github.io/youth-weekly"
   email: "contact@youth-weekly.com"
   language: "zh-CN"
+  # 周刊页脚与展示相关文案(可选,缺省时使用内置 fallback,保持向后兼容)
+  github_url: "https://github.com/xfengyin/youth-weekly"  # 往期回顾链接基础 URL
+  footer_slogan: "保持好奇,保持年轻。"                       # 文末标语
+  footer_topic: "你对本期哪个内容最感兴趣?欢迎在评论区分享!"  # 编读往来话题
+  empty_section_placeholder: "本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。"  # 空板块占位
+  tagline_format: "{date} | 第{issue_number}期 | 每周更新"   # 副标题格式
 
 author:
   name: "青年周刊编辑部"
@@ -23,30 +29,39 @@ categories:
   - id: "editorial"
     name: "刊首语"
     icon: "📝"
+    tagline: "主编视角,带你回顾本周值得关注的内容"
   - id: "tech"
     name: "科技新势力"
     icon: "🚀"
+    tagline: "AI 工具、编程技巧、效率软件、前沿技术"
   - id: "anime"
     name: "二次元次元壁"
     icon: "🎨"
+    tagline: "ACG 资讯、动漫评论、原创推荐"
   - id: "gaming"
     name: "游戏研究所"
     icon: "🎮"
+    tagline: "游戏评测、攻略心得、行业动态"
   - id: "stories"
     name: "青春故事会"
     icon: "📖"
+    tagline: "成长故事、职场指南、学习心得"
   - id: "tools"
     name: "好工具"
     icon: "🛠️"
+    tagline: "生产力工具、生活助手推荐"
   - id: "watching"
     name: "在看什么"
     icon: "👀"
+    tagline: "影视、书籍、播客推荐"
   - id: "gallery"
     name: "一周图鉴"
     icon: "📷"
+    tagline: "本周精选视觉内容"
   - id: "jobs"
     name: "谁在招人"
     icon: "💼"
+    tagline: "本周招聘信息精选"
 
 content:
   max_excerpt_length: 500

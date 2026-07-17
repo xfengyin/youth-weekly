@@ -50,6 +50,14 @@ class SiteConfig(BaseModel):
     url: str = "https://xfengyin.github.io/youth-weekly"
     email: str = "contact@youth-weekly.com"
     language: str = "zh-CN"
+    # 可选:周刊页脚与展示相关文案,缺省时由调用方使用内置 fallback
+    github_url: str = "https://github.com/xfengyin/youth-weekly"
+    footer_slogan: str = "保持好奇,保持年轻。"
+    footer_topic: str = "你对本期哪个内容最感兴趣?欢迎在评论区分享!"
+    empty_section_placeholder: str = (
+        "本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。"
+    )
+    tagline_format: str = "{date} | 第{issue_number}期 | 每周更新"
 
 
 class AuthorConfig(BaseModel):
@@ -78,6 +86,8 @@ class CategoryConfig(BaseModel):
     id: str
     name: str
     icon: str
+    # 可选:板块副标题;缺省时由调用方使用内置 fallback
+    tagline: str = ""
 
 
 class ContentConfig(BaseModel):
@@ -165,10 +175,13 @@ def _get_config_path() -> Path:
     1. 项目根目录的 config.yaml
     2. scripts 目录下的 config.yaml(向后兼容)
     3. 环境变量 YOUTH_WEEKLY_CONFIG 指向的路径
+
+    Raises:
+        FileNotFoundError: 所有候选位置都没有 config.yaml
     """
-    config_path = ROOT_DIR / "config.yaml"
-    if config_path.exists():
-        return config_path
+    primary = ROOT_DIR / "config.yaml"
+    if primary.exists():
+        return primary
 
     scripts_dir = Path(__file__).resolve().parent.parent.parent.parent
     scripts_config_path = scripts_dir / "config.yaml"
@@ -179,7 +192,18 @@ def _get_config_path() -> Path:
     if env_config_path and Path(env_config_path).exists():
         return Path(env_config_path)
 
-    raise FileNotFoundError(f"config.yaml not found at {config_path}")
+    # 错误信息脱敏:对外只暴露文件名/提示信息,详细绝对路径写入日志
+    # 便于运维排查,同时避免把本机系统结构(用户名/挂载点等)泄漏给上层调用方
+    logger.error(
+        "config.yaml not found. Tried primary=%s, scripts=%s, env=%s",
+        primary,
+        scripts_config_path,
+        env_config_path or "<unset>",
+    )
+    raise FileNotFoundError(
+        "config.yaml not found. Place it at the project root or "
+        "set the YOUTH_WEEKLY_CONFIG env var to a custom path."
+    )
 
 
 def load_config(force_reload: bool = False) -> AppConfig:

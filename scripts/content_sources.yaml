@@ -1,5 +1,12 @@
 # 内容源配置 - 青年周刊自动采集系统
 # 每个源包含: id, name, type (rss/github/hackernews/website), url, category, enabled
+#
+# 重要：source_categories 是**源分类(采集层)**,与 config.yaml 中
+# 的 categories(**板块分类(展示层)**)是两个不同的概念。
+#   - config.yaml#categories: 9 个固定板块(editorial/tech/anime/...),控制周刊目录结构
+#   - source_categories(本文件): 5 个采集分类(tech/dev/ai/research/oss),控制采集源归类
+# 两者通过 expander.CATEGORY_TO_SECTION 建立映射;调整本文件时请同步
+# expander.py 与 config.yaml。
 
 sources:
   # ====== RSS 新闻源 ======
@@ -84,40 +91,33 @@ sources:
     enabled: true
     max_items: 5
 
-categories:
-  # 分类映射配置: 源 category → 周刊板块
-  tech:
+# 源分类的采集阈值(仅控制采集/策展数量,板块展示由 config.yaml#categories 决定)
+# ID 命名应与 config.yaml#categories 或 CATEGORY_TO_SECTION 中的 key 对齐
+# 若新增源分类,请在 expander.py 的 CATEGORY_TO_SECTION 中添加映射,
+# 或复用 config.yaml#categories 中已有的 ID。
+source_categories:
+  tech:  # 复用 config.yaml 中的 tech 板块 ID
     id: tech
-    name: "科技新势力"
-    icon: "🚀"
     min_items: 3
     max_items: 5
 
-  dev:
+  dev:  # 源分类,最终映射到 config.yaml 中的 tools 板块
     id: dev
-    name: "开发者工具"
-    icon: "🛠️"
     min_items: 3
     max_items: 5
 
-  ai:
+  ai:  # 源分类,最终映射到 config.yaml 中的 tech 板块
     id: ai
-    name: "AI 前沿"
-    icon: "🤖"
     min_items: 3
     max_items: 5
 
-  research:
+  research:  # 源分类,最终映射到 config.yaml 中的 tech 板块
     id: research
-    name: "技术趋势"
-    icon: "🔬"
     min_items: 2
     max_items: 4
 
-  oss:
+  oss:  # 源分类,最终映射到 config.yaml 中的 tools 板块
     id: oss
-    name: "开源精选"
-    icon: "📦"
     min_items: 2
     max_items: 4
 

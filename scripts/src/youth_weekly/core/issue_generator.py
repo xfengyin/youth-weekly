@@ -13,11 +13,16 @@ import logging
 import threading
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 import yaml
 
 from youth_weekly.core.collectors import ContentItem
-from youth_weekly.core.config import ROOT_DIR, get_llm_config
+from youth_weekly.core.config import (
+    ROOT_DIR,
+    get_config_value,
+    get_llm_config,
+)
 from youth_weekly.core.expander import CATEGORY_TO_SECTION, ContentExpander
 
 logger = logging.getLogger(__name__)
@@ -29,8 +34,8 @@ ISSUES_DIR = ROOT_DIR / "docs" / "issues"
 _cache_lock = threading.Lock()
 
 
-# 九大固定板块顺序(与现有 6 期一致)
-SECTION_ORDER: list[tuple[str, str]] = [
+# 硬编码字符串的 fallback 字典（当 config.yaml 未配置时使用,保持向后兼容）
+_FALLBACK_SECTION_ORDER: list[tuple[str, str]] = [
     ("editorial", "刊首语"),
     ("tech", "科技新势力"),
     ("anime", "二次元次元壁"),
@@ -41,6 +46,69 @@ SECTION_ORDER: list[tuple[str, str]] = [
     ("gallery", "一周图鉴"),
     ("jobs", "谁在招人"),
 ]
+
+_FALLBACK_TAGLINES: dict[str, str] = {
+    "tech": "AI 工具、编程技巧、效率软件、前沿技术",
+    "anime": "ACG 资讯、动漫评论、原创推荐",
+    "gaming": "游戏评测、攻略心得、行业动态",
+    "stories": "成长故事、职场指南、学习心得",
+    "tools": "生产力工具、生活助手推荐",
+    "watching": "影视、书籍、播客推荐",
+    "gallery": "本周精选视觉内容",
+    "jobs": "本周招聘信息精选",
+}
+
+_FALLBACK_GITHUB_URL = "https://github.com/xfengyin/youth-weekly"
+_FALLBACK_FOOTER_SLOGAN = "保持好奇,保持年轻。"
+_FALLBACK_FOOTER_TOPIC = "你对本期哪个内容最感兴趣?欢迎在评论区分享!"
+_FALLBACK_EMPTY_PLACEHOLDER = "本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。"
+_FALLBACK_TAGLINE_FORMAT = "{date} | 第{issue_number}期 | 每周更新"
+
+
+def _load_section_order() -> list[tuple[str, str]]:
+    """
+    加载板块顺序:优先从 config.yaml 的 categories 派生,缺省时使用 fallback。
+
+    这样新增/调整板块时,只需修改 config.yaml,无需改代码。
+    """
+    raw_categories = get_config_value("categories", None)
+    if isinstance(raw_categories, list) and raw_categories:
+        result: list[tuple[str, str]] = []
+        for cat in raw_categories:
+            if not isinstance(cat, dict):
+                continue
+            cid = cat.get("id")
+            name = cat.get("name")
+            if isinstance(cid, str) and isinstance(name, str) and cid and name:
+                result.append((cid, name))
+        if result:
+            return result
+    return list(_FALLBACK_SECTION_ORDER)
+
+
+def _load_section_taglines() -> dict[str, str]:
+    """加载板块副标题:优先从 config.yaml 的 categories.tagline 派生"""
+    raw_categories = get_config_value("categories", None)
+    if isinstance(raw_categories, list):
+        result: dict[str, str] = {}
+        for cat in raw_categories:
+            if not isinstance(cat, dict):
+                continue
+            cid = cat.get("id")
+            tagline = cat.get("tagline")
+            if isinstance(cid, str) and isinstance(tagline, str) and tagline:
+                result[cid] = tagline
+        if result:
+            return result
+    return dict(_FALLBACK_TAGLINES)
+
+
+def _load_site_text(key: str, fallback: str) -> str:
+    """从 site 配置读取展示文案,缺省回退到 fallback"""
+    value = get_config_value(f"site.{key}", None)
+    if isinstance(value, str) and value:
+        return value
+    return fallback
 
 
 def get_next_issue_number(issues_dir: Path | None = None) -> int:
@@ -63,6 +131,22 @@ class IssueGenerator:
     def __init__(self, issues_dir: Path | None = None) -> None:
         self.issues_dir = issues_dir or ISSUES_DIR
         self.issues_dir.mkdir(parents=True, exist_ok=True)
+        # 加载配置驱动的板块顺序/副标题/展示文案(均为内存缓存,启动时一次性读取)
+        self._section_order: list[tuple[str, str]] = _load_section_order()
+        self._section_taglines: dict[str, str] = _load_section_taglines()
+        self._github_url: str = _load_site_text("github_url", _FALLBACK_GITHUB_URL)
+        self._footer_slogan: str = _load_site_text(
+            "footer_slogan", _FALLBACK_FOOTER_SLOGAN
+        )
+        self._footer_topic: str = _load_site_text(
+            "footer_topic", _FALLBACK_FOOTER_TOPIC
+        )
+        self._empty_placeholder: str = _load_site_text(
+            "empty_section_placeholder", _FALLBACK_EMPTY_PLACEHOLDER
+        )
+        self._tagline_format: str = _load_site_text(
+            "tagline_format", _FALLBACK_TAGLINE_FORMAT
+        )
 
     def generate(
         self,
@@ -146,7 +230,7 @@ class IssueGenerator:
         issue_number: int,
         publish_date: str,
         items: list[ContentItem],
-    ) -> dict[str, object]:
+    ) -> dict[str, Any]:
         """构建 frontmatter,与现有 6 期格式一致"""
         description = self._generate_description(items)
         return {
@@ -180,7 +264,10 @@ class IssueGenerator:
         # 标题头
         sections.append(f"# 青年周刊 · 第 {issue_number} 期")
         sections.append("")
-        sections.append(f"> {publish_date} | 第{issue_number}期 | 每周更新")
+        sections.append(
+            "> "
+            + self._tagline_format.format(date=publish_date, issue_number=issue_number)
+        )
         sections.append("")
         sections.append("---")
         sections.append("")
@@ -189,13 +276,11 @@ class IssueGenerator:
         sections.extend(self._build_toc())
 
         # 刊首语(基于全部精选内容)
-        editorial = expander.generate_editorial(
-            issue_number, publish_date, flat_items
-        )
+        editorial = expander.generate_editorial(issue_number, publish_date, flat_items)
         sections.extend(self._build_editorial_section(editorial))
 
-        # 按固定板块顺序输出(保持与前6期结构一致,空板块显示占位提示)
-        for section_id, section_name in SECTION_ORDER:
+        # 按配置驱动的板块顺序输出(保持与前6期结构一致,空板块显示占位提示)
+        for section_id, section_name in self._section_order:
             if section_id == "editorial":
                 continue
             section_items = self._collect_section_items(section_id, categorized_items)
@@ -216,7 +301,7 @@ class IssueGenerator:
     def _build_toc(self) -> list[str]:
         """构建目录"""
         lines = ["## 本期目录", ""]
-        for i, (section_id, section_name) in enumerate(SECTION_ORDER, 1):
+        for i, (section_id, section_name) in enumerate(self._section_order, 1):
             anchor = f"#{section_name}"
             lines.append(f"{i}. [{section_name}]({anchor})")
         lines.append("")
@@ -279,21 +364,19 @@ class IssueGenerator:
     def _category_to_section_id(self, category: str) -> str:
         """把采集分类映射到固定板块 ID"""
         section_name, _ = CATEGORY_TO_SECTION.get(category, (category, ""))
-        for sid, sname in SECTION_ORDER:
+        for sid, sname in self._section_order:
             if sname == section_name:
                 return sid
         return category
 
-    def _build_empty_section(
-        self, section_name: str, section_id: str
-    ) -> list[str]:
+    def _build_empty_section(self, section_name: str, section_id: str) -> list[str]:
         """为没有采集到内容的固定板块生成占位,保持结构完整"""
         lines = [f"## {section_name}", ""]
         tagline = self._section_tagline(section_id)
         if tagline:
             lines.append(f"> {tagline}")
             lines.append("")
-        lines.append("本期该板块暂无精选内容,欢迎通过 GitHub Issues 投稿推荐。")
+        lines.append(self._empty_placeholder)
         lines.append("")
         lines.append("---")
         lines.append("")
@@ -325,18 +408,8 @@ class IssueGenerator:
         return lines
 
     def _section_tagline(self, section_id: str) -> str:
-        """板块副标题"""
-        taglines: dict[str, str] = {
-            "tech": "AI 工具、编程技巧、效率软件、前沿技术",
-            "anime": "ACG 资讯、动漫评论、原创推荐",
-            "gaming": "游戏评测、攻略心得、行业动态",
-            "stories": "成长故事、职场指南、学习心得",
-            "tools": "生产力工具、生活助手推荐",
-            "watching": "影视、书籍、播客推荐",
-            "gallery": "本周精选视觉内容",
-            "jobs": "本周招聘信息精选",
-        }
-        return taglines.get(section_id, "")
+        """板块副标题(优先从配置读取,缺省使用 fallback)"""
+        return self._section_taglines.get(section_id, "")
 
     def _format_item(self, item: ContentItem) -> list[str]:
         """降级模式下单条内容格式化"""
@@ -360,19 +433,20 @@ class IssueGenerator:
             "",
             f"**下期预告:** 第 {issue_number + 1} 期将于 {next_date} 发布",
             "",
-            "**本期话题:** 你对本期哪个内容最感兴趣?欢迎在评论区分享!",
+            f"**本期话题:** {self._footer_topic}",
             "",
             "---",
             "",
-            '> "保持好奇,保持年轻。"',
+            f'> "{self._footer_slogan}"',
             "",
             "**往期回顾:**",
         ]
+        # 往期回顾使用配置的 github_url 作为基础链接
+        github_base = self._github_url.rstrip("/")
         for i in range(max(1, issue_number - 4), issue_number):
             slug = f"{i:03d}"
             lines.append(
-                f"- [第{i}期](https://github.com/xfengyin/youth-weekly/blob/main/"
-                f"docs/issues/{slug}/README.md)"
+                f"- [第{i}期]({github_base}/blob/main/docs/issues/{slug}/README.md)"
             )
         lines.append("")
         return lines
@@ -391,4 +465,8 @@ class IssueGenerator:
         return result
 
 
-__all__ = ["ISSUES_DIR", "get_next_issue_number", "IssueGenerator"]
+__all__ = [
+    "ISSUES_DIR",
+    "get_next_issue_number",
+    "IssueGenerator",
+]
