@@ -1,48 +1,97 @@
+# =============================================================================
+# Pre-commit 本地质量门禁
+# -----------------------------------------------------------------------------
+# 目的：在 git commit 之前自动执行 black / isort / flake8 等质量检查，
+#       避免不合格代码进入 CI，根治"本地不跑、CI 才挂"的 100% 失败率。
+# 安装：uv run pre-commit install        # 在仓库根目录执行
+# 手动：uv run pre-commit run --all-files
+# 验证：uv run pre-commit validate-config
+# =============================================================================
+
+# 全局排除路径：dist/.venv/node_modules 等构建产物、依赖、前端构建输出
+exclude: |
+  (?x)^(
+      dist/.*|
+      \.venv/.*|
+      venv/.*|
+      env/.*|
+      node_modules/.*|
+      web/node_modules/.*|
+      web/\.next/.*|
+      \.git/.*|
+      __pycache__/.*|
+      \.mypy_cache/.*|
+      \.pytest_cache/.*|
+      \.ruff_cache/.*|
+      .*\.egg-info/.*|
+      .*\.min\.(js|css)|
+      docs/issues/.*/assets/.*
+  )$
+
+# 最小 pre-commit 版本
+minimum_pre_commit_version: "3.5.0"
+
 repos:
-  # 基础 Git 钩子
+  # ---------------------------------------------------------------------------
+  # 1. 基础 Git 钩子：保证仓库基础卫生
+  # ---------------------------------------------------------------------------
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: check-merge-conflict
-      - id: detect-private-key
+      - id: trailing-whitespace        # 删除行尾空白
+      - id: end-of-file-fixer          # 确保文件以单个换行结尾
+      - id: check-yaml                 # YAML 语法校验
+      - id: check-added-large-files    # 防止误提交大文件
+      - id: check-merge-conflict       # 检测未解决的合并冲突标记
+      - id: detect-private-key         # 防止误提交私钥
 
-  # Python 代码格式化
+  # ---------------------------------------------------------------------------
+  # 2. black：Python 代码格式化（不可变、零配置）
+  #    line-length 与 pyproject.toml [tool.black] 一致
+  # ---------------------------------------------------------------------------
   - repo: https://github.com/psf/black
     rev: 23.11.0
     hooks:
       - id: black
-        language_version: python3
+        language_version: python3     # 与 pyproject.toml requires-python >=3.11 一致
+        args: ["--line-length=88"]
+        files: \.pyi?$
 
-  # import 排序
+  # ---------------------------------------------------------------------------
+  # 3. isort：import 排序，profile=black 与 black 协同避免冲突
+  # ---------------------------------------------------------------------------
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
       - id: isort
-        args: ["--profile", "black"]
+        language_version: python3
+        args: ["--profile", "black", "--line-length=88", "--known-first-party=youth_weekly"]
+        files: \.py$
 
-  # 代码检查
+  # ---------------------------------------------------------------------------
+  # 4. flake8：代码风格 + 错误检查
+  #    max-line-length=88 与 black 一致；E203/W503 已在 pyproject 排除
+  # ---------------------------------------------------------------------------
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
     hooks:
       - id: flake8
-        args: ["--max-line-length=100", "--extend-ignore=E203"]
+        language_version: python3
+        additional_dependencies: [flake8-pyproject]
+        args: ["--max-line-length=88", "--extend-ignore=E203,W503"]
+        files: \.py$
 
-  # 类型检查
+  # ---------------------------------------------------------------------------
+  # 5. mypy：静态类型检查
+  #    因速度较慢，默认不在 commit 阶段触发，仅手动运行：
+  #        uv run pre-commit run --hook-stage manual mypy
+  # ---------------------------------------------------------------------------
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.7.0
     hooks:
       - id: mypy
-        additional_dependencies: [types-all]
-        args: [--ignore-missing-imports]
-
-  # 安全扫描
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: ["-r", "src/youth_weekly/"]
-        files: \.py$
+        language_version: python3
+        stages: [manual]              # 手动模式，commit 不跑
+        additional_dependencies: [types-requests, types-PyYAML, types-python-dateutil]
+        args: [--ignore-missing-imports, --config-file=scripts/pyproject.toml]
+        files: ^scripts/src/.*\.py$

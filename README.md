@@ -287,6 +287,44 @@ uv run youth-weekly generate   # 生成周刊
 uv run youth-weekly rss        # 生成 RSS
 ```
 
+### 本地质量门禁（pre-commit）
+
+为避免不合格代码进入 CI 流水线，推荐在本地启用 pre-commit 钩子：
+
+```bash
+# 1. 同步依赖（含 dev 工具链）
+cd scripts && uv sync --extra dev && cd ..
+
+# 2. 安装 Git 钩子（仅需执行一次）
+uv run pre-commit install
+
+# 3. 一键跑全量检查（format + lint + test）
+make all
+
+# 4. 单独跑某项
+make format        # 仅格式化
+make lint          # 仅静态检查
+make test          # 仅跑测试
+make audit         # 仅安全扫描
+make typecheck     # mypy 类型检查（速度较慢，按需执行）
+```
+
+可用的 make 目标清单：
+
+| 目标 | 作用 |
+|------|------|
+| `make install`      | 安装 Python 依赖（uv sync） |
+| `make install-hooks`| 安装 pre-commit Git 钩子 |
+| `make format`       | black + isort 格式化 |
+| `make lint`         | flake8 + isort/black check |
+| `make test`         | pytest 跑测试 + 覆盖率 |
+| `make audit`        | bandit 安全扫描 |
+| `make all`          | format + lint + test |
+| `make ci`           | 模拟完整 CI 流水线 |
+| `make pre-commit`   | 手动跑 pre-commit 全量检查 |
+
+> 提示：若不便安装 pre-commit 框架，也可使用 `bash scripts/pre-commit.sh` 作为零依赖的轻量替代。
+
 </details>
 
 ---
