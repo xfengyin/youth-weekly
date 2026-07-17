@@ -223,6 +223,10 @@ jobs:
         working-directory: web
         run: npm run type-check
 
+      - name: Test
+        working-directory: web
+        run: npm test -- --coverage --watchAll=false
+
       - name: Build
         working-directory: web
         run: npm run build

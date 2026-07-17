@@ -1,12 +1,31 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { remark } from 'remark'
-import remarkHtml from 'remark-html'
-import remarkGfm from 'remark-gfm'
-import DOMPurify from 'isomorphic-dompurify'
 
-const docsDirectory = path.join(process.cwd(), '..', 'docs')
+/**
+ * 文档根目录解析：
+ * 1. 优先使用环境变量 DOCS_PATH（生产/CI 可通过该变量覆盖，避免对 process.cwd() 的硬编码依赖）。
+ * 2. 兜底使用 `process.cwd()/../docs`（兼容本地开发环境与 `next export` 工作目录）。
+ *
+ * 若目录不存在，抛出明确错误，避免静默失败导致空数据。
+ */
+function resolveDocsDirectory(): string {
+  const fallback = path.join(process.cwd(), '..', 'docs')
+  const docsDirectory = process.env.DOCS_PATH
+    ? path.resolve(process.env.DOCS_PATH)
+    : fallback
+
+  if (!fs.existsSync(docsDirectory)) {
+    throw new Error(
+      `[content] 文档目录不存在: ${docsDirectory}` +
+        (process.env.DOCS_PATH
+          ? `（来源：DOCS_PATH 环境变量）`
+          : `（默认值，可通过设置 DOCS_PATH 环境变量覆盖）`),
+    )
+  }
+
+  return docsDirectory
+}
 
 export interface Issue {
   issue: number
@@ -33,8 +52,9 @@ export interface SearchResult {
  * 不可在客户端组件或浏览器环境中调用
  */
 export function getAllIssues(): Issue[] {
+  const docsDirectory = resolveDocsDirectory()
   const issuesDirectory = path.join(docsDirectory, 'issues')
-  
+
   if (!fs.existsSync(issuesDirectory)) {
     return []
   }
@@ -45,7 +65,7 @@ export function getAllIssues(): Issue[] {
 
   const issues = issueDirs.map(dir => {
     const fullPath = path.join(issuesDirectory, dir, 'README.md')
-    
+
     if (!fs.existsSync(fullPath)) {
       return null
     }
@@ -78,8 +98,9 @@ export function getIssueBySlug(slug: string): Issue | null {
   // 防止路径遍历攻击
   if (!/^\d+$/.test(slug)) return null
 
+  const docsDirectory = resolveDocsDirectory()
   const fullPath = path.join(docsDirectory, 'issues', slug, 'README.md')
-  
+
   if (!fs.existsSync(fullPath)) {
     return null
   }
@@ -97,38 +118,6 @@ export function getIssueBySlug(slug: string): Issue | null {
     content: String(content),
     slug: String(slug),
   }
-}
-
-// 渲染 Markdown 为 HTML（带 XSS 防护）
-export async function renderMarkdown(content: string): Promise<string> {
-  const result = await remark()
-    .use(remarkGfm)
-    .use(remarkHtml, { sanitize: false })
-    .process(content)
-  
-  const rawHtml = result.toString()
-  
-  return DOMPurify.sanitize(rawHtml, {
-    ALLOWED_TAGS: [
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'p', 'br', 'hr',
-      'ul', 'ol', 'li',
-      'blockquote', 'pre', 'code',
-      'a', 'strong', 'em', 'del', 's',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
-      'img', 'figure', 'figcaption',
-      'span', 'div',
-    ],
-    ALLOWED_ATTR: [
-      'href', 'title', 'target', 'rel',
-      'src', 'alt', 'width', 'height',
-      'class', 'className',
-      'align',
-    ],
-    ALLOW_DATA_ATTR: false,
-    ADD_ATTR: ['target'],
-    FORCE_BODY: false,
-  })
 }
 
 // 获取搜索索引
