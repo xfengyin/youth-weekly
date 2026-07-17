@@ -11,15 +11,15 @@ on:
         required: false
         default: '手动触发周刊采集与发布'
 
-# 最小化权限：周刊只需写仓库内容 + 触发主站 deploy
+# 最小化权限：周刊只需写仓库内容（commit 推送新一期）
+# 注意：不需要 actions: write —— 主站部署由 deploy.yml 在收到 push 后自然触发
 permissions:
   contents: write
-  actions: write
 
-# 并发控制：避免重复触发
-# 同 workflow 在不同 ref 下可并行，但同一 ref 上串行（保证周刊原子性）
+# 并发控制：与 deploy.yml 使用不同的 group 名，互不阻塞；
+# 周刊生成原子性：同 workflow 下串行进行，新运行不打断旧运行。
 concurrency:
-  group: "weekly-publish-${{ github.ref }}"
+  group: "weekly-publish-${{ workflow }}"
   cancel-in-progress: false  # 周刊生成不可打断
 
 jobs:
@@ -85,6 +85,8 @@ jobs:
           uv run youth-weekly issue
 
       # 3. 提交阶段：将新一期推送到 main
+      #    注意：commit message 使用 [skip ci] 仅用于跳过 ci.yml 的冗余校验，
+      #    不会跳过 deploy.yml（按设计 deploy 会自然触发并完成 Pages 部署）。
       - name: Commit generated issue
         id: commit
         if: steps.content_check.outputs.has_content == 'true'
@@ -100,19 +102,8 @@ jobs:
             echo "no_changes=false" >> $GITHUB_OUTPUT
           fi
 
-      # 4. 触发主站 rebuild（仅在有变更时）
-      - name: Trigger site rebuild
-        if: steps.commit.outputs.no_changes == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            "/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" \
-            -f ref="${{ github.ref_name }}"
-
-      # 5. 汇总结果
+      # 4. 汇总结果
+      #    主站部署由 deploy.yml 在收到上方 push 后自然触发，无需在此 dispatch。
       - name: Notify result
         if: always()
         run: |
@@ -124,5 +115,5 @@ jobs:
           elif [ "${{ steps.commit.outputs.no_changes }}" = "true" ]; then
             echo "ℹ️ No new content to publish this week"
           else
-            echo "✅ New weekly issue published and site rebuild triggered"
+            echo "✅ New weekly issue published; deploy.yml will be triggered by the push to main"
           fi
