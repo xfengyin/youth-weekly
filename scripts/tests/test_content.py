@@ -12,6 +12,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from youth_weekly.core.content import (
+    clear_cache,
     get_issue_count,
     get_latest_issue,
     load_all_issues,
@@ -321,6 +322,80 @@ class TestSafeResolvePath:
         result = safe_resolve_path(self.base_dir, "/tmp/evil")
 
         assert result is None
+
+
+class TestMtimeCacheInvalidation:
+    """测试基于 mtime 的缓存自动失效(P1)"""
+
+    def setup_method(self):
+        self.temp_dir = tempfile.mkdtemp()
+        self.docs_dir = Path(self.temp_dir) / "docs"
+        self.docs_dir.mkdir()
+        self.issues_dir = self.docs_dir / "issues"
+        self.issues_dir.mkdir()
+        clear_cache()  # 防止前一个测试污染
+
+    def teardown_method(self):
+        clear_cache()
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def _create_issue(self, num: int, title: str, published: bool = True) -> Path:
+        issue_dir = self.issues_dir / str(num).zfill(3)
+        issue_dir.mkdir()
+        readme_content = f"""---
+issue: {num}
+title: "{title}"
+date: "2026-01-{str(num).zfill(2)}"
+published: {str(published).lower()}
+---
+
+内容 {num}
+"""
+        readme_path = issue_dir / "README.md"
+        readme_path.write_text(readme_content, encoding="utf-8")
+        return readme_path
+
+    def test_cache_invalidates_on_new_file(self):
+        """新增 issue 后,缓存应自动失效并看到新内容"""
+        self._create_issue(1, "周刊1")
+        first = load_all_issues(self.docs_dir)
+        assert len(first) == 1
+
+        # 模拟新增一期:文件系统变化
+        self._create_issue(2, "周刊2")
+
+        # mtime 变化后应自动重新加载,无需手动 clear_cache
+        second = load_all_issues(self.docs_dir)
+        assert len(second) == 2
+
+    def test_cache_returns_same_list_when_unchanged(self):
+        """文件未变时,缓存应命中(返回同一对象)"""
+        self._create_issue(1, "周刊1")
+        first = load_all_issues(self.docs_dir)
+        second = load_all_issues(self.docs_dir)
+        # mtime 未变 → 命中缓存 → 返回同一列表对象
+        assert first is second
+
+    def test_clear_cache_forces_reload(self):
+        """显式 clear_cache 强制重新加载"""
+        self._create_issue(1, "周刊1")
+        first = load_all_issues(self.docs_dir)
+
+        self._create_issue(2, "周刊2")
+        clear_cache()  # 显式清除
+        second = load_all_issues(self.docs_dir)
+        assert len(second) == 2
+        assert first is not second
+
+    def test_cache_isolated_by_args(self):
+        """不同 (reverse, include_unpublished) 组合的缓存互不影响"""
+        self._create_issue(1, "周刊1", published=True)
+        self._create_issue(2, "周刊2", published=False)
+
+        published = load_all_issues(self.docs_dir, include_unpublished=False)
+        all_issues = load_all_issues(self.docs_dir, include_unpublished=True)
+        assert len(published) == 1
+        assert len(all_issues) == 2
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ import logging
 import pytest
 
 from youth_weekly.cli import main
-from youth_weekly.plugins import rss, collect, issue  # noqa: F401
+from youth_weekly.plugins import collect, issue, rss  # noqa: F401
 
 
 @pytest.fixture(autouse=True)

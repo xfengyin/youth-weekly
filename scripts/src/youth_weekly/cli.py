@@ -20,17 +20,17 @@ from youth_weekly.core.config import (
     get_output_dir,
     load_config,
 )
-from youth_weekly.core.content import load_all_issues
+from youth_weekly.core.content import clear_cache, load_all_issues
 from youth_weekly.core.logger import get_logger, setup_logger
 from youth_weekly.plugin import Registry
 from youth_weekly.plugins import (  # noqa: F401
+    collect,
     example,
+    issue,
     issue_index,
+    rss,
     search_index,
     stats,
-    rss,
-    collect,
-    issue,
 )
 
 
@@ -139,6 +139,8 @@ def cmd_issue(args: argparse.Namespace) -> int:
         params["issues_dir"] = args.issues_dir
 
     result = plugin.execute(params)
+    # 生成新一期后必须清除缓存,否则新文件不会被 load_all_issues 看到
+    clear_cache()
     if result.get("success"):
         logger.info("Issue generated: %s", result.get("issue_dir"))
         return 0

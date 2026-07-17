@@ -10,11 +10,12 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from youth_weekly.plugin.base import BasePlugin
-from youth_weekly.plugin.registry import register
 from youth_weekly.core.collectors import ContentItem
 from youth_weekly.core.config import get_curated_content_path, get_issues_dir
+from youth_weekly.core.content import clear_cache
 from youth_weekly.core.issue_generator import IssueGenerator
+from youth_weekly.plugin.base import BasePlugin
+from youth_weekly.plugin.registry import register
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,8 @@ class IssuePlugin(BasePlugin):
         issue_dir = generator.generate(categorized)
 
         if issue_dir:
+            # 主动清除缓存,保证下一次 load_all_issues 能看到新生成的文件
+            clear_cache()
             logger.info("Issue generated successfully at %s", issue_dir)
             return {
                 "success": True,

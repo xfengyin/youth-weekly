@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 import re
 import time
 from abc import ABC, abstractmethod
@@ -19,6 +20,20 @@ import feedparser
 import requests
 
 logger = logging.getLogger(__name__)
+
+
+# 单次请求的响应体最大字节数,防止恶意/异常大文件耗尽内存(10MB)
+MAX_RESPONSE_SIZE: int = 10 * 1024 * 1024
+
+
+class ResponseTooLargeError(requests.RequestException):
+    """响应体超过允许大小,主动中止以避免 OOM"""
+
+    def __init__(self, url: str, size: int, limit: int) -> None:
+        self.url = url
+        self.size = size
+        self.limit = limit
+        super().__init__(f"Response from {url} exceeds {limit} bytes (got {size})")
 
 
 @dataclass
@@ -62,12 +77,53 @@ class BaseCollector(ABC):
         """执行内容采集(子类必须实现)"""
         raise NotImplementedError
 
-    def _fetch_with_retry(self, url: str) -> requests.Response | None:
-        """带指数退避的 HTTP 请求"""
+    def _fetch_with_retry(
+        self,
+        url: str,
+        *,
+        max_size: int = MAX_RESPONSE_SIZE,
+    ) -> requests.Response | None:
+        """
+        带指数退避的 HTTP 请求,同时限制响应体大小防止 OOM。
+
+        使用 stream=True + iter_content 累加检查大小,超限时主动关闭连接
+        并返回 None;子采集器据此跳过空内容。
+
+        Args:
+            url: 目标 URL
+            max_size: 允许的最大响应字节数(默认 10MB)
+
+        Returns:
+            成功的 Response 对象,失败或超限返回 None
+        """
         for attempt in range(self.max_retries):
             try:
-                resp = self.session.get(url, timeout=self.timeout)
+                resp = self.session.get(url, timeout=self.timeout, stream=True)
                 resp.raise_for_status()
+
+                # 流式读取,累加检查大小,避免将整个响应载入内存
+                total = 0
+                chunks: list[bytes] = []
+                for chunk in resp.iter_content(chunk_size=64 * 1024):
+                    if not chunk:
+                        continue
+                    total += len(chunk)
+                    if total > max_size:
+                        resp.close()
+                        logger.warning(
+                            "Response too large (attempt %d/%d): %s "
+                            "> %d bytes, aborting",
+                            attempt + 1,
+                            self.max_retries,
+                            url,
+                            max_size,
+                        )
+                        # 超限不重试,直接返回 None 避免放大攻击面
+                        return None
+                    chunks.append(chunk)
+
+                # 用累加后的内容替换原始流,后续可直接使用 resp.content
+                resp._content = b"".join(chunks)  # type: ignore[attr-defined]
                 return resp
             except requests.RequestException as exc:
                 logger.warning(
@@ -210,13 +266,63 @@ class HackerNewsCollector(BaseCollector):
 class GitHubTrendingCollector(BaseCollector):
     """GitHub Trending 采集器(使用 Search API 模拟)"""
 
+    # 认证后的速率限制(per hour per IP)远高于匿名 60/h
+    AUTHENTICATED_RATE_LIMIT_PER_HOUR: int = 5000
+    ANONYMOUS_RATE_LIMIT_PER_HOUR: int = 60
+
+    def __init__(
+        self,
+        timeout: int = 30,
+        max_retries: int = 3,
+        user_agent: str = "YouthWeekly/1.0",
+        delay: float = 2.0,
+        github_token: str | None = None,
+    ) -> None:
+        super().__init__(
+            timeout=timeout,
+            max_retries=max_retries,
+            user_agent=user_agent,
+            delay=delay,
+        )
+        # 优先级:显式参数 > GITHUB_TOKEN 环境变量
+        token = (
+            github_token or os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        )
+        if token:
+            # GitHub API 使用 Bearer token 认证
+            self.session.headers["Authorization"] = f"Bearer {token}"
+            # 限流维度:认证用户
+            self._rate_limit = self.AUTHENTICATED_RATE_LIMIT_PER_HOUR
+            logger.info(
+                "GitHubTrendingCollector: using authenticated requests "
+                "(rate limit %d/h)",
+                self._rate_limit,
+            )
+        else:
+            # 未配置 token,降级为匿名请求,速率受限
+            self._rate_limit = self.ANONYMOUS_RATE_LIMIT_PER_HOUR
+            logger.info(
+                "GitHubTrendingCollector: GITHUB_TOKEN not set, "
+                "fallback to anonymous requests (rate limit %d/h)",
+                self._rate_limit,
+            )
+
+    @property
+    def is_authenticated(self) -> bool:
+        """是否启用了 GitHub API 认证"""
+        return "Authorization" in self.session.headers
+
     def collect(self, source_config: dict[str, Any]) -> list[ContentItem]:
         """从 GitHub Trending 采集内容"""
         max_items = int(source_config.get("max_items", 10))
         name = source_config.get("name", "GitHub Trending")
         category = source_config.get("category", "dev")
 
-        logger.info("Collecting from %s", name)
+        logger.info(
+            "Collecting from %s (authenticated=%s)",
+            name,
+            self.is_authenticated,
+        )
 
         try:
             params_dict: dict[str, str | int] = {
@@ -347,4 +453,6 @@ __all__ = [
     "get_collector",
     "register_collector",
     "collect_concurrent",
+    "MAX_RESPONSE_SIZE",
+    "ResponseTooLargeError",
 ]

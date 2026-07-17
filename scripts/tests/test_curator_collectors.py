@@ -165,6 +165,37 @@ class TestContentCurator:
         assert len(result) == 2
         curator.close()
 
+    def test_dedup_batch_preserves_order(self):
+        """批量去重应保留首次出现顺序(用于评分排序)"""
+        from youth_weekly.core.collectors import ContentItem
+        from youth_weekly.core.curator import ContentCurator
+
+        db = self.tmp / "d2.db"
+        curator = ContentCurator(dedup_enabled=True, dedup_db_path=str(db))
+        items = [
+            ContentItem(title="first", url="http://x/1"),
+            ContentItem(title="second", url="http://x/2"),
+            ContentItem(title="first-dup", url="http://x/1"),
+            ContentItem(title="third", url="http://x/3"),
+        ]
+        result = curator.deduplicate(items)
+        assert [i.title for i in result] == ["first", "second", "third"]
+
+        # 第二次调用同库,所有项都应被去重
+        result2 = curator.deduplicate(items)
+        assert result2 == []
+        curator.close()
+
+    def test_dedup_empty_list(self):
+        """空列表去重应安全返回空列表,不抛异常"""
+        from youth_weekly.core.curator import ContentCurator
+
+        db = self.tmp / "d3.db"
+        curator = ContentCurator(dedup_enabled=True, dedup_db_path=str(db))
+        result = curator.deduplicate([])
+        assert result == []
+        curator.close()
+
     def test_score_items(self):
         from youth_weekly.core.collectors import ContentItem
         from youth_weekly.core.curator import ContentCurator

@@ -11,10 +11,10 @@ from typing import Any
 
 from feedgen.feed import FeedGenerator
 
-from youth_weekly.plugin.base import BasePlugin
-from youth_weekly.plugin.registry import register
 from youth_weekly.core.config import get_config
 from youth_weekly.core.content import load_all_issues
+from youth_weekly.plugin.base import BasePlugin
+from youth_weekly.plugin.registry import register
 
 
 @register()

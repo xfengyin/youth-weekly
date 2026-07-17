@@ -8,22 +8,22 @@
 from __future__ import annotations
 
 # 导入即注册,业务插件需在包内显式导入才能被注册
+from . import collect  # noqa: F401
 from . import example  # noqa: F401
+from . import issue  # noqa: F401
 from . import issue_index  # noqa: F401
+from . import rss  # noqa: F401
 from . import search_index  # noqa: F401
 from . import stats  # noqa: F401
-from . import rss  # noqa: F401
-from . import collect  # noqa: F401
-from . import issue  # noqa: F401
+from .collect import CollectPlugin
 
 # 公共 API 重导出
 from .example import ExamplePlugin, HelloWorldPlugin
+from .issue import IssuePlugin
 from .issue_index import IssueIndexPlugin
+from .rss import RssPlugin
 from .search_index import SearchIndexPlugin
 from .stats import StatsPlugin
-from .rss import RssPlugin
-from .collect import CollectPlugin
-from .issue import IssuePlugin
 
 __all__ = [
     "ExamplePlugin",
