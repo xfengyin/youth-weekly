@@ -79,7 +79,12 @@ class ContentCurator:
 
     def deduplicate(self, items: list[ContentItem]) -> list[ContentItem]:
         """
-        对内容条目进行去重
+        对内容条目进行去重（批量优化版本）
+
+        性能优化:
+        - 一次 SELECT 拉取所有已存在指纹（O(1) 次往返代替 O(N) 次）
+        - 用 executemany 批量插入新增指纹
+        - 输入列表内重复的条目也由单一去重集合处理
 
         Args:
             items: 原始内容条目列表
@@ -90,36 +95,53 @@ class ContentCurator:
         if not self.dedup_enabled:
             return items
 
-        unique_items: list[ContentItem] = []
-        db = self._get_db()
-        seen_count = 0
+        if not items:
+            return []
 
+        db = self._get_db()
+
+        # 1) 一次查询拉取所有候选指纹
+        candidate_fps = {item.fingerprint for item in items}
+        placeholders = ",".join("?" * len(candidate_fps))
+        existing: set[str] = set()
+        if candidate_fps:
+            cursor = db.execute(
+                f"SELECT fingerprint FROM content_fingerprints "
+                f"WHERE fingerprint IN ({placeholders})",
+                tuple(candidate_fps),
+            )
+            existing = {row[0] for row in cursor.fetchall()}
+
+        # 2) 在内存中按指纹去重,保留首次出现顺序
+        seen: set[str] = set()
+        unique_items: list[ContentItem] = []
+        new_rows: list[tuple[str, str, str]] = []
         for item in items:
             fp = item.fingerprint
-            cursor = db.execute(
-                "SELECT fingerprint FROM content_fingerprints WHERE fingerprint = ?",
-                (fp,),
-            )
-            if cursor.fetchone() is not None:
-                seen_count += 1
+            if fp in seen or fp in existing:
                 continue
-
+            seen.add(fp)
             unique_items.append(item)
-            db.execute(
-                "INSERT INTO content_fingerprints "
-                "(fingerprint, title, url) VALUES (?, ?, ?)",
-                (fp, item.title, item.url),
-            )
+            new_rows.append((fp, item.title, item.url))
 
+        # 3) 批量插入新增指纹(单次 SQL 往返)
+        if new_rows:
+            db.executemany(
+                "INSERT OR IGNORE INTO content_fingerprints "
+                "(fingerprint, title, url) VALUES (?, ?, ?)",
+                new_rows,
+            )
         db.commit()
 
+        seen_count = len(items) - len(unique_items)
         if seen_count > 0:
             logger.info("Dedup: filtered %d duplicate items", seen_count)
         logger.info(
-            "Dedup: %d -> %d items (removed %d)",
+            "Dedup: %d -> %d items (removed %d, batch=%d)",
             len(items),
             len(unique_items),
             seen_count,
+            len(new_rows),
         )
         return unique_items
 

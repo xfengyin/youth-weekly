@@ -4,9 +4,8 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-
 from youth_weekly.plugin import Registry
-from youth_weekly.plugins import rss, collect, issue  # noqa: F401
+from youth_weekly.plugins import collect, issue, rss  # noqa: F401
 
 
 class TestRssPlugin:

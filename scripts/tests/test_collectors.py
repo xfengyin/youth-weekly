@@ -2,15 +2,14 @@
 
 from unittest.mock import MagicMock, patch
 
-
 from youth_weekly.core.collectors import (
+    COLLECTOR_MAP,
     ContentItem,
-    RSSCollector,
-    HackerNewsCollector,
     GitHubTrendingCollector,
+    HackerNewsCollector,
+    RSSCollector,
     get_collector,
     register_collector,
-    COLLECTOR_MAP,
 )
 
 
@@ -264,3 +263,100 @@ class TestCollectorFactory:
 
         # 清理
         del COLLECTOR_MAP["custom"]
+
+
+class TestResponseSizeLimit:
+    """测试响应大小限制(P0 安全修复)"""
+
+    def test_fetch_respects_max_size(self):
+        """超限时 _fetch_with_retry 应返回 None"""
+        from youth_weekly.core.collectors import BaseCollector
+
+        class _Stub(BaseCollector):
+            def collect(self, source_config):
+                return []
+
+        collector = _Stub(delay=0, max_retries=1)
+
+        # 构造一个会分块返回数据的伪响应
+        resp = MagicMock()
+        # 第一次 iter_content 给出 5MB 数据,触发超限检查
+        big_chunk = b"x" * (5 * 1024 * 1024)
+        resp.iter_content.return_value = [big_chunk]
+        resp.raise_for_status.return_value = None
+        resp.close = MagicMock()
+
+        with patch.object(collector.session, "get", return_value=resp):
+            result = collector._fetch_with_retry("http://x", max_size=4 * 1024 * 1024)
+
+        assert result is None
+        resp.close.assert_called_once()
+
+    def test_fetch_within_limit_returns_response(self):
+        """未超限时正常返回 Response"""
+        from youth_weekly.core.collectors import BaseCollector
+
+        class _Stub(BaseCollector):
+            def collect(self, source_config):
+                return []
+
+        collector = _Stub(delay=0, max_retries=1)
+
+        resp = MagicMock()
+        resp.iter_content.return_value = [b"ok"]
+        resp.raise_for_status.return_value = None
+
+        with patch.object(collector.session, "get", return_value=resp):
+            result = collector._fetch_with_retry("http://x", max_size=1024)
+
+        assert result is resp
+        # 验证小响应被缓存到 _content
+        assert resp._content == b"ok"
+
+
+class TestGitHubAuthentication:
+    """测试 GitHub API 认证(P1)"""
+
+    def test_no_token_means_anonymous(self, monkeypatch):
+        """未配置 token 时降级为匿名请求"""
+        monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+        monkeypatch.delenv("GH_TOKEN", raising=False)
+        collector = GitHubTrendingCollector(delay=0)
+        assert collector.is_authenticated is False
+        assert "Authorization" not in collector.session.headers
+        assert (
+            collector._rate_limit
+            == GitHubTrendingCollector.ANONYMOUS_RATE_LIMIT_PER_HOUR
+        )
+
+    def test_explicit_token_sets_authorization_header(self, monkeypatch):
+        """显式传入 token 时设置 Authorization 头"""
+        monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+        collector = GitHubTrendingCollector(delay=0, github_token="ghp_explicit123")
+        assert collector.is_authenticated is True
+        assert collector.session.headers["Authorization"] == "Bearer ghp_explicit123"
+        assert (
+            collector._rate_limit
+            == GitHubTrendingCollector.AUTHENTICATED_RATE_LIMIT_PER_HOUR
+        )
+
+    def test_env_token_uses_authorization(self, monkeypatch):
+        """环境变量 GITHUB_TOKEN 启用认证"""
+        monkeypatch.setenv("GITHUB_TOKEN", "ghp_envtoken456")
+        collector = GitHubTrendingCollector(delay=0)
+        assert collector.is_authenticated is True
+        assert collector.session.headers["Authorization"] == "Bearer ghp_envtoken456"
+
+    def test_explicit_token_takes_precedence_over_env(self, monkeypatch):
+        """显式 token 优先于环境变量"""
+        monkeypatch.setenv("GITHUB_TOKEN", "ghp_env")
+        collector = GitHubTrendingCollector(delay=0, github_token="ghp_explicit")
+        assert collector.session.headers["Authorization"] == "Bearer ghp_explicit"
+
+    def test_gh_token_env_fallback(self, monkeypatch):
+        """GH_TOKEN 环境变量作为后备"""
+        monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+        monkeypatch.setenv("GH_TOKEN", "ghp_fallback789")
+        collector = GitHubTrendingCollector(delay=0)
+        assert collector.is_authenticated is True
+        assert collector.session.headers["Authorization"] == "Bearer ghp_fallback789"
