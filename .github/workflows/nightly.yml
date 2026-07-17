@@ -1,0 +1,129 @@
+name: Nightly Security Scan
+
+on:
+  # 每天 UTC 02:00 全量安全扫描
+  schedule:
+    - cron: '0 2 * * *'
+  # 支持手动触发
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: '手动触发原因'
+        required: false
+        default: '手动触发夜间安全扫描'
+
+# 写权限：用于创建/更新漏洞 issue
+permissions:
+  contents: read
+  issues: write
+
+# 并发控制：同 ref 上不允许并发，保证扫描结果原子性
+concurrency:
+  group: nightly-security-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # 全量安全扫描：失败会创建 issue 并产出可下载报告
+  security-scan:
+    name: Full Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: 'latest'
+          enable-cache: true
+          cache-dependency-glob: 'scripts/uv.lock'
+
+      - name: Install dependencies
+        working-directory: scripts
+        run: |
+          uv sync --all-extras
+
+      # 1) Bandit 全量扫描（ll = low+medium 级别）
+      - name: Run bandit
+        id: bandit
+        working-directory: scripts
+        run: |
+          mkdir -p security-reports
+          uv run bandit -r src/youth_weekly/ -ll -f json -o ../security-reports/bandit.json || true
+          uv run bandit -r src/youth_weekly/ -ll -f txt -o ../security-reports/bandit.txt || true
+          # 计算高/中风险数量
+          HIGH=$(uv run python -c "import json,sys; d=json.load(open('security-reports/bandit.json')); print(sum(1 for r in d.get('results',[]) if r.get('issue_severity')=='HIGH'))")
+          MED=$(uv run python -c "import json,sys; d=json.load(open('security-reports/bandit.json')); print(sum(1 for r in d.get('results',[]) if r.get('issue_severity')=='MEDIUM'))")
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+          echo "medium=$MED" >> $GITHUB_OUTPUT
+
+      # 2) pip-audit 全量漏洞扫描
+      - name: Run pip-audit
+        id: pip-audit
+        working-directory: scripts
+        run: |
+          mkdir -p security-reports
+          uv run pip-audit --strict --format json --output ../security-reports/pip-audit.json || AUDIT_EXIT=$?
+          uv run pip-audit --strict --format columns --output ../security-reports/pip-audit.txt || true
+          echo "audit_exit=${AUDIT_EXIT:-0}" >> $GITHUB_OUTPUT
+
+      # 3) 汇总结果
+      - name: Summarize
+        id: summary
+        if: always()
+        run: |
+          HIGH="${{ steps.bandit.outputs.high }}"
+          MED="${{ steps.bandit.outputs.medium }}"
+          AUDIT_EXIT="${{ steps.pip-audit.outputs.audit_exit }}"
+          echo "## 夜间安全扫描报告" > security-reports/summary.md
+          echo "" >> security-reports/summary.md
+          echo "- Bandit HIGH: ${HIGH:-0}" >> security-reports/summary.md
+          echo "- Bandit MEDIUM: ${MED:-0}" >> security-reports/summary.md
+          echo "- pip-audit exit: ${AUDIT_EXIT:-0}" >> security-reports/summary.md
+          echo "report_path=security-reports/summary.md" >> $GITHUB_OUTPUT
+
+      # 4) 上传安全扫描报告
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: security-reports/
+          retention-days: 30
+
+      # 5) 失败时创建 issue 通知
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🚨 [Nightly] 安全扫描失败 ${new Date().toISOString().slice(0,10)}`;
+            const body = [
+              '## 安全扫描失败',
+              '',
+              `- Commit: \`${context.sha}\``,
+              `- Workflow: ${context.workflow}`,
+              `- Run: ${context.serverUrl}/${context.workflowRun.repository.owner.login}/${context.workflowRun.repository.name}/actions/runs/${context.runId}`,
+              '',
+              '请前往 Actions 查看完整日志，或下载 security-reports 工件分析。',
+              '',
+              '```',
+              `High: ${{ steps.bandit.outputs.high || 0 }}`,
+              `Medium: ${{ steps.bandit.outputs.medium || 0 }}`,
+              `pip-audit exit: ${{ steps.pip-audit.outputs.audit_exit || 0 }}`,
+              '```',
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['security', 'nightly'],
+            });
