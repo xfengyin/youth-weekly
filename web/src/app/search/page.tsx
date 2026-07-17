@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import { Search, ArrowLeft, Calendar, X } from 'lucide-react'
+import { Search, ArrowLeft, Calendar, X, AlertCircle } from 'lucide-react'
 import Fuse from 'fuse.js'
 
 interface SearchResult {
@@ -19,15 +19,20 @@ export default function SearchPage() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  // 错误状态：避免 catch 静默吞错，提供可观测性
+  const [error, setError] = useState<string | null>(null)
 
   // 加载搜索索引数据
   useEffect(() => {
     let cancelled = false
     setIsLoading(true)
+    setError(null)
 
     fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/search-data.json`)
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch search data')
+        if (!res.ok) {
+          throw new Error(`搜索数据请求失败 (HTTP ${res.status})`)
+        }
         return res.json()
       })
       .then((data) => {
@@ -36,11 +41,16 @@ export default function SearchPage() {
           setIsLoading(false)
         }
       })
-      .catch(() => {
-        if (!cancelled) {
-          setSearchData([])
-          setIsLoading(false)
-        }
+      .catch((err: unknown) => {
+        if (cancelled) return
+        // 记录错误到控制台，便于线上排查
+        // eslint-disable-next-line no-console
+        console.error('[search] 加载搜索数据失败:', err)
+        const message =
+          err instanceof Error ? err.message : '加载搜索数据时发生未知错误'
+        setError(message)
+        setSearchData([])
+        setIsLoading(false)
       })
 
     return () => {
@@ -109,6 +119,28 @@ export default function SearchPage() {
         {isLoading && (
           <div className="text-center py-20">
             <p className="text-[#a39e98] dark:text-[#615d59]">搜索数据加载中...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {!isLoading && error && (
+          <div
+            role="alert"
+            className="callout"
+            style={{ borderLeft: '4px solid var(--color-error)' }}
+          >
+            <span className="callout-icon" aria-hidden="true">
+              <AlertCircle className="w-5 h-5 text-[#eb5757]" />
+            </span>
+            <div className="callout-content">
+              <p className="font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-1">
+                搜索数据加载失败
+              </p>
+              <p>{error}</p>
+              <p className="mt-2 text-xs text-[#a39e98] dark:text-[#615d59]">
+                请稍后重试，或刷新页面。如问题持续，请联系站点管理员。
+              </p>
+            </div>
           </div>
         )}
 

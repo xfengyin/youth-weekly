@@ -1,7 +1,39 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Share2 } from 'lucide-react'
-import { getAllIssues, getIssueBySlug, renderMarkdown } from '../../lib/content'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { getAllIssues, getIssueBySlug } from '../../lib/content'
+
+/**
+ * 使用 react-markdown 渲染 Markdown：
+ * 1. 默认不执行 dangerouslySetInnerHTML，从根上消除 XSS 注入面。
+ * 2. 通过 remark-gfm 支持 GFM 语法（表格、删除线、任务列表等）。
+ * 3. 自定义 a 组件：外链自动追加 target="_blank" rel="noopener noreferrer"，避免反向 tabnabbing。
+ */
+function MarkdownRenderer({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        a: ({ node: _node, href, children, ...props }) => {
+          const isExternal = typeof href === 'string' && /^https?:\/\//.test(href)
+          return (
+            <a
+              href={href}
+              {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              {...props}
+            >
+              {children}
+            </a>
+          )
+        },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  )
+}
 
 export async function generateStaticParams() {
   const issues = getAllIssues()
@@ -40,7 +72,7 @@ export default async function IssuePage({ params }: { params: Promise<{ slug: st
     notFound()
   }
 
-  const contentHtml = await renderMarkdown(issue.content || '')
+  const content = issue.content || ''
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#191919]">
@@ -79,7 +111,7 @@ export default async function IssuePage({ params }: { params: Promise<{ slug: st
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <article className="prose-custom">
-          <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+          <MarkdownRenderer content={content} />
         </article>
 
         <div className="callout mt-12">
