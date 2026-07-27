@@ -19,7 +19,7 @@ permissions:
 # 并发控制：与 deploy.yml 使用不同的 group 名，互不阻塞；
 # 周刊生成原子性：同 workflow 下串行进行，新运行不打断旧运行。
 concurrency:
-  group: "weekly-publish-${{ workflow }}"
+  group: "weekly-publish-${{ github.workflow }}"
   cancel-in-progress: false  # 周刊生成不可打断
 
 jobs:

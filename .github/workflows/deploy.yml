@@ -30,7 +30,7 @@ permissions:
 # 并发控制：同 workflow+ref 下只允许一个 deploy 运行，
 # 避免多次部署互相覆盖或抢资源；新运行取消旧运行。
 concurrency:
-  group: "pages-deploy-${{ workflow }}-${{ ref }}"
+  group: "pages-deploy-${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
