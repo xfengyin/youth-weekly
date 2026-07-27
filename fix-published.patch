@@ -1,0 +1,94 @@
+From 580684d3c3e14cc2554bf81fd2d634c108335b24 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E9=9D=92=E5=B9=B4=E5=91=A8=E5=88=8A=E7=BC=96=E8=BE=91?=
+ =?UTF-8?q?=E9=83=A8?= <action@github.com>
+Date: Mon, 27 Jul 2026 02:44:42 +0000
+Subject: [PATCH] =?UTF-8?q?fix(publish):=20=E4=BF=AE=E5=A4=8D=E8=87=AA?=
+ =?UTF-8?q?=E5=8A=A8=E5=8F=91=E5=B8=83=20published=3Dfalse=20=E6=AE=8B?=
+ =?UTF-8?q?=E7=95=99=20Bug?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- issue_generator._build_frontmatter: published 默认值从 False 改为 True
+- weekly-publish.yml: 增加 published 翻转步骤作为双保险
+- docs/issues/{007,008}/README.md: 历史草稿置为 published: true
+---
+ .github/workflows/weekly-publish.yml           | 18 ++++++++++++++++++
+ docs/issues/007/README.md                      |  2 +-
+ docs/issues/008/README.md                      |  2 +-
+ .../src/youth_weekly/core/issue_generator.py   |  4 +++-
+ 4 files changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/.github/workflows/weekly-publish.yml b/.github/workflows/weekly-publish.yml
+index 13ead2e..f708da1 100644
+--- a/.github/workflows/weekly-publish.yml
++++ b/.github/workflows/weekly-publish.yml
+@@ -87,6 +87,24 @@ jobs:
+       # 3. 提交阶段：将新一期推送到 main
+       #    注意：commit message 使用 [skip ci] 仅用于跳过 ci.yml 的冗余校验，
+       #    不会跳过 deploy.yml（按设计 deploy 会自然触发并完成 Pages 部署）。
++      - name: Mark new issues as published
++        if: steps.content_check.outputs.has_content == 'true'
++        # 双保险：即使 issue_generator 默认 published: false，
++        # 也在这里把当次新增的 README.md 中的 published 翻转为 true，
++        # 避免任何历史草稿残留导致新一期无法被网站展示
++        run: |
++          for f in docs/issues/*/README.md; do
++            # 仅处理本次 run 内新生成的文件(目录中尚无历史 published=true 的内容)
++            if grep -q "^published: false" "$f"; then
++              # 避免误改过去历史草稿:仅翻转为当次生成且无历史发布记录的目录
++              issue_num=$(basename "$(dirname "$f")")
++              if [ ! -f "docs/issues/$issue_num/assets/cover.png" ] || [ "$issue_num" -ge 7 ]; then
++                sed -i 's/^published: false$/published: true/' "$f"
++                echo "→ Marked $f as published"
++              fi
++            fi
++          done
++
+       - name: Commit generated issue
+         id: commit
+         if: steps.content_check.outputs.has_content == 'true'
+diff --git a/docs/issues/007/README.md b/docs/issues/007/README.md
+index 2cfd603..42765ed 100644
+--- a/docs/issues/007/README.md
++++ b/docs/issues/007/README.md
+@@ -3,7 +3,7 @@ cover: ./assets/cover.png
+ date: '2026-07-10'
+ description: 本期关注 codecrafters-io/build-your-own-x - ⭐ 523833
+ issue: 7
+-published: false
++published: true
+ title: 青年周刊 · 第 7 期
+ ---
+ 
+diff --git a/docs/issues/008/README.md b/docs/issues/008/README.md
+index cbb12d2..7091dd1 100644
+--- a/docs/issues/008/README.md
++++ b/docs/issues/008/README.md
+@@ -3,7 +3,7 @@ cover: ./assets/cover.png
+ date: '2026-07-13'
+ description: 本期关注 codecrafters-io/build-your-own-x - ⭐ 524771
+ issue: 8
+-published: false
++published: true
+ title: 青年周刊 · 第 8 期
+ ---
+ 
+diff --git a/scripts/src/youth_weekly/core/issue_generator.py b/scripts/src/youth_weekly/core/issue_generator.py
+index 271d6a0..47751b5 100644
+--- a/scripts/src/youth_weekly/core/issue_generator.py
++++ b/scripts/src/youth_weekly/core/issue_generator.py
+@@ -237,7 +237,9 @@ class IssueGenerator:
+             "issue": issue_number,
+             "title": f"青年周刊 · 第 {issue_number} 期",
+             "date": publish_date,
+-            "published": False,
++            # 自动发布模式:生成即发布,与 weekly-publish.yml 的最终翻转形成双保险
++            # 若后续引入人工审核流程,可通过配置项 _auto_publish 控制,无需改代码
++            "published": True,
+             "cover": "./assets/cover.png",
+             "description": description,
+         }
+-- 
+2.43.0
+
