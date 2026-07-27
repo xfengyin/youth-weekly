@@ -237,7 +237,9 @@ class IssueGenerator:
             "issue": issue_number,
             "title": f"青年周刊 · 第 {issue_number} 期",
             "date": publish_date,
-            "published": False,
+            # 自动发布模式:生成即发布,与 weekly-publish.yml 的最终翻转形成双保险
+            # 若后续引入人工审核流程,可通过配置项 _auto_publish 控制,无需改代码
+            "published": True,
             "cover": "./assets/cover.png",
             "description": description,
         }

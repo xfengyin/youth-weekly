@@ -3,7 +3,7 @@ cover: ./assets/cover.png
 date: '2026-07-13'
 description: 本期关注 codecrafters-io/build-your-own-x - ⭐ 524771
 issue: 8
-published: false
+published: true
 title: 青年周刊 · 第 8 期
 ---
 
