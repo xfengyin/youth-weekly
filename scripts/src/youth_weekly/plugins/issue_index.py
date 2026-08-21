@@ -11,6 +11,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from youth_weekly.core.config import ROOT_DIR
 from youth_weekly.core.content import load_all_issues
 from youth_weekly.core.utils import safe_int
 from youth_weekly.plugin import BasePlugin, register
@@ -26,21 +27,24 @@ class IssueIndexPlugin(BasePlugin):
     version: str = "1.0.0"
     description: str = "生成周刊索引 JSON 文件"
 
+    # 产物路由:generate 命令据此把索引写到 web/public/issue_index.json
+    outputs: dict[str, str] = {"issue_index": "web/public/issue_index.json"}
+
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         执行周刊索引生成
 
         Args:
             params: 参数字典,支持:
-                - docs_dir: 文档根目录
-                - output_path: 输出文件路径
+                - docs_dir: 文档根目录(默认 ROOT_DIR/docs)
+                - output_path: 输出文件路径(默认不写文件)
                 - issues: 预加载的 issues 列表(可选)
 
         Returns:
             生成的周刊数据
         """
         params = params or {}
-        docs_dir = Path(params.get("docs_dir", ""))
+        docs_dir = Path(params.get("docs_dir", str(ROOT_DIR / "docs")))
         output_path = Path(params["output_path"]) if "output_path" in params else None
 
         issues = params.get("issues") or load_all_issues(docs_dir, reverse=True)

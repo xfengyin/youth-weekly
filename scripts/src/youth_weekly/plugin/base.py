@@ -19,7 +19,14 @@ class BasePlugin(ABC):
     2. 必须定义 name 属性
     3. 通过 @register() 装饰器注册到注册中心
     4. 可选实现 version/description/validate
+    5. 可选声明 outputs 类属性(产物路由与 artifacts-manifest.json 依赖它)
     """
+
+    # 可选类属性:声明本插件产出的文件产物(逻辑名 -> 相对仓库根 ROOT_DIR 的路径)。
+    # generate 命令据此把产物路由到正确位置、写入 artifacts-manifest.json。
+    # 仅声明"文件"产物;动态生成多个文件的插件(如每期 JSON)可留空,
+    # 并在 execute 返回值中用 "output_files" 列表报告实际产物路径。
+    outputs: dict[str, str] = {}
 
     @property
     @abstractmethod
@@ -68,6 +75,7 @@ class BasePlugin(ABC):
             "name": self.name,
             "version": self.version,
             "description": self.description,
+            "outputs": dict(self.outputs),
         }
 
 
