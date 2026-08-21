@@ -26,7 +26,9 @@ jobs:
   weekly-publish:
     name: Weekly Auto-Publish
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # 60min：采集（10+ 源 × 2s 间隔）+ LLM 杂志化改写（单条最长 60s × 3 重试 × ~25 条）
+    # 的最坏情况评估，避免整周发布在 30min 超时失败
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository

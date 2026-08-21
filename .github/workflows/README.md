@@ -54,6 +54,7 @@
 
 - **`deploy.yml`**：同 workflow + 同 ref 下，新运行会取消旧运行。短时间内多次 push 时只保留最后一次部署，避免浪费 runner 资源。
 - **`weekly-publish.yml`**：周刊采集 + 生成是长任务，新运行**不打断**旧运行，保证一次采集的原子性。
+- **`weekly-publish.yml` 超时**：`timeout-minutes: 60`（T-H 由 30 调高）。理由：采集（10+ 源 × 2s 间隔）+ LLM 杂志化改写（单条最长 60s × 3 次重试 × 最多约 25 条）的最坏耗时可能超过 30 分钟；60 分钟为最坏情况评估值。
 
 ### 4. 为什么 deploy.yml 不绑定 environment
 

@@ -104,6 +104,20 @@ jobs:
         run: |
           uv run youth-weekly config
 
+      # 5) 生成物契约检查：generate 必须幂等（输出与已提交产物一致），
+      #    若产生 diff 说明 JSON 产物过期未同步提交，PR 应一并更新产物。
+      - name: Artifact contract check (generate must be idempotent)
+        run: |
+          cd scripts
+          uv run youth-weekly generate
+          cd ..
+          if ! git diff --quiet -- web/public/; then
+            echo "❌ generate 产出与已提交产物不一致：请将最新产物一并提交"
+            git diff --stat -- web/public/
+            exit 1
+          fi
+          echo "✅ 生成产物与提交一致（web/public/ 无 diff）"
+
   # 安全扫描：PR 硬失败（发现即阻塞合并）；全量定时兜底见 nightly.yml（每周一）
   security:
     name: Security Scan
