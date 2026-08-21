@@ -1,6 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Archive } from 'lucide-react'
 import { getAllIssues } from '../lib/content'
+
+export const metadata: Metadata = {
+  title: '文章归档',
+  description: '按年份归档浏览青年周刊全部期次。',
+  alternates: { canonical: 'archive/' },
+}
 
 export default function ArchivePage() {
   const issues = getAllIssues()

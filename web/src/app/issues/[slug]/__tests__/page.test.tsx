@@ -2,15 +2,15 @@
  * issues/[slug]/page.tsx 单元测试
  *
  * 覆盖以下场景:
- * 1. generateStaticParams:基于已发布 issue 返回 slug 列表
- * 2. generateMetadata:title 拼接、description、openGraph
+ * 1. generateStaticParams:基于 issue_index.json 返回 slug 列表
+ * 2. generateMetadata:title(模板拼接)、description、openGraph、canonical
  * 3. generateMetadata:找不到 issue 时返回降级 title
- * 4. Page:正常 slug 渲染标题、日期、期号、frontmatter 字段
+ * 4. Page:正常 slug 渲染标题、日期、期号、正文内容
  * 5. Page:非法 slug 调用 notFound()
- * 6. Page:frontmatter 解析(空 description 时不渲染描述段落)
+ * 6. Page:合法但产物缺失的 slug 调用 notFound()
  *
  * 策略:
- * - mock ../lib/content,以可控的 issue 列表驱动被测页面
+ * - mock fs:注入 <cwd>/public/issue_index.json 与 issue-<slug>.json
  * - mock next/navigation 的 notFound,使其成为可观察的 jest.fn()
  */
 
@@ -18,55 +18,54 @@ import path from 'path'
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-// 注入 fs mock(在测试文件顶部,与 content.test.ts 类似)
 type FsSnapshot = Record<string, string>
 
-const ORIGINAL_CWD = process.cwd()
-const DOCS_ISSUES_DIR = path.join(ORIGINAL_CWD, '..', 'docs', 'issues')
+const PUBLIC_DIR = path.join(process.cwd(), 'public')
+const norm = (p: string): string => p.replace(/\\/g, '/').replace(/\/+$/g, '')
 
 jest.mock('fs', () => {
   let snapshot: FsSnapshot = {}
   const existsSync = (p: string): boolean => {
-    const normalized = p.replace(/\\/g, '/').replace(/\/+$/g, '')
-    return Object.prototype.hasOwnProperty.call(snapshot, normalized)
+    const k = norm(p)
+    if (k === norm(PUBLIC_DIR)) return Object.keys(snapshot).length > 0
+    return Object.prototype.hasOwnProperty.call(snapshot, k)
   }
-  const readFileSync = (p: string, _enc: string): string => {
-    const normalized = p.replace(/\\/g, '/').replace(/\/+$/g, '')
-    if (!snapshot[normalized]) {
-      const err: NodeJS.ErrnoException = new Error(
-        `ENOENT: no such file '${normalized}'`
-      )
+  const readFileSync = (p: string, _enc?: string): string => {
+    const k = norm(p)
+    if (!Object.prototype.hasOwnProperty.call(snapshot, k)) {
+      const err: NodeJS.ErrnoException = new Error(`ENOENT: no such file '${k}'`)
       err.code = 'ENOENT'
       throw err
     }
-    return snapshot[normalized]
-  }
-  const readdirSync = (p: string): string[] => {
-    const normalized = p.replace(/\\/g, '/').replace(/\/+$/g, '')
-    const prefix = normalized.endsWith('/') ? normalized : `${normalized}/`
-    const dirs = new Set<string>()
-    for (const key of Object.keys(snapshot)) {
-      if (!key.startsWith(prefix)) continue
-      const rest = key.slice(prefix.length)
-      const head = rest.split('/')[0]
-      if (head) dirs.add(head)
-    }
-    return Array.from(dirs)
+    return snapshot[k]
   }
   return {
     __esModule: false,
     existsSync,
     readFileSync,
-    readdirSync,
     __setFs: (next: FsSnapshot) => {
       snapshot = next
     },
   }
 })
 
-const fsMock = jest.requireMock('fs') as {
-  __setFs: (snapshot: FsSnapshot) => void
-}
+let fsMock: { __setFs: (snapshot: FsSnapshot) => void }
+
+// react-markdown v9 为纯 ESM，ts-jest(commonjs) 无法直接 require；
+// 此处以轻量桩替代：页面测试关注数据/渲染逻辑，不测试 markdown 解析本身。
+jest.mock('react-markdown', () => {
+  const React = require('react')
+  return {
+    __esModule: true,
+    default: ({ children }: { children: React.ReactNode }) =>
+      React.createElement('div', { 'data-testid': 'markdown' }, children),
+  }
+})
+
+jest.mock('remark-gfm', () => ({
+  __esModule: true,
+  default: () => () => {},
+}))
 
 const notFoundMock = jest.fn()
 
@@ -77,71 +76,59 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
+const json = (obj: unknown): string => JSON.stringify(obj)
+
+const publicFile = (rel: string): string => norm(path.join(PUBLIC_DIR, rel))
+
+/** 构造一期完整 issue-<slug>.json 数据 */
 const buildIssue = (
   slug: string,
-  frontmatter: Record<string, unknown>,
-  body = '正文内容'
-): string => {
-  const yaml = Object.entries(frontmatter)
-    .map(([k, v]) => {
-      if (typeof v === 'string') return `${k}: "${v.replace(/"/g, '\\"')}"`
-      return `${k}: ${v}`
-    })
-    .join('\n')
-  return `---\n${yaml}\n---\n\n${body}\n`
-}
+  data: Record<string, unknown>,
+): Record<string, unknown> => ({
+  issue: Number(slug),
+  title: `第${Number(slug)}期`,
+  date: '2026-04-08',
+  published: true,
+  description: undefined,
+  content: '# 正文\n',
+  slug,
+  ...data,
+})
 
-const snapshotFrom = (entries: Array<[string, string]>): FsSnapshot => {
-  const map: FsSnapshot = {}
-  for (const [rel, content] of entries) {
-    map[rel.replace(/\\/g, '/').replace(/^\/+/, '')] = content
+const setPublicFiles = (files: Record<string, unknown>): void => {
+  const snapshot: FsSnapshot = {}
+  for (const [rel, data] of Object.entries(files)) {
+    snapshot[publicFile(rel)] = typeof data === 'string' ? data : json(data)
   }
-  return map
+  fsMock.__setFs(snapshot)
 }
 
 describe('issues/[slug]/page.tsx', () => {
   beforeEach(() => {
     notFoundMock.mockClear()
     jest.resetModules()
+    // resetModules 后重新获取 fs mock
+    fsMock = jest.requireMock('fs') as { __setFs: (snapshot: FsSnapshot) => void }
   })
 
   describe('generateStaticParams', () => {
-    it('基于已发布 issue 返回 slug 列表', async () => {
-      // Arrange
-      const e1 = buildIssue(
-        '001',
-        { issue: 1, title: '创刊号', date: '2026-04-08', published: true },
-        'A'
-      )
-      const e2 = buildIssue(
-        '002',
-        { issue: 2, title: '第2期', date: '2026-04-15', published: false },
-        'B'
-      )
-      const e3 = buildIssue(
-        '003',
-        { issue: 3, title: '第3期', date: '2026-04-22', published: true },
-        'C'
-      )
-      fsMock.__setFs(
-        snapshotFrom([
-          ['001/README.md', e1],
-          ['002/README.md', e2],
-          ['003/README.md', e3],
-        ])
-      )
+    it('基于 issue_index.json 返回 slug 列表', async () => {
+      setPublicFiles({
+        'issue_index.json': [
+          { issue: 1, title: '创刊号', date: '2026-04-08', slug: '001' },
+          { issue: 3, title: '第3期', date: '2026-04-22', slug: '003' },
+        ],
+      })
 
-      // Act
       const { generateStaticParams } = await import('../page')
       const params = await generateStaticParams()
 
-      // Assert:应只包含已发布的 001/003
       const slugs = params.map((p: { slug: string }) => p.slug).sort()
       expect(slugs).toEqual(['001', '003'])
     })
 
     it('没有 issue 时返回空数组', async () => {
-      fsMock.__setFs(snapshotFrom([]))
+      setPublicFiles({ 'issue_index.json': [] })
       const { generateStaticParams } = await import('../page')
       const params = await generateStaticParams()
       expect(params).toEqual([])
@@ -149,27 +136,26 @@ describe('issues/[slug]/page.tsx', () => {
   })
 
   describe('generateMetadata', () => {
-    it('找到 issue 时返回 title + description + openGraph', async () => {
-      const e1 = buildIssue(
-        '001',
-        {
-          issue: 1,
+    it('找到 issue 时返回 title + description + openGraph + canonical', async () => {
+      setPublicFiles({
+        'issue-001.json': buildIssue('001', {
           title: '青年周刊 · 创刊号',
           date: '2026-04-08',
-          published: true,
           description: '创刊号描述',
-        },
-        'A'
-      )
-      fsMock.__setFs(snapshotFrom([['001/README.md', e1]]))
+          content: '# 创刊号\n',
+        }),
+      })
 
       const { generateMetadata } = await import('../page')
       const meta = await generateMetadata({
         params: Promise.resolve({ slug: '001' }),
       })
 
-      expect(meta.title).toBe('青年周刊 · 创刊号 - 青年周刊')
+      // title 由 layout 模板（%s - 青年周刊）统一追加后缀
+      expect(meta.title).toBe('青年周刊 · 创刊号')
       expect((meta as { description?: string }).description).toBe('创刊号描述')
+      const alt = (meta as { alternates?: { canonical?: string } }).alternates
+      expect(alt?.canonical).toBe('issues/001/')
       const og = (meta as { openGraph?: Record<string, unknown> }).openGraph
       expect(og).toMatchObject({
         title: '青年周刊 · 创刊号',
@@ -180,18 +166,16 @@ describe('issues/[slug]/page.tsx', () => {
     })
 
     it('找不到 issue 时返回降级 title', async () => {
-      fsMock.__setFs(snapshotFrom([]))
-
+      setPublicFiles({})
       const { generateMetadata } = await import('../page')
       const meta = await generateMetadata({
         params: Promise.resolve({ slug: '999' }),
       })
-
       expect(meta.title).toBe('周刊未找到')
     })
 
     it('非法 slug 返回降级 title', async () => {
-      fsMock.__setFs(snapshotFrom([]))
+      setPublicFiles({})
       const { generateMetadata } = await import('../page')
       const meta = await generateMetadata({
         params: Promise.resolve({ slug: '../etc/passwd' }),
@@ -202,29 +186,21 @@ describe('issues/[slug]/page.tsx', () => {
 
   describe('Page 组件', () => {
     it('渲染标题、日期、期号徽章、frontmatter 字段', async () => {
-      // Arrange
-      const e1 = buildIssue(
-        '001',
-        {
-          issue: 1,
+      setPublicFiles({
+        'issue-001.json': buildIssue('001', {
           title: '青年周刊 · 创刊号',
           date: '2026-04-08',
-          published: true,
           description: '欢迎来到青年周刊',
-        },
-        '# 创刊号\n\n这是正文。'
-      )
-      fsMock.__setFs(snapshotFrom([['001/README.md', e1]]))
+          content: '# 创刊号\n\n这是正文。',
+        }),
+      })
 
       const IssuePage = (await import('../page')).default
-
-      // Act
       const element = await IssuePage({
         params: Promise.resolve({ slug: '001' }),
       })
       render(element as React.ReactElement)
 
-      // Assert
       await waitFor(() => {
         expect(screen.getByText('青年周刊 · 创刊号')).toBeInTheDocument()
       })
@@ -234,17 +210,9 @@ describe('issues/[slug]/page.tsx', () => {
     })
 
     it('frontmatter 缺 description 时不渲染描述段落', async () => {
-      const e2 = buildIssue(
-        '002',
-        {
-          issue: 2,
-          title: '第2期',
-          date: '2026-04-15',
-          published: true,
-        },
-        '正文'
-      )
-      fsMock.__setFs(snapshotFrom([['002/README.md', e2]]))
+      setPublicFiles({
+        'issue-002.json': buildIssue('002', { title: '第2期', date: '2026-04-15' }),
+      })
 
       const IssuePage = (await import('../page')).default
       const element = await IssuePage({
@@ -253,55 +221,37 @@ describe('issues/[slug]/page.tsx', () => {
       render(element as React.ReactElement)
 
       await waitFor(() => {
-        expect(screen.getByText('第2期')).toBeInTheDocument()
+        // '第2期' 同时出现在期号徽章与 h1 标题中
+        expect(screen.getAllByText('第2期').length).toBeGreaterThan(0)
       })
-      // 描述段落(以 text-lg 区分)不应该存在
-      expect(
-        screen.queryByText('欢迎来到青年周刊')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('欢迎来到青年周刊')).not.toBeInTheDocument()
     })
 
     it('非法 slug 调用 notFound()', async () => {
-      // Arrange
-      fsMock.__setFs(snapshotFrom([]))
+      setPublicFiles({})
       const IssuePage = (await import('../page')).default
 
-      // Act
-      const element = await IssuePage({
-        params: Promise.resolve({ slug: '../etc/passwd' }),
-      })
-      render(element as React.ReactElement)
-
-      // Assert
-      await waitFor(() => {
-        expect(notFoundMock).toHaveBeenCalled()
-      })
+      // 真实 notFound() 会抛出特殊错误终止渲染；mock 保持相同语义
+      await expect(
+        IssuePage({ params: Promise.resolve({ slug: '../etc/passwd' }) })
+      ).rejects.toThrow()
+      expect(notFoundMock).toHaveBeenCalled()
     })
 
-    it('合法但文件不存在的 slug 调用 notFound()', async () => {
-      fsMock.__setFs(snapshotFrom([]))
+    it('合法但产物缺失的 slug 调用 notFound()', async () => {
+      setPublicFiles({})
       const IssuePage = (await import('../page')).default
-      const element = await IssuePage({
-        params: Promise.resolve({ slug: '999' }),
-      })
-      render(element as React.ReactElement)
-      await waitFor(() => {
-        expect(notFoundMock).toHaveBeenCalled()
-      })
+
+      await expect(
+        IssuePage({ params: Promise.resolve({ slug: '999' }) })
+      ).rejects.toThrow()
+      expect(notFoundMock).toHaveBeenCalled()
     })
 
     it('渲染返回周刊列表与订阅的导航链接', async () => {
-      const e1 = buildIssue(
-        '001',
-        {
-          issue: 1,
-          title: '创刊号',
-          date: '2026-04-08',
-          published: true,
-        },
-        '正文'
-      )
-      fsMock.__setFs(snapshotFrom([['001/README.md', e1]]))
+      setPublicFiles({
+        'issue-001.json': buildIssue('001', { title: '创刊号' }),
+      })
 
       const IssuePage = (await import('../page')).default
       const element = await IssuePage({
@@ -312,7 +262,6 @@ describe('issues/[slug]/page.tsx', () => {
       await waitFor(() => {
         expect(screen.getByText('返回周刊列表')).toBeInTheDocument()
       })
-      // "← 查看所有周刊" 与 "订阅周刊 →"
       expect(screen.getByText(/查看所有周刊/)).toBeInTheDocument()
       expect(screen.getByText(/订阅周刊/)).toBeInTheDocument()
     })

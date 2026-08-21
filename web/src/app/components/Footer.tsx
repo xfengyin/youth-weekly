@@ -53,8 +53,10 @@ export default function Footer() {
               >
                 <Github className="w-5 h-5" />
               </a>
+              {/* basePath 不会改写原生 <a>，需用 NEXT_PUBLIC_BASE_PATH 拼接，
+                  否则部署到 /youth-weekly 子路径时指向站点根 → 404 */}
               <a
-                href="/rss.xml"
+                href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`}
                 className="text-[#a39e98] hover:text-[#615d59] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
               >
                 <Rss className="w-5 h-5" />
@@ -77,12 +79,24 @@ export default function Footer() {
               <ul className="mt-4 space-y-3">
                 {links.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.href.startsWith('http') ? (
+                      // 外链用原生 <a> 并追加 target/rel，避免反向 tabnabbing
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-sm text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

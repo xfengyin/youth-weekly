@@ -1,6 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, BookOpen } from 'lucide-react'
 import { getAllIssues } from '../lib/content'
+
+export const metadata: Metadata = {
+  title: '所有周刊',
+  description: '浏览青年周刊全部已发布期次，每周更新，涵盖科技、二次元、游戏、成长等领域。',
+  alternates: { canonical: 'issues/' },
+}
 
 export default function IssuesPage() {
   const issues = getAllIssues()

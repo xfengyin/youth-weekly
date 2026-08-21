@@ -1,32 +1,73 @@
 import fs from 'fs'
 import path from 'path'
-import matter from 'gray-matter'
 
 /**
- * 文档根目录解析：
- * 1. 优先使用环境变量 DOCS_PATH（生产/CI 可通过该变量覆盖，避免对 process.cwd() 的硬编码依赖）。
- * 2. 兜底使用 `process.cwd()/../docs`（兼容本地开发环境与 `next export` 工作目录）。
+ * ════════════════════════════════════════════════════════════════════════
+ * 数据源：JSON 静态产物（唯一数据源）
+ * ════════════════════════════════════════════════════════════════════════
+ * 本模块不再直接读取 docs/*.md，而是消费 `youth-weekly generate`
+ * （scripts/ 侧 OCP 管线）产出的 JSON：
+ *   - web/public/issue_index.json   —— 已发布周刊索引（最新在前）
+ *   - web/public/issue-<slug>.json  —— 单期全文（含 markdown content）
+ *   - web/public/site-data.json     —— 站点元数据（site/author/categories/build）
+ *   - web/public/search-data.json   —— 搜索索引（供 /search/ 客户端消费）
  *
- * 若目录不存在，抛出明确错误，避免静默失败导致空数据。
+ * 注意：构建（next build / 静态导出）前必须先运行 generate，产物缺失时
+ * 本模块会快速失败并给出提示，避免“空数据静默上线”。本地开发：
+ *   cd scripts && uv run youth-weekly generate
  */
-function resolveDocsDirectory(): string {
-  const fallback = path.join(process.cwd(), '..', 'docs')
-  const docsDirectory = process.env.DOCS_PATH
-    ? path.resolve(process.env.DOCS_PATH)
-    : fallback
 
-  if (!fs.existsSync(docsDirectory)) {
-    throw new Error(
-      `[content] 文档目录不存在: ${docsDirectory}` +
-        (process.env.DOCS_PATH
-          ? `（来源：DOCS_PATH 环境变量）`
-          : `（默认值，可通过设置 DOCS_PATH 环境变量覆盖）`),
-    )
-  }
-
-  return docsDirectory
+/** 产物根目录：web/public（Next 静态导出会自动复制进 out/）；不存在返回 null */
+function resolvePublicDir(): string | null {
+  const publicDir = path.join(process.cwd(), 'public')
+  return fs.existsSync(publicDir) ? publicDir : null
 }
 
+/** 读取 public 下的 JSON 产物；缺失/损坏时快速失败并给出可操作提示 */
+function readJson<T>(fileName: string, options?: { optional?: boolean }): T | null {
+  const publicDir = resolvePublicDir()
+  if (!publicDir) {
+    if (options?.optional) {
+      return null // 单期产物缺失视为“不存在”→ 页面走 notFound()
+    }
+    throw new Error(
+      `[content] public 目录不存在: ${publicDir}。` +
+        `请在构建前运行 \`cd scripts && uv run youth-weekly generate\` 生成 JSON 产物。`,
+    )
+  }
+  const fullPath = path.join(publicDir, fileName)
+  if (!fs.existsSync(fullPath)) {
+    if (options?.optional) {
+      return null
+    }
+    throw new Error(
+      `[content] 缺少 JSON 产物: ${fileName}（${fullPath}）。` +
+        `请先运行 \`cd scripts && uv run youth-weekly generate\` 后再构建/开发。`,
+    )
+  }
+  try {
+    const raw = fs.readFileSync(fullPath, 'utf8')
+    return JSON.parse(raw) as T
+  } catch (err) {
+    throw new Error(
+      `[content] JSON 产物解析失败: ${fileName}（${(err as Error).message}）`,
+    )
+  }
+}
+
+// ── 类型（与 scripts 侧产物 schema 对齐）───────────────────────────────
+
+/** 周刊索引条目（web/public/issue_index.json） */
+export interface IssueIndexEntry {
+  issue: number
+  title: string
+  date: string
+  description?: string
+  slug: string
+  cover?: string
+}
+
+/** 单期周刊（web/public/issue-<slug>.json） */
 export interface Issue {
   issue: number
   title: string
@@ -38,6 +79,7 @@ export interface Issue {
   slug: string
 }
 
+/** 搜索索引条目（web/public/search-data.json） */
 export interface SearchResult {
   issue: number
   title: string
@@ -46,119 +88,90 @@ export interface SearchResult {
   excerpt: string
 }
 
-// 获取所有周刊
-/**
- * ⚠️ 仅可在 Server Component 中使用（依赖 fs 模块）
- * 不可在客户端组件或浏览器环境中调用
- */
-export function getAllIssues(): Issue[] {
-  const docsDirectory = resolveDocsDirectory()
-  const issuesDirectory = path.join(docsDirectory, 'issues')
-
-  if (!fs.existsSync(issuesDirectory)) {
-    return []
-  }
-
-  const issueDirs = fs.readdirSync(issuesDirectory)
-    .filter(dir => /^\d+$/.test(dir))
-    .sort((a, b) => parseInt(b) - parseInt(a))
-
-  const issues = issueDirs.map(dir => {
-    const fullPath = path.join(issuesDirectory, dir, 'README.md')
-
-    if (!fs.existsSync(fullPath)) {
-      return null
-    }
-
-    const fileContents = fs.readFileSync(fullPath, 'utf8')
-    const { data, content } = matter(fileContents)
-
-    const issue: Issue = {
-      issue: parseInt(dir),
-      title: String(data.title || `第${dir}期`),
-      date: String(data.date || ''),
-      published: data.published === true,
-      cover: data.cover ? String(data.cover) : undefined,
-      description: data.description ? String(data.description) : undefined,
-      content: String(content),
-      slug: String(dir),
-    }
-    return issue
-  }).filter((issue): issue is Issue => issue !== null && issue.published)
-
-  return issues
+/** 站点分类（web/public/site-data.json -> categories） */
+export interface Category {
+  id: string
+  name: string
+  icon: string
+  tagline?: string
 }
 
-// 获取单期周刊
+/** 站点元数据（web/public/site-data.json） */
+export interface SiteData {
+  site: Record<string, unknown>
+  author: Record<string, unknown>
+  categories: Category[]
+  build: Record<string, unknown>
+}
+
+// ── 读取函数（⚠️ 仅可在 Server Component / 构建期调用，依赖 fs）────────
+
 /**
- * ⚠️ 仅可在 Server Component 中使用（依赖 fs 模块）
- * 不可在客户端组件或浏览器环境中调用
+ * 获取所有已发布周刊（列表视图使用，不含正文 content）。
+ * 数据源：web/public/issue_index.json（generate 已按 published 过滤、按期号倒序）。
+ */
+export function getAllIssues(): Issue[] {
+  const entries = readJson<IssueIndexEntry[]>('issue_index.json')
+  return (Array.isArray(entries) ? entries : []).map((entry) => ({
+    issue: entry.issue,
+    title: entry.title,
+    date: entry.date,
+    published: true, // 生成器只输出已发布条目
+    cover: entry.cover ? String(entry.cover) : undefined,
+    description: entry.description ? String(entry.description) : undefined,
+    slug: entry.slug,
+  }))
+}
+
+/**
+ * 获取单期周刊全文。
+ * 数据源：web/public/issue-<slug>.json（generate 只输出已发布期次）。
+ * 入口先做白名单校验，防止路径遍历。
  */
 export function getIssueBySlug(slug: string): Issue | null {
-  // 防止路径遍历攻击
+  // 防止路径遍历攻击（与旧 fs 实现一致）
   if (!/^\d+$/.test(slug)) return null
 
-  const docsDirectory = resolveDocsDirectory()
-  const fullPath = path.join(docsDirectory, 'issues', slug, 'README.md')
-
-  if (!fs.existsSync(fullPath)) {
-    return null
-  }
-
-  const fileContents = fs.readFileSync(fullPath, 'utf8')
-  const { data, content } = matter(fileContents)
+  // 单期产物按“可选”读取：缺失时返回 null，由页面走 notFound()；
+  // 列表/站点级产物（issue_index/site-data）仍严格快速失败。
+  const data = readJson<Issue | null>(`issue-${slug}.json`, { optional: true })
+  if (!data || typeof data !== 'object') return null
 
   return {
-    issue: parseInt(slug),
+    issue: Number(data.issue ?? parseInt(slug, 10)),
     title: String(data.title || `第${slug}期`),
     date: String(data.date || ''),
     published: data.published === true,
     cover: data.cover ? String(data.cover) : undefined,
     description: data.description ? String(data.description) : undefined,
-    content: String(content),
-    slug: String(slug),
+    content: data.content ? String(data.content) : undefined,
+    slug: String(data.slug || slug),
   }
 }
 
-// 获取搜索索引
 /**
- * ⚠️ 仅可在 Server Component 中使用（依赖 fs 模块）
- * 不可在客户端组件或浏览器环境中调用
+ * 获取搜索索引（与 /search/ 页客户端 fetch 的 search-data.json 同源）。
  */
 export function getSearchIndex(): SearchResult[] {
-  const issues = getAllIssues()
-
-  return issues.map(issue => {
-    const content = issue.content || ''
-    // 提取前200个字符作为摘要
-    const excerpt = content
-      .replace(/#.*\n/g, '')
-      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-      .slice(0, 200) + '...'
-
-    return {
-      issue: issue.issue,
-      title: issue.title,
-      date: issue.date,
-      slug: issue.slug,
-      excerpt,
-    }
-  })
+  const data = readJson<SearchResult[]>('search-data.json')
+  return Array.isArray(data) ? data : []
 }
 
-// 分类数据
-export const categories = [
-  { id: 'editorial', name: '刊首语', icon: '📝' },
-  { id: 'tech', name: '科技新势力', icon: '🚀' },
-  { id: 'anime', name: '二次元次元壁', icon: '🎨' },
-  { id: 'gaming', name: '游戏研究所', icon: '🎮' },
-  { id: 'stories', name: '青春故事会', icon: '📖' },
-  { id: 'tools', name: '好工具', icon: '🛠️' },
-  { id: 'watching', name: '在看什么', icon: '👀' },
-  { id: 'gallery', name: '一周图鉴', icon: '📷' },
-  { id: 'jobs', name: '谁在招人', icon: '💼' },
-]
+/**
+ * 站点分类（唯一来源：site-data.json，由 config.yaml 生成）。
+ */
+export function getCategories(): Category[] {
+  const siteData = readJson<Partial<SiteData>>('site-data.json')
+  return siteData && Array.isArray(siteData.categories) ? siteData.categories : []
+}
 
-// ⚠️ RSS 生成已迁移至 Python 端 (scripts/generate_rss.py)
-// 使用 feedgen 确保正确的 XML 转义，避免注入风险
-// 此函数保留仅供内部 API route 使用，如需 RSS 请运行 generate_rss.py
+/**
+ * 站点元数据（site/author/build 等，供页面 / 测试消费）。
+ */
+export function getSiteData(): SiteData {
+  const siteData = readJson<SiteData>('site-data.json')
+  if (!siteData) {
+    throw new Error('[content] site-data.json 产物缺失或为空。')
+  }
+  return siteData
+}

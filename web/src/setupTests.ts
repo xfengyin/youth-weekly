@@ -4,8 +4,7 @@ import '@testing-library/jest-dom'
 
 // mock next/link,避免在 jsdom 中触发 next/router 内部行为
 jest.mock('next/link', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const React = require('react')
+    const React = require('react')
   const NextLink = ({
     href,
     children,
@@ -35,10 +34,18 @@ jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
 }))
 
+
+// mock next/font/google：jsdom 环境无法加载字体数据，
+// layout.tsx 在模块顶层调用 Inter()/Noto_Serif_SC()，需返回可控对象
+jest.mock('next/font/google', () => ({
+  __esModule: true,
+  Inter: () => ({ className: 'mock-inter', variable: '--font-inter' }),
+  Noto_Serif_SC: () => ({ className: 'mock-noto', variable: '--font-noto-serif-sc' }),
+}))
+
 // mock next-themes,提供可控的 useTheme 实现
 jest.mock('next-themes', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const React = require('react')
+    const React = require('react')
 
   let currentTheme = 'light'
   const setTheme = jest.fn((next: string) => {
