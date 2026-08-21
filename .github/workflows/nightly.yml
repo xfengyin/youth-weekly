@@ -36,7 +36,8 @@ jobs:
       - name: Install Python dependencies
         working-directory: scripts
         run: |
-          uv sync --all-extras
+          # T-B 后 pyproject 仅含 [dependency-groups]（dev/lint/test），无 [project.optional-dependencies]
+          uv sync --all-groups
 
       - name: Run bandit (Python 安全扫描, 含中危)
         id: bandit

@@ -45,7 +45,8 @@ jobs:
       - name: Install dependencies
         working-directory: scripts
         run: |
-          uv sync --all-extras
+          # T-B 后 pyproject 仅含 [dependency-groups]（dev/lint/test），无 [project.optional-dependencies]
+          uv sync --all-groups
 
       # 1) 代码风格与静态检查：本地 pre-commit 已兜底，CI 硬校验（失败即失败）
       - name: Run black
@@ -127,7 +128,8 @@ jobs:
       - name: Install dependencies
         working-directory: scripts
         run: |
-          uv sync --all-extras
+          # T-B 后 pyproject 仅含 [dependency-groups]（dev/lint/test），无 [project.optional-dependencies]
+          uv sync --all-groups
 
       - name: Run bandit
         working-directory: scripts
