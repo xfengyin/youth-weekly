@@ -2,31 +2,19 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Mail, Rss, Bell, AlertCircle, Check } from 'lucide-react'
+import { ArrowLeft, Mail, Rss, Check } from 'lucide-react'
 
-// 与 config.yaml site.email 保持一致（site-data.json 同源；避免硬编码双份）
+interface SubscribeClientProps {
+  contactEmail: string
+}
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-export default function SubscribeClient() {
-  const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'info' | 'error'>('idle')
-  const [message, setMessage] = useState('')
+/**
+ * 订阅页交互主体。
+ * 说明：邮件订阅通道尚未接入后端/第三方服务，为避免“可提交表单但无真实
+ * 通道”的误导，这里明确展示“功能规划中”，并提供 mailto 直达编辑部。
+ */
+export default function SubscribeClient({ contactEmail }: SubscribeClientProps) {
   const [copied, setCopied] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (EMAIL_RE.test(email)) {
-      // 订阅 API 尚未实现，先用提示信息如实告知用户，避免欺骗式“订阅成功”
-      setStatus('info')
-      setMessage('订阅功能即将上线，敬请期待。')
-      setEmail('')
-    } else {
-      setStatus('error')
-      setMessage('请输入有效的邮箱地址。')
-    }
-  }
 
   const handleCopy = async () => {
     const rssUrl = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`
@@ -35,12 +23,12 @@ export default function SubscribeClient() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      setStatus('error')
-      setMessage('复制失败，请手动复制上方地址。')
+      // 剪贴板不可用时静默降级（地址本身可见可复制）
     }
   }
 
   const rssUrl = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`
+  const mailtoHref = `mailto:${contactEmail}?subject=${encodeURIComponent('订阅青年周刊')}`
 
   return (
     <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
@@ -64,7 +52,7 @@ export default function SubscribeClient() {
 
         {/* Subscription Options */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
-          {/* Email Subscription */}
+          {/* Email Subscription（功能规划中） */}
           <div className="card p-7">
             <div className="flex items-center space-x-4 mb-6">
               <div className="p-3 bg-[#f2f9ff] dark:bg-[rgba(0,117,222,0.15)] rounded-notion">
@@ -74,54 +62,29 @@ export default function SubscribeClient() {
                 <h2 className="text-lg font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
                   邮件订阅
                 </h2>
-                <p className="text-sm text-[#a39e98] dark:text-[#615d59]">
+                <p className="text-sm text-[#615d59] dark:text-[#a39e98]">
                   每周一直接收送到邮箱
                 </p>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
-              <label htmlFor="email-input" className="sr-only">
-                邮箱地址
-              </label>
-              <input
-                id="email-input"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="input"
-                aria-describedby="email-feedback"
-                aria-invalid={status === 'error' || undefined}
-              />
-              <button
-                type="submit"
-                className="w-full btn-primary flex items-center justify-center space-x-2"
-              >
-                <Bell className="w-4 h-4" />
-                <span>订阅</span>
-              </button>
-            </form>
-
-            {/* 表单反馈区：aria-live 让读屏用户感知校验/订阅结果 */}
-            <div id="email-feedback" aria-live="polite" className="mt-5">
-              {status === 'info' && (
-                <div className="callout !bg-[rgba(0,117,222,0.06)] !border-[rgba(0,117,222,0.15)]">
-                  <Bell className="w-5 h-5 text-[#0075de] flex-shrink-0" />
-                  <p className="callout-content text-[#0075de]">{message}</p>
-                </div>
-              )}
-
-              {status === 'error' && (
-                <div className="callout !bg-[rgba(235,87,87,0.06)] !border-[rgba(235,87,87,0.15)]">
-                  <AlertCircle className="w-5 h-5 text-[#eb5757] flex-shrink-0" />
-                  <p className="callout-content text-[#eb5757]">{message}</p>
-                </div>
-              )}
+            <div className="callout !bg-[rgba(0,117,222,0.06)] !border-[rgba(0,117,222,0.15)]">
+              <p className="callout-content">
+                邮件订阅功能正在规划中，敬请期待。期间可通过邮件联系我们，或在
+                GitHub Issues 反馈：
+              </p>
             </div>
 
-            <p className="mt-5 text-xs text-[#a39e98] dark:text-[#615d59] leading-relaxed">
-              我们尊重您的隐私，不会分享您的邮箱地址。您可以随时取消订阅。
+            <a
+              href={mailtoHref}
+              className="mt-5 w-full btn-primary flex items-center justify-center space-x-2"
+            >
+              <Mail className="w-4 h-4" />
+              <span>邮件联系编辑部</span>
+            </a>
+
+            <p className="mt-5 text-xs text-[#615d59] dark:text-[#a39e98] leading-relaxed">
+              我们尊重您的隐私，不会分享您的邮箱地址。
             </p>
           </div>
 
@@ -135,7 +98,7 @@ export default function SubscribeClient() {
                 <h2 className="text-lg font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
                   RSS 订阅
                 </h2>
-                <p className="text-sm text-[#a39e98] dark:text-[#615d59]">
+                <p className="text-sm text-[#615d59] dark:text-[#a39e98]">
                   使用 RSS 阅读器订阅
                 </p>
               </div>
@@ -233,4 +196,3 @@ export default function SubscribeClient() {
     </div>
   )
 }
-

@@ -28,6 +28,8 @@ export const metadata: Metadata = {
     '融合科技、二次元、游戏、成长等多个领域的综合性青年内容周刊。参考阮一峰科技爱好者周刊的开源模式，温暖、有趣、有深度。',
   keywords: ['青年周刊', '科技', '二次元', '游戏', '成长', '周刊', '年轻人'],
   authors: [{ name: '青年周刊编辑部' }],
+  // PWA manifest（public/ 静态资源需手动拼 basePath）
+  manifest: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/manifest.json`,
   openGraph: {
     title: '青年周刊',
     description: '为年轻人打造的内容聚合周刊',

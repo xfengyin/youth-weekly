@@ -91,7 +91,7 @@ export default async function IssuePage({ params }: { params: Promise<{ slug: st
             返回周刊列表
           </Link>
 
-          <div className="flex items-center space-x-3 text-sm text-[#a39e98] dark:text-[#615d59] mb-5">
+          <div className="flex items-center space-x-3 text-sm text-[#615d59] dark:text-[#a39e98] mb-5">
             <div className="flex items-center space-x-1">
               <Calendar className="w-4 h-4" />
               <span>{issue.date}</span>

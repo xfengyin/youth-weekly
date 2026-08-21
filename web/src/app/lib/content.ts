@@ -64,6 +64,11 @@ export interface IssueIndexEntry {
   date: string
   description?: string
   slug: string
+  /**
+   * 封面图相对路径（如 './assets/cover.png'，指向 docs/issues/<slug>/assets/）。
+   * 属生成器（T-B）产物契约字段，docs 中确有封面文件；
+   * 当前 Web UI 尚未渲染封面（静态导出未同步 docs 资产），保留字段供后续使用。
+   */
   cover?: string
 }
 
@@ -73,6 +78,7 @@ export interface Issue {
   title: string
   date: string
   published: boolean
+  /** 封面图相对路径；当前 UI 未渲染，保留（见 IssueIndexEntry.cover 说明） */
   cover?: string
   description?: string
   content?: string

@@ -54,9 +54,9 @@ export default function ArchivePage() {
           {sortedYears.map((year) => (
             <div key={year}>
               <h2 className="text-2xl font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-5 flex items-center leading-tight">
-                <Archive className="w-5 h-5 mr-2.5 text-[#a39e98] dark:text-[#615d59]" />
+                <Archive className="w-5 h-5 mr-2.5 text-[#615d59] dark:text-[#a39e98]" />
                 {year}年
-                <span className="ml-2 text-sm font-normal text-[#a39e98] dark:text-[#615d59]">
+                <span className="ml-2 text-sm font-normal text-[#615d59] dark:text-[#a39e98]">
                   ({groupedByYear[year].length}期)
                 </span>
               </h2>
@@ -69,7 +69,7 @@ export default function ArchivePage() {
                     className="card p-5 flex items-center justify-between group"
                   >
                     <div className="flex items-center space-x-5">
-                      <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] min-w-[100px]">
+                      <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98] min-w-[100px]">
                         <Calendar className="w-4 h-4" />
                         <span>{issue.date}</span>
                       </div>
@@ -77,7 +77,7 @@ export default function ArchivePage() {
                         {issue.title}
                       </h3>
                     </div>
-                    <span className="text-[#a39e98] dark:text-[#615d59] group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
+                    <span className="text-[#615d59] dark:text-[#a39e98] group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
                       →
                     </span>
                   </Link>
@@ -90,7 +90,7 @@ export default function ArchivePage() {
         {/* Empty State */}
         {issues.length === 0 && (
           <div className="text-center py-20">
-            <Archive className="w-14 h-14 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
+            <Archive className="w-14 h-14 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
             <p className="text-[#615d59] dark:text-[#a39e98]">
               暂无归档内容
             </p>

@@ -84,6 +84,15 @@ export default function Header() {
               </button>
             )}
 
+            {/* RSS 入口（桌面端，与移动端菜单保持一致；next/link 自动加 basePath 前缀） */}
+            <Link
+              href="/rss.xml"
+              className="hidden md:inline-flex items-center p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
+              aria-label="RSS 订阅"
+            >
+              <Rss className="w-5 h-5" />
+            </Link>
+
             {/* Subscribe CTA (Desktop) */}
             <Link
               href="/subscribe/"

@@ -97,7 +97,7 @@ export default function SearchClient() {
 
         {/* Search Input */}
         <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#a39e98] dark:text-[#615d59]" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#615d59] dark:text-[#a39e98]" />
           <input
             type="text"
             value={query}
@@ -112,7 +112,7 @@ export default function SearchClient() {
               type="button"
               onClick={() => setQuery('')}
               aria-label="清空搜索"
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#a39e98] dark:text-[#615d59] hover:text-[#615d59] dark:hover:text-[rgba(255,255,255,0.95)]"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#615d59] dark:text-[#a39e98] hover:text-[#615d59] dark:hover:text-[rgba(255,255,255,0.95)]"
             >
               <X className="w-5 h-5" />
             </button>
@@ -122,7 +122,7 @@ export default function SearchClient() {
         {/* Loading State */}
         {isLoading && (
           <div className="text-center py-20">
-            <p className="text-[#a39e98] dark:text-[#615d59]">搜索数据加载中...</p>
+            <p className="text-[#615d59] dark:text-[#a39e98]">搜索数据加载中...</p>
           </div>
         )}
 
@@ -141,7 +141,7 @@ export default function SearchClient() {
                 搜索数据加载失败
               </p>
               <p>{error}</p>
-              <p className="mt-2 text-xs text-[#a39e98] dark:text-[#615d59]">
+              <p className="mt-2 text-xs text-[#615d59] dark:text-[#a39e98]">
                 请稍后重试，或刷新页面。如问题持续，请联系站点管理员。
               </p>
             </div>
@@ -150,7 +150,7 @@ export default function SearchClient() {
 
         {/* Search Status */}
         {!isLoading && query && (
-          <div className="mb-6 text-sm text-[#a39e98] dark:text-[#615d59]">
+          <div className="mb-6 text-sm text-[#615d59] dark:text-[#a39e98]">
             找到 {results.length} 个结果
           </div>
         )}
@@ -164,7 +164,7 @@ export default function SearchClient() {
                 href={`/issues/${result.slug}/`}
                 className="card p-6 block group"
               >
-                <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] mb-3">
+                <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98] mb-3">
                   <Calendar className="w-4 h-4" />
                   <span>{result.date}</span>
                   <span>·</span>
@@ -184,7 +184,7 @@ export default function SearchClient() {
         {/* Empty State */}
         {!isLoading && query && results.length === 0 && (
           <div className="text-center py-20">
-            <Search className="w-14 h-14 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
+            <Search className="w-14 h-14 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
             <h3 className="text-lg font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2">
               未找到相关内容
             </h3>
@@ -197,7 +197,7 @@ export default function SearchClient() {
         {/* Initial State */}
         {!isLoading && !query && (
           <div className="text-center py-20">
-            <Search className="w-14 h-14 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
+            <Search className="w-14 h-14 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
             <h3 className="text-lg font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2">
               开始搜索
             </h3>
