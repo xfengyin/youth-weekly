@@ -39,9 +39,23 @@
 
 ## 上线前必做
 
-- 在 [微信公众平台](https://mp.weixin.qq.com/) → 开发管理 → 服务器域名
-  → request 合法域名中添加：`https://xfengyin.github.io`
-  （小程序正式环境强制校验 HTTPS 域名白名单，未配置则所有请求被拦截）
+小程序正式环境强制校验 HTTPS 域名白名单，未配置则所有网络请求与图片加载都会被拦截。
+请在 [微信公众平台](https://mp.weixin.qq.com/) → 开发管理 → 开发设置 → 服务器域名 中配置：
+
+| 域名类型 | 域名 | 用途 |
+| --- | --- | --- |
+| `request` 合法域名 | `https://xfengyin.github.io` | 拉取 `issue_index.json` / `issue-<slug>.json` / `site-data.json`（`utils/config.js`） |
+| `downloadFile` 合法域名 | `https://xfengyin.github.io` | `<image>` 加载周刊封面等静态图片资源 |
+
+注意事项：
+
+- 正式域名要求 **HTTPS 且已完成 ICP 备案**。`github.io` 为 GitHub 提供的共享域名、
+  通常无法完成备案，正式上线前建议将站点部署/CDN 到自有的已备案域名，并同步更新
+  `utils/config.js` 的 `baseUrl` 与上表白名单。
+- 配置修改后一般数分钟内生效；开发调试阶段可在开发者工具「详情 → 本地设置」
+  勾选「不校验合法域名」。
+- 本仓库 `project.config.json` 的 `setting.urlCheck` 默认 `true`（正式校验），
+  上传前请勿关闭。
 
 ## 项目结构
 
@@ -58,5 +72,6 @@ wechat-miniprogram/
 ├── app.js              # 小程序入口
 ├── app.json            # 小程序配置
 ├── app.wxss            # 全局样式
+├── project.config.json # 开发者工具项目配置（appid/libVersion 等）
 └── sitemap.json        # 站点地图
 ```
