@@ -25,7 +25,7 @@ UV          ?= uv
 USE_UV ?= 1
 
 # 若 USE_UV=1，所有命令通过 uv run 执行，否则需自行激活虚拟环境
-ifdef USE_UV
+ifeq ($(USE_UV),1)
     PY_RUN    := $(UV) run
     PIP_RUN   := $(UV) pip
 else

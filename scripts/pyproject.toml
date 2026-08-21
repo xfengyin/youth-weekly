@@ -5,19 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "youth-weekly-scripts"
 version = "2.0.0"
-description = "青年周刊静态文件生成与工具脚本 - Python 3.14 + uv + OCP 插件架构"
+description = "青年周刊静态文件生成与工具脚本 - Python 3.12 + uv + OCP 插件架构"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [
-    { name = "青年周刊编辑部", email = "youth-weekly@example.com" },
+    { name = "青年周刊编辑部", email = "contact@youth-weekly.com" },
 ]
 keywords = ["newsletter", "youth-weekly", "ocp", "plugin", "uv"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -90,7 +89,7 @@ youth_weekly = ["py.typed"]
 
 [tool.black]
 line-length = 88
-target-version = ["py311"]
+target-version = ["py312"]
 
 [tool.isort]
 profile = "black"
@@ -99,7 +98,7 @@ multi_line_output = 3
 known_first_party = ["youth_weekly"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

@@ -196,7 +196,7 @@ https://xfengyin.github.io/youth-weekly/rss.xml
 |---------|------|------|
 | GitHub Issue | 使用投稿模板提交 | [内容投稿](https://github.com/xfengyin/youth-weekly/issues/new?template=content_submission.md) |
 | Pull Request | Fork 后在 `docs/issues/` 提交 Markdown | [贡献指南](./CONTRIBUTING.md) |
-| 邮件 | 发送至编辑部邮箱 | youth-weekly@xfengyin.com |
+| 邮件 | 发送至编辑部邮箱 | contact@youth-weekly.com |
 
 **内容要求：** 原创或已获授权 · Markdown 格式 · 500-3000 字 · 配图注明来源
 

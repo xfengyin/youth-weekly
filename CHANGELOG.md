@@ -12,12 +12,19 @@
 - API 文档站点
 - 国际化支持
 
+### 已变更（T-A 基础重构）
+- 统一 Python 运行时为 3.12（pyproject/CI/.python-version/config.yaml 一致）
+- 统一 Node 运行时要求为 >=20
+- 新增 `.env.example` 与 GitHub Pages `_headers` 安全响应头
+- 统一维护者联系邮箱为 contact@youth-weekly.com
+- 修正 Makefile `USE_UV` 判断语义与 config.yaml 无效插件引用
+
 ## [1.0.0] - 2026-05-25
 
 ### 🎉 主要变更
 
 #### 架构升级
-- 升级到 Python 3.14（PEP 649/749 延迟注解求值）
+- 统一 Python 运行时为 3.12（现代类型注解 + uv；历史文档中的 3.14 表述为当时规划，实际落地为 3.12）
 - 集成 uv 包管理器（速度提升 10-100 倍）
 - 重构为现代企业级架构
 - 引入 Pydantic 进行类型化配置管理

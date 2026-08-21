@@ -4,12 +4,13 @@
 
 ## Workflow 一览
 
+当前仓库实际存在 3 个工作流（release.yml / nightly.yml 已于 2026 年清理下线，不再列举）：
+
 | Workflow | 触发条件 | 职责 |
 | --- | --- | --- |
 | `ci.yml` | push (PR / main) | 单元测试、类型检查、构建校验 |
 | `deploy.yml` | push main、手动 dispatch | 构建站点并部署到 GitHub Pages |
 | `weekly-publish.yml` | 每周一 cron、手动 dispatch | 采集内容、生成周刊、提交到 main |
-| `release.yml` | tag 推送 | 打包发布版本 |
 
 ## GitHub Pages 部署（双轨冲突解决方案）
 

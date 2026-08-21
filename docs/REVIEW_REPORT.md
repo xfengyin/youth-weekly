@@ -1,7 +1,7 @@
 # 项目代码审查报告
 
 ## 审查日期
-2026-05-25
+2026-05-25（快照日期；后续变更见 git 历史与 T-A 基础重构，2026-08 已按最终决策更新 Issue #1 结论）
 
 ## 审查范围
 - Python 后端代码
@@ -36,11 +36,12 @@ python_version = "3.11"               # mypy 配置
 - uv 安装时可能使用错误的 Python 版本
 - CI/CD 部署可能失败
 
-**建议修复：**
+**建议修复（T-A 基础重构已按最终决策落地，✅ 已解决）：**
 ```toml
-requires-python = ">=3.14"
-target-version = ["py314"]
-python_version = "3.14"
+# 最终决策：统一为 Python 3.12（与 CI matrix / .python-version 一致），而非升级 3.14
+requires-python = ">=3.12"
+target-version = ["py312"]
+python_version = "3.12"
 ```
 
 ---

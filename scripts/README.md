@@ -1,13 +1,13 @@
 # Youth Weekly Scripts
 
-青年周刊 Python 工具集 - Python 3.14 + uv + OCP 插件架构
+青年周刊 Python 工具集 - Python 3.12 + uv + OCP 插件架构
 
 ## 简介
 
 本目录包含青年周刊周刊的 Python 自动化脚本和工具,采用以下企业级设计:
 
 - **开闭原则 (OCP)** - 通过 `youth_weekly.plugin` 框架实现
-- **Python 3.14** - 使用最新的 PEP 649/749 延迟注解等现代语言特性
+- **Python 3.12** - 现代类型注解（`X | None`、`list[T]`、`from __future__ import annotations`）
 - **uv** - 极快的 Python 包管理工具
 - **Pydantic 2.0+** - 类型安全的配置管理
 - **插件化** - SPI 架构,新增功能只需添加文件
@@ -29,7 +29,7 @@ scripts/
 ├── templates/               # Jinja2 模板
 ├── pyproject.toml           # Python 项目配置
 ├── uv.toml                  # uv 行为配置
-└── .python-version          # Python 版本锁定(3.14)
+└── .python-version          # Python 版本锁定(3.12)
 ```
 
 ## 快速开始
@@ -125,9 +125,8 @@ from . import my_plugin  # noqa: F401
 
 **无需修改任何其他文件**,OCP 框架会自动发现并执行。
 
-## Python 3.14 特性
+## Python 3.12 特性
 
-- **PEP 649/749 延迟注解求值** - 类型注解仅在需要时求值
 - **现代类型注解** - `list[T]`、`dict[K, V]`、`X | None`
 - **`from __future__ import annotations`** - 全模块启用延迟求值
 - **`ParamSpec` / `TypeVar`** - 泛型装饰器支持
