@@ -51,7 +51,9 @@ jobs:
         continue-on-error: true
         working-directory: scripts
         run: |
-          uv run pip-audit --strict
+          # 只审计外部依赖，跳过本地未发布的 youth-weekly-scripts 可编辑包
+          uv export --all-groups --format requirements-txt --no-hashes | grep -v '^-e ' > /tmp/audit-req.txt
+          uv run pip-audit -r /tmp/audit-req.txt --strict
 
       - name: Run npm audit (前端依赖漏洞)
         id: npmaudit
