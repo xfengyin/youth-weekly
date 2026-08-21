@@ -136,7 +136,8 @@ collection:
   timeout: 30
   # 每源最大重试次数
   max_retries: 3
-  # 请求间隔（秒），防止被封
+  # 请求间隔（秒），防止被封；collect 插件在源之间真实 sleep
   delay_between_sources: 2
+  # 单个源可通过 `delay: <秒>` 字段覆盖此值（0 表示该源不等待）
   # User-Agent
   user_agent: "YouthWeekly/1.0 (Content Aggregator)"

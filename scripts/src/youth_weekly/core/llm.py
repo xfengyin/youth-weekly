@@ -111,7 +111,15 @@ class OpenAICompatibleProvider(LLMProvider):
                     usage=usage,
                     latency_ms=latency,
                 )
-            except requests.RequestException as exc:
+            except (
+                requests.RequestException,
+                ValueError,
+                KeyError,
+                IndexError,
+                TypeError,
+            ) as exc:
+                # 网络错误、JSON 解析失败(ValueError)、响应体字段缺失/类型异常
+                # (KeyError/IndexError/TypeError)统一走重试,避免一次坏响应直接降级
                 last_error = exc
                 logger.warning(
                     "LLM request failed (attempt %d/%d): %s",
@@ -184,7 +192,14 @@ class AnthropicProvider(LLMProvider):
                     usage=usage,
                     latency_ms=latency,
                 )
-            except requests.RequestException as exc:
+            except (
+                requests.RequestException,
+                ValueError,
+                KeyError,
+                IndexError,
+                TypeError,
+            ) as exc:
+                # 与 OpenAI 兼容提供者一致:网络/JSON 解析/字段缺失统一重试
                 last_error = exc
                 logger.warning(
                     "Anthropic request failed (attempt %d/%d): %s",

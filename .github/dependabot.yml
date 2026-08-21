@@ -9,8 +9,10 @@ updates:
       time: "09:00"
       timezone: "Asia/Shanghai"
     open-pull-requests-limit: 10
+    # 注：原 reviewers 引用的团队 "youth-weekly/maintainers" 无法确认存在，
+    # 改为仓库维护者用户名，避免 Dependabot 无法指派 reviewer。
     reviewers:
-      - "youth-weekly/maintainers"
+      - "xfengyin"
     labels:
       - "dependencies"
       - "python"
@@ -28,10 +30,28 @@ updates:
       timezone: "Asia/Shanghai"
     open-pull-requests-limit: 5
     reviewers:
-      - "youth-weekly/maintainers"
+      - "xfengyin"
     labels:
       - "dependencies"
       - "github-actions"
     commit-message:
       prefix: "ci"
+      include: "scope"
+
+  # 前端依赖（npm）
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "xfengyin"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore"
       include: "scope"

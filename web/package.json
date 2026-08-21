@@ -12,13 +12,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "export": "next build"
+    "prebuild": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
-    "next": "14.2.24",
+    "next": "14.2.35",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "gray-matter": "^4.0.3",
     "react-markdown": "^9.0.1",
     "remark-gfm": "^4.0.0",
     "@tailwindcss/typography": "^0.5.10",
@@ -35,7 +34,7 @@
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",
-    "eslint-config-next": "14.2.24",
+    "eslint-config-next": "14.2.35",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.32",
@@ -44,6 +43,6 @@
     "typescript": "^5.3.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

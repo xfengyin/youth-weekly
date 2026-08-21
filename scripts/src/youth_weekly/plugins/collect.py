@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from pathlib import Path
 from typing import Any
 
@@ -107,13 +108,32 @@ class CollectPlugin(BasePlugin):
                 )
         _validate_source_categories(source_categories_raw or {}, get_categories())
 
-        # 采集
-        collection_config = {"timeout": 30, "max_retries": 3, "delay": 2.0}
+        # 采集:读取 content_sources.yaml#collection 配置(支持每源 delay 覆盖)
+        # 默认与旧行为兼容;delay_between_sources 控制在源之间真实 sleep,避免触发限流
+        raw_collection = sources_config.get("collection") or {}
+        defaults: dict[str, Any] = {"timeout": 30, "max_retries": 3, "delay": 2.0}
+        defaults.update(
+            {
+                k: v
+                for k, v in raw_collection.items()
+                if k in ("timeout", "max_retries", "delay")
+            }
+        )
+        delay_between_sources = float(
+            raw_collection.get("delay_between_sources", defaults["delay"])
+        )
         all_items = []
 
-        for source in sources:
+        for index, source in enumerate(sources):
+            # 源间节流(首个源不等待);支持每源 delay 覆盖
+            source_delay = float(source.get("delay", delay_between_sources))
+            if index > 0 and source_delay > 0:
+                time.sleep(source_delay)
+
             collector_type = source.get("type", "rss")
-            collector = get_collector(collector_type, **collection_config)
+            collector_kwargs = dict(defaults)
+            collector_kwargs["delay"] = source_delay
+            collector = get_collector(collector_type, **collector_kwargs)
 
             if collector is None:
                 logger.warning("Skipping unknown source type: %s", collector_type)

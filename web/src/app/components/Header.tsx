@@ -2,17 +2,37 @@
 
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
-import { useState, useEffect } from 'react'
-import { Sun, Moon, Menu, X, Search, Rss } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Sun, Moon, Menu, X, Rss } from 'lucide-react'
 
 export default function Header() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  // 移动菜单按钮引用：关闭后把焦点还给它，保证键盘导航不丢失
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // 移动菜单 a11y：打开时聚焦首个链接，支持 Esc 关闭
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const dialog = document.getElementById('mobile-menu')
+    const firstLink = dialog?.querySelector<HTMLElement>('a')
+    firstLink?.focus()
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [mobileMenuOpen])
 
   const navItems = [
     { href: '/', label: '首页' },
@@ -64,6 +84,15 @@ export default function Header() {
               </button>
             )}
 
+            {/* RSS 入口（桌面端，与移动端菜单保持一致；next/link 自动加 basePath 前缀） */}
+            <Link
+              href="/rss.xml"
+              className="hidden md:inline-flex items-center p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
+              aria-label="RSS 订阅"
+            >
+              <Rss className="w-5 h-5" />
+            </Link>
+
             {/* Subscribe CTA (Desktop) */}
             <Link
               href="/subscribe/"
@@ -74,6 +103,7 @@ export default function Header() {
 
             {/* Mobile Menu Button */}
             <button
+              ref={menuButtonRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
               aria-label="菜单"
@@ -91,7 +121,13 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div id="mobile-menu" role="dialog" className="md:hidden py-4 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
+          <div
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="移动端导航菜单"
+            className="md:hidden py-4 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]"
+          >
             <nav className="flex flex-col space-y-4">
               {navItems.map((item) => (
                 <Link

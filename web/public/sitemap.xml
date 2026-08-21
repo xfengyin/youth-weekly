@@ -11,6 +11,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://xfengyin.github.io/youth-weekly/archive/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://xfengyin.github.io/youth-weekly/categories/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://xfengyin.github.io/youth-weekly/search/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -21,26 +31,44 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://xfengyin.github.io/youth-weekly/issues/001/</loc>
-    <lastmod>2026-04-08</lastmod>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/012/</loc>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xfengyin.github.io/youth-weekly/issues/002/</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/011/</loc>
+    <lastmod>2026-08-10</lastmod>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xfengyin.github.io/youth-weekly/issues/003/</loc>
-    <lastmod>2026-04-20</lastmod>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/010/</loc>
+    <lastmod>2026-08-03</lastmod>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xfengyin.github.io/youth-weekly/issues/004/</loc>
-    <lastmod>2026-04-27</lastmod>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/009/</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/008/</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/007/</loc>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/006/</loc>
+    <lastmod>2026-05-11</lastmod>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
   </url>
@@ -51,8 +79,26 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://xfengyin.github.io/youth-weekly/issues/006/</loc>
-    <lastmod>2026-05-11</lastmod>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/004/</loc>
+    <lastmod>2026-04-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/003/</loc>
+    <lastmod>2026-04-20</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/002/</loc>
+    <lastmod>2026-04-13</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xfengyin.github.io/youth-weekly/issues/001/</loc>
+    <lastmod>2026-04-08</lastmod>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
   </url>

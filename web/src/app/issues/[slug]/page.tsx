@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Share2 } from 'lucide-react'
+import { ArrowLeft, Calendar } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getAllIssues, getIssueBySlug } from '../../lib/content'
@@ -10,12 +10,14 @@ import { getAllIssues, getIssueBySlug } from '../../lib/content'
  * 1. 默认不执行 dangerouslySetInnerHTML，从根上消除 XSS 注入面。
  * 2. 通过 remark-gfm 支持 GFM 语法（表格、删除线、任务列表等）。
  * 3. 自定义 a 组件：外链自动追加 target="_blank" rel="noopener noreferrer"，避免反向 tabnabbing。
+ * 4. 正文 markdown 的 h1 降级为 h2，避免与页面级 h1 并存导致标题层级混乱。
  */
 function MarkdownRenderer({ content }: { content: string }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
+        h1: 'h2',
         a: ({ node: _node, href, children, ...props }) => {
           const isExternal = typeof href === 'string' && /^https?:\/\//.test(href)
           return (
@@ -53,8 +55,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return {
-    title: `${issue.title} - 青年周刊`,
+    // 标题后缀由 layout 的 title.template（%s - 青年周刊）统一追加
+    title: issue.title,
     description: issue.description,
+    // canonical 用相对路径，基于 metadataBase（含 /youth-weekly）解析
+    alternates: { canonical: `issues/${issue.slug}/` },
     openGraph: {
       title: issue.title,
       description: issue.description,
@@ -86,7 +91,7 @@ export default async function IssuePage({ params }: { params: Promise<{ slug: st
             返回周刊列表
           </Link>
 
-          <div className="flex items-center space-x-3 text-sm text-[#a39e98] dark:text-[#615d59] mb-5">
+          <div className="flex items-center space-x-3 text-sm text-[#615d59] dark:text-[#a39e98] mb-5">
             <div className="flex items-center space-x-1">
               <Calendar className="w-4 h-4" />
               <span>{issue.date}</span>

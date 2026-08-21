@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import date, datetime
 from pathlib import Path
 from threading import RLock
 from typing import Any
@@ -21,31 +22,42 @@ _cache_stats: dict[str, int] = {"hits": 0, "misses": 0}
 # 自实现的 mtime 感知缓存(替代 lru_cache,因为 lru_cache 无法感知文件变更)
 # key: (docs_dir, reverse, include_unpublished)
 # value: (mtime_signature, result)
-_cache: dict[tuple[Any, ...], tuple[float, list[dict]]] = {}
+# mtime_signature: 按名称排序的 (子目录名, README.md mtime) 元组,
+# 目录新增/删除/重命名、README 新增/修改/删除都会改变签名(删除"最新一期"也会失效)。
+_cache: dict[tuple[Any, ...], tuple[tuple[tuple[str, float], ...], list[dict]]] = {}
 _cache_lock = RLock()
 
+# 目录存在但没有 README 的子目录使用该哨兵 mtime
+_NO_README_MTIME: float = 0.0
 
-def _issues_dir_signature(issues_dir: Path) -> float:
+
+def _issues_dir_signature(issues_dir: Path) -> tuple[tuple[str, float], ...]:
     """
-    计算 issues 目录的指纹(基于所有直接子目录 README.md 的 mtime 最大值)
+    计算 issues 目录的指纹。
 
-    用最大 mtime 作为缓存键的一部分,文件写入或修改后 mtime 必变,
-    即可触发缓存失效,而无需显式调用 clear_cache。
+    对每个直接子目录记录 (子目录名, README.md mtime) 并整体排序:
+    - 修改任意 README.md -> 对应 mtime 变化 -> 签名变化
+    - 新增/删除/重命名任意子目录 -> 元组集合变化 -> 签名变化
+    - 删除 README.md -> mtime 降级为哨兵 0.0 -> 签名变化
+
+    相比"最大 mtime"方案,删除最新一期(其 mtime 恰为最大值)也能正确失效。
     """
     if not issues_dir.exists():
-        return 0.0
-    latest = 0.0
-    for child in issues_dir.iterdir():
+        return ()
+    signature: list[tuple[str, float]] = []
+    for child in sorted(issues_dir.iterdir()):
         if not child.is_dir():
             continue
         readme = child / "README.md"
         if readme.exists():
             try:
-                latest = max(latest, readme.stat().st_mtime)
-            except OSError:
-                # 权限不足或文件已删除,忽略
+                signature.append((child.name, readme.stat().st_mtime))
                 continue
-    return latest
+            except OSError:
+                # 权限不足或文件已删除,降级为哨兵,签名仍会变化
+                pass
+        signature.append((child.name, _NO_README_MTIME))
+    return tuple(signature)
 
 
 def safe_resolve_path(base_dir: Path, target_name: str) -> Path | None:
@@ -127,6 +139,13 @@ def load_issue(issue_dir: Path, docs_dir: Path | None = None) -> dict | None:
     # 显式标注类型避免 mypy 把 front_matter 推断为 object
     body = content[content.find("\n---", 3) + 4 :].strip()
     result: dict = dict(front_matter)  # type: ignore[arg-type]
+
+    # 归一化 date:frontmatter 中未加引号的日期会被 YAML 解析为 date/datetime 对象,
+    # 与加引号的字符串混用会导致下游比较/校验失败,统一转为 YYYY-MM-DD 字符串。
+    raw_date: object = result.get("date")
+    if isinstance(raw_date, (date, datetime)):
+        result["date"] = raw_date.strftime("%Y-%m-%d")
+
     return {
         **result,
         "content": body,
@@ -176,8 +195,9 @@ def load_all_issues(
 
     缓存策略:
     - 以 (docs_dir, reverse, include_unpublished) 为 key
-    - 用 issues 子目录中所有 README.md 的最大 mtime 作为失效签名
-    - 文件新增/修改后 mtime 变化,下次调用自动重建缓存
+    - 用 (子目录名, README.md mtime) 元组集合作为失效签名
+    - 任何子目录新增/删除/重命名或 README 新增/修改/删除都会使签名变化,
+      下次调用自动重建缓存(删除"最新一期"也会正确失效)
     - 也可通过 clear_cache() 显式失效
 
     Args:

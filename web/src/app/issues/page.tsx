@@ -1,6 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, BookOpen } from 'lucide-react'
 import { getAllIssues } from '../lib/content'
+
+export const metadata: Metadata = {
+  title: '所有周刊',
+  description: '浏览青年周刊全部已发布期次，每周更新，涵盖科技、二次元、游戏、成长等领域。',
+  alternates: { canonical: 'issues/' },
+}
 
 export default function IssuesPage() {
   const issues = getAllIssues()
@@ -34,7 +41,7 @@ export default function IssuesPage() {
               className="card p-7 group"
             >
               <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59]">
+                <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98]">
                   <Calendar className="w-4 h-4" />
                   <span>{issue.date}</span>
                 </div>
@@ -52,7 +59,7 @@ export default function IssuesPage() {
               </p>
 
               <div className="flex items-center justify-between pt-5 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
-                <div className="flex items-center text-sm text-[#a39e98] dark:text-[#615d59]">
+                <div className="flex items-center text-sm text-[#615d59] dark:text-[#a39e98]">
                   <BookOpen className="w-4 h-4 mr-1.5" />
                   <span>阅读全文</span>
                 </div>
@@ -67,7 +74,7 @@ export default function IssuesPage() {
         {/* Empty State */}
         {issues.length === 0 && (
           <div className="text-center py-20">
-            <BookOpen className="w-16 h-16 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
+            <BookOpen className="w-16 h-16 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
             <p className="text-[#615d59] dark:text-[#a39e98]">
               暂无周刊内容，敬请期待...
             </p>

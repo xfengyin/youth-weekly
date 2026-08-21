@@ -27,8 +27,9 @@ from youth_weekly.core.expander import CATEGORY_TO_SECTION, ContentExpander
 
 logger = logging.getLogger(__name__)
 
-# 周刊存放目录
-ISSUES_DIR = ROOT_DIR / "docs" / "issues"
+# 周刊存放目录:统一走 config.yaml#paths.issues(相对 ROOT_DIR 或绝对路径),
+# 不再硬编码 docs/issues,避免配置迁移后模块级 API 与主流程行为分叉。
+ISSUES_DIR = ROOT_DIR / str(get_config_value("paths.issues", "docs/issues"))
 
 # 期号计算锁（保证扫描+计算原子性）
 _cache_lock = threading.Lock()
@@ -245,11 +246,13 @@ class IssueGenerator:
         }
 
     def _generate_description(self, items: list[ContentItem]) -> str:
-        """根据前几条内容生成本期描述"""
+        """根据前几条内容生成本期描述(真实拼接前 3 个标题)"""
         if not items:
             return "本期青年周刊为你精选了科技、工具与成长内容。"
         titles = [item.title for item in items[:3]]
-        return f"本期关注 {titles[0]}"
+        if len(titles) == 1:
+            return f"本期关注 {titles[0]}"
+        return f"本期关注 {'、'.join(titles)}"
 
     def _build_body(
         self,

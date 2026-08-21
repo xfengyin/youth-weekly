@@ -4,178 +4,109 @@
  * 覆盖以下关键场景:
  * 1. getIssueBySlug 路径遍历防护(白名单正则 ^\d+$)
  * 2. 空 slug、无效 slug、特殊字符 slug
- * 3. 正常 slug 返回 frontmatter 与 content
- * 4. published 过滤(只返回 published: true)
- * 5. getAllIssues 排序(按期号倒序)
- * 6. renderMarkdown XSS 清洗
- * 7. getSearchIndex excerpt 生成
- * 8. categories 常量结构
+ * 3. 正常 slug 从 issue-<slug>.json 返回完整 Issue
+ * 4. getAllIssues 从 issue_index.json 读取(已发布列表,按期号倒序)
+ * 5. getCategories 从 site-data.json 读取分类
+ * 6. getSearchIndex 从 search-data.json 读取搜索索引
+ * 7. 缺少产物时抛出可操作错误
  */
 
 import path from 'path'
 import type { Issue } from '../content'
 
-// 构造内存中的"文件系统"快照,key 为相对 docs 的路径
+// 构造内存中的"文件系统"快照:key 为 <cwd>/public/<file> 归一化路径
 type FsSnapshot = Record<string, string>
 
-const ORIGINAL_CWD = process.cwd()
-const DOCS_ISSUES_DIR = path.join(ORIGINAL_CWD, '..', 'docs', 'issues')
+const PUBLIC_DIR = path.join(process.cwd(), 'public')
 
-// 通过 jest.mock 在每个用例中替换 fs 实现
+const norm = (p: string): string => p.replace(/\\/g, '/').replace(/\/+$/g, '')
+
+// 通过 jest.mock 替换 fs,__setFs 注入快照
 jest.mock('fs', () => {
-  // 实际快照由 __setFs() 在 beforeEach 注入
   let snapshot: FsSnapshot = {}
   const existsSync = (p: string): boolean => {
-    const normalized = normalize(p)
-    return Object.prototype.hasOwnProperty.call(snapshot, normalized)
+    const k = norm(p)
+    // public 目录本身视为存在（只要快照里注入过任何文件）
+    if (k === norm(PUBLIC_DIR)) return Object.keys(snapshot).length > 0
+    return Object.prototype.hasOwnProperty.call(snapshot, k)
   }
-  const readFileSync = (p: string, _enc: string): string => {
-    const normalized = normalize(p)
-    if (!Object.prototype.hasOwnProperty.call(snapshot, normalized)) {
-      const err: NodeJS.ErrnoException = new Error(
-        `ENOENT: no such file '${normalized}'`
-      )
+  const readFileSync = (p: string, _enc?: string): string => {
+    const k = norm(p)
+    if (!Object.prototype.hasOwnProperty.call(snapshot, k)) {
+      const err: NodeJS.ErrnoException = new Error(`ENOENT: no such file '${k}'`)
       err.code = 'ENOENT'
       throw err
     }
-    return snapshot[normalized]
+    return snapshot[k]
   }
-  const readdirSync = (p: string): string[] => {
-    const normalized = normalize(p)
-    const prefix = normalized.endsWith('/') ? normalized : `${normalized}/`
-    const dirs = new Set<string>()
-    for (const key of Object.keys(snapshot)) {
-      if (!key.startsWith(prefix)) continue
-      const rest = key.slice(prefix.length)
-      const head = rest.split('/')[0]
-      if (head) dirs.add(head)
-    }
-    return Array.from(dirs)
-  }
-
-  // 去掉可能的盘符并将 \ 转为 /
-  function normalize(p: string): string {
-    return p.replace(/\\/g, '/').replace(/\/+$/g, '')
-  }
-
   return {
     __esModule: false,
     existsSync,
     readFileSync,
-    readdirSync,
     __setFs: (next: FsSnapshot) => {
       snapshot = next
     },
-    __getDocsIssuesDir: () => DOCS_ISSUES_DIR,
   }
 })
 
-// 从 mock 中取出注入器
-const fsMock = jest.requireMock('fs') as {
-  __setFs: (snapshot: FsSnapshot) => void
-}
+let fsMock: { __setFs: (snapshot: FsSnapshot) => void }
 
-const issuePath = (slug: string) =>
-  path.join(DOCS_ISSUES_DIR, slug, 'README.md')
+const json = (obj: unknown): string => JSON.stringify(obj)
 
-const buildIssue = (
-  slug: string,
-  frontmatter: Record<string, unknown>,
-  body = '# body'
-): string => {
-  const yaml = Object.entries(frontmatter)
-    .map(([k, v]) => {
-      if (typeof v === 'string') return `${k}: "${v.replace(/"/g, '\\"')}"`
-      return `${k}: ${v}`
-    })
-    .join('\n')
-  return `---\n${yaml}\n---\n\n${body}\n`
-}
+const publicFile = (rel: string): string => norm(path.join(PUBLIC_DIR, rel))
 
-const snapshotFrom = (entries: Array<[string, string]>): FsSnapshot => {
-  // 每个 entry 既可以是 "001/README.md" 也可以是带 docs 前缀的绝对路径
-  const map: FsSnapshot = {}
-  for (const [rel, content] of entries) {
-    const normalized = rel.replace(/\\/g, '/').replace(/^\/+/, '')
-    map[normalized] = content
+const setPublicFiles = (files: Record<string, unknown>): void => {
+  const snapshot: FsSnapshot = {}
+  for (const [rel, data] of Object.entries(files)) {
+    snapshot[publicFile(rel)] = typeof data === 'string' ? data : json(data)
   }
-  return map
+  fsMock.__setFs(snapshot)
 }
 
-describe('content.ts', () => {
+describe('content.ts（JSON 数据源）', () => {
   beforeEach(() => {
-    // 重要:清除 require 缓存,让 content 模块在每个 case 重新加载
-    // 这样它内部对 process.cwd 的引用与最新 fs mock 保持一致
+    // 清除 require 缓存,让 content 模块在每个 case 重新加载；
+    // resetModules 后必须重新获取 fs mock（工厂会重新执行，旧实例已失效）
     jest.resetModules()
+    fsMock = jest.requireMock('fs') as { __setFs: (snapshot: FsSnapshot) => void }
   })
 
   describe('getIssueBySlug - 路径遍历防护', () => {
     it('空 slug 应该返回 null', () => {
-      // Arrange
-      fsMock.__setFs(snapshotFrom([]))
+      setPublicFiles({})
       const { getIssueBySlug } = require('../content')
-
-      // Act
-      const result = getIssueBySlug('')
-
-      // Assert
-      expect(result).toBeNull()
+      expect(getIssueBySlug('')).toBeNull()
     })
 
     it('非数字 slug 应该返回 null(防路径遍历)', () => {
-      fsMock.__setFs(snapshotFrom([]))
+      setPublicFiles({})
       const { getIssueBySlug } = require('../content')
-
       expect(getIssueBySlug('../etc/passwd')).toBeNull()
       expect(getIssueBySlug('../../secret')).toBeNull()
       expect(getIssueBySlug('1/../2')).toBeNull()
-    })
-
-    it('带特殊字符的 slug 应该返回 null', () => {
-      fsMock.__setFs(snapshotFrom([]))
-      const { getIssueBySlug } = require('../content')
-
       expect(getIssueBySlug('001;rm -rf')).toBeNull()
-      expect(getIssueBySlug('001|whoami')).toBeNull()
-      expect(getIssueBySlug('001 and 1=1')).toBeNull()
       expect(getIssueBySlug('README')).toBeNull()
-    })
-
-    it('负数 slug 应该返回 null', () => {
-      fsMock.__setFs(snapshotFrom([]))
-      const { getIssueBySlug } = require('../content')
-
       expect(getIssueBySlug('-1')).toBeNull()
-    })
-
-    it('浮点数 slug 应该返回 null', () => {
-      fsMock.__setFs(snapshotFrom([]))
-      const { getIssueBySlug } = require('../content')
-
       expect(getIssueBySlug('1.5')).toBeNull()
     })
   })
 
   describe('getIssueBySlug - 正常与边界场景', () => {
-    it('合法数字 slug 且存在文件时返回完整 Issue', () => {
-      const slug = '001'
-      const rel = `${slug}/README.md`
-      const file = buildIssue(
-        slug,
-        {
+    it('合法数字 slug 且存在 issue-<slug>.json 时返回完整 Issue', () => {
+      setPublicFiles({
+        'issue-001.json': {
           issue: 1,
           title: '青年周刊 · 创刊号',
           date: '2026-04-08',
           published: true,
-          cover: './assets/cover.png',
           description: '创刊号',
+          content: '# 创刊号内容\n',
+          cover: './assets/cover.png',
+          slug: '001',
         },
-        '# 创刊号内容'
-      )
-      fsMock.__setFs(snapshotFrom([[rel, file]]))
+      })
       const { getIssueBySlug } = require('../content')
-
-      const issue: Issue | null = getIssueBySlug(slug)
+      const issue: Issue | null = getIssueBySlug('001')
 
       expect(issue).not.toBeNull()
       expect(issue).toMatchObject({
@@ -190,236 +121,113 @@ describe('content.ts', () => {
       })
     })
 
-    it('合法 slug 但文件不存在时返回 null', () => {
-      fsMock.__setFs(snapshotFrom([]))
+    it('合法 slug 但缺少 issue-<slug>.json 时返回 null', () => {
+      setPublicFiles({})
       const { getIssueBySlug } = require('../content')
-
       expect(getIssueBySlug('999')).toBeNull()
     })
 
-    it('未发布 (published=false) 的 issue 仍然可以通过 getIssueBySlug 拿到原始数据', () => {
-      const slug = '008'
-      const rel = `${slug}/README.md`
-      const file = buildIssue(
-        slug,
-        {
-          issue: 8,
-          title: '第 8 期',
-          date: '2026-07-13',
-          published: false,
-        },
-        '草稿内容'
-      )
-      fsMock.__setFs(snapshotFrom([[rel, file]]))
+    it('JSON 缺少字段时使用默认值', () => {
+      setPublicFiles({
+        'issue-010.json': { issue: 10, title: '第10期', date: '2026-05-01' },
+      })
       const { getIssueBySlug } = require('../content')
-
-      const issue = getIssueBySlug(slug)
-
-      expect(issue).not.toBeNull()
-      expect(issue?.published).toBe(false)
-      expect(issue?.content).toBe('草稿内容\n')
-    })
-
-    it('缺少 frontmatter 字段时使用默认值', () => {
-      const slug = '010'
-      const rel = `${slug}/README.md`
-      // 只提供 issue 字段,缺 title/date/cover/description
-      const file = `---\nissue: 10\n---\n\n# 第 10 期\n`
-      fsMock.__setFs(snapshotFrom([[rel, file]]))
-      const { getIssueBySlug } = require('../content')
-
-      const issue = getIssueBySlug(slug)
-
+      const issue = getIssueBySlug('010')
       expect(issue).not.toBeNull()
       expect(issue?.title).toBe('第10期')
-      expect(issue?.date).toBe('')
-      expect(issue?.cover).toBeUndefined()
       expect(issue?.description).toBeUndefined()
-      expect(issue?.published).toBe(false)
+      expect(issue?.content).toBeUndefined()
     })
   })
 
-  describe('getAllIssues - 排序与过滤', () => {
-    it('按期号倒序返回', () => {
-      // Arrange:在 issues 目录下提供 001/002/003 三个目录,只发布 001/003
-      const e1 = buildIssue('001', { issue: 1, title: '第1期', date: '2026-04-08', published: true })
-      const e3 = buildIssue('003', { issue: 3, title: '第3期', date: '2026-04-22', published: true })
-      const e2 = buildIssue('002', { issue: 2, title: '第2期', date: '2026-04-15', published: true })
-      fsMock.__setFs(
-        snapshotFrom([
-          ['001/README.md', e1],
-          ['002/README.md', e2],
-          ['003/README.md', e3],
-        ])
-      )
+  describe('getAllIssues - 从 issue_index.json 读取', () => {
+    it('按期号顺序返回列表条目(生成器已倒序、只含已发布)', () => {
+      setPublicFiles({
+        'issue_index.json': [
+          { issue: 3, title: '第3期', date: '2026-04-22', description: 'd3', slug: '003' },
+          { issue: 1, title: '第1期', date: '2026-04-08', description: 'd1', slug: '001' },
+        ],
+      })
       const { getAllIssues } = require('../content')
-
-      // Act
       const issues = getAllIssues()
 
-      // Assert
-      expect(issues.map((i) => i.issue)).toEqual([3, 2, 1])
+      expect(issues).toHaveLength(2)
+      expect(issues[0].slug).toBe('003')
+      expect(issues[1].slug).toBe('001')
+      // 列表条目不含正文
+      expect(issues[0].content).toBeUndefined()
+      expect(issues[0].published).toBe(true)
     })
 
-    it('只返回 published: true 的 issue', () => {
-      const published = buildIssue('001', {
-        issue: 1,
-        title: '已发布',
-        date: '2026-04-08',
-        published: true,
-      })
-      const draft = buildIssue('002', {
-        issue: 2,
-        title: '草稿',
-        date: '2026-04-15',
-        published: false,
-      })
-      fsMock.__setFs(
-        snapshotFrom([
-          ['001/README.md', published],
-          ['002/README.md', draft],
-        ])
-      )
+    it('产物缺失时抛出可操作错误(而非静默空数据)', () => {
+      setPublicFiles({ 'robots.txt': 'User-agent: *' })
       const { getAllIssues } = require('../content')
-
-      const issues = getAllIssues()
-
-      expect(issues).toHaveLength(1)
-      expect(issues[0].title).toBe('已发布')
+      expect(() => getAllIssues()).toThrow(/issue_index\.json/)
+      expect(() => getAllIssues()).toThrow(/youth-weekly generate/)
     })
 
-    it('忽略非数字目录(如 assets、tools 等)', () => {
-      const e1 = buildIssue('001', {
-        issue: 1,
-        title: 'A',
-        date: '2026-04-08',
-        published: true,
-      })
-      fsMock.__setFs(
-        snapshotFrom([
-          ['001/README.md', e1],
-          // 非数字目录应被正则过滤
-          ['assets/logo.png', 'binary'],
-          ['tools/script.sh', '#!/bin/sh'],
-        ])
-      )
+    it('issue_index.json 非数组时返回空数组', () => {
+      setPublicFiles({ 'issue_index.json': { not: 'array' } })
       const { getAllIssues } = require('../content')
-
-      const issues = getAllIssues()
-
-      expect(issues).toHaveLength(1)
-      expect(issues[0].issue).toBe(1)
-    })
-
-    it('当 issues 目录不存在时返回空数组', () => {
-      fsMock.__setFs(snapshotFrom([]))
-      const { getAllIssues } = require('../content')
-
       expect(getAllIssues()).toEqual([])
     })
-
-    it('当某期目录缺少 README.md 时跳过该期', () => {
-      const e1 = buildIssue('001', {
-        issue: 1,
-        title: 'A',
-        date: '2026-04-08',
-        published: true,
-      })
-      const e3 = buildIssue('003', {
-        issue: 3,
-        title: 'C',
-        date: '2026-04-22',
-        published: true,
-      })
-      fsMock.__setFs(
-        snapshotFrom([
-          ['001/README.md', e1],
-          // 002 没有 README.md
-          ['003/README.md', e3],
-        ])
-      )
-      const { getAllIssues } = require('../content')
-
-      const issues = getAllIssues()
-      expect(issues.map((i) => i.issue)).toEqual([3, 1])
-    })
   })
 
-  describe('renderMarkdown - XSS 防护', () => {
-    it('过滤 script 标签', async () => {
-      const { renderMarkdown } = require('../content')
-
-      const html = await renderMarkdown('Hello <script>alert(1)</script> world')
-
-      expect(html).not.toMatch(/<script/i)
-      expect(html).toContain('Hello')
-      expect(html).toContain('world')
-    })
-
-    it('保留基础 markdown 元素', async () => {
-      const { renderMarkdown } = require('../content')
-
-      const html = await renderMarkdown('# Title\n\n- a\n- b\n')
-
-      expect(html).toContain('<h1>Title</h1>')
-      expect(html).toContain('<li>a</li>')
-      expect(html).toContain('<li>b</li>')
-    })
-
-    it('支持 GFM 表格', async () => {
-      const { renderMarkdown } = require('../content')
-
-      const md = '| a | b |\n|---|---|\n| 1 | 2 |\n'
-      const html = await renderMarkdown(md)
-
-      expect(html).toContain('<table>')
-      expect(html).toContain('<th>a</th>')
-      expect(html).toContain('<td>1</td>')
-    })
-  })
-
-  describe('getSearchIndex', () => {
-    it('从已发布 issue 中提取 excerpt(去除 markdown 标记)', () => {
-      const e1 = buildIssue(
-        '001',
-        {
-          issue: 1,
-          title: '创刊号',
-          date: '2026-04-08',
-          published: true,
+  describe('getCategories - 从 site-data.json 读取', () => {
+    it('返回配置中的分类列表', () => {
+      setPublicFiles({
+        'site-data.json': {
+          site: { name: '青年周刊' },
+          categories: [
+            { id: 'tech', name: '科技新势力', icon: '🚀', tagline: 'AI 工具' },
+            { id: 'jobs', name: '谁在招人', icon: '💼' },
+          ],
         },
-        '## 标题\n\n这是[链接](http://example.com)的内容,用于测试摘要生成。'
-      )
-      fsMock.__setFs(snapshotFrom([['001/README.md', e1]]))
-      const { getSearchIndex } = require('../content')
+      })
+      const { getCategories } = require('../content')
+      const categories = getCategories()
 
+      expect(categories).toHaveLength(2)
+      expect(categories[0]).toMatchObject({ id: 'tech', name: '科技新势力' })
+      expect(categories[1].tagline).toBeUndefined()
+    })
+
+    it('产物缺失时抛出可操作错误', () => {
+      setPublicFiles({ 'robots.txt': 'User-agent: *' })
+      const { getCategories } = require('../content')
+      expect(() => getCategories()).toThrow(/site-data\.json/)
+    })
+  })
+
+  describe('getSearchIndex - 从 search-data.json 读取', () => {
+    it('返回搜索索引条目', () => {
+      setPublicFiles({
+        'search-data.json': [
+          { issue: 1, title: '创刊号', date: '2026-04-08', slug: '001', excerpt: '这是摘要...' },
+        ],
+      })
+      const { getSearchIndex } = require('../content')
       const index = getSearchIndex()
 
       expect(index).toHaveLength(1)
-      expect(index[0].title).toBe('创刊号')
-      expect(index[0].slug).toBe('001')
-      expect(index[0].excerpt).toContain('这是链接的内容')
-      expect(index[0].excerpt.endsWith('...')).toBe(true)
+      expect(index[0]).toMatchObject({ issue: 1, slug: '001', excerpt: '这是摘要...' })
     })
   })
 
-  describe('categories 常量', () => {
-    it('包含 9 个分类且 id 唯一', () => {
-      const { categories } = require('../content')
-
-      expect(categories).toHaveLength(9)
-      const ids = categories.map((c: { id: string }) => c.id)
-      expect(new Set(ids).size).toBe(ids.length)
-    })
-
-    it('每个分类都有 id、name、icon 字段', () => {
-      const { categories } = require('../content')
-
-      for (const c of categories) {
-        expect(c).toHaveProperty('id')
-        expect(c).toHaveProperty('name')
-        expect(c).toHaveProperty('icon')
-      }
+  describe('getSiteData - 站点元数据', () => {
+    it('返回 site-data.json 完整结构', () => {
+      setPublicFiles({
+        'site-data.json': {
+          site: { name: '青年周刊', url: 'https://xfengyin.github.io/youth-weekly' },
+          author: { name: '编辑部' },
+          categories: [],
+          build: { node_version: '20' },
+        },
+      })
+      const { getSiteData } = require('../content')
+      const siteData = getSiteData()
+      expect(siteData.site.name).toBe('青年周刊')
+      expect(siteData.categories).toEqual([])
     })
   })
 })

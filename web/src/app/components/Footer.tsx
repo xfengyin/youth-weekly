@@ -49,19 +49,21 @@ export default function Footer() {
                 href="https://github.com/xfengyin/youth-weekly"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#a39e98] hover:text-[#615d59] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
+                className="text-[#615d59] hover:text-[#4b4743] dark:text-[#a39e98] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
               >
                 <Github className="w-5 h-5" />
               </a>
+              {/* basePath 不会改写原生 <a>，需用 NEXT_PUBLIC_BASE_PATH 拼接，
+                  否则部署到 /youth-weekly 子路径时指向站点根 → 404 */}
               <a
-                href="/rss.xml"
-                className="text-[#a39e98] hover:text-[#615d59] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
+                href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`}
+                className="text-[#615d59] hover:text-[#4b4743] dark:text-[#a39e98] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
               >
                 <Rss className="w-5 h-5" />
               </a>
               <a
                 href="mailto:youth-weekly@example.com"
-                className="text-[#a39e98] hover:text-[#615d59] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
+                className="text-[#615d59] hover:text-[#4b4743] dark:text-[#a39e98] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
               >
                 <Mail className="w-5 h-5" />
               </a>
@@ -77,12 +79,24 @@ export default function Footer() {
               <ul className="mt-4 space-y-3">
                 {links.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.href.startsWith('http') ? (
+                      // 外链用原生 <a> 并追加 target/rel，避免反向 tabnabbing
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-sm text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -93,10 +107,10 @@ export default function Footer() {
         {/* Bottom */}
         <div className="mt-14 pt-8 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-[#a39e98] dark:text-[#615d59]">
+            <p className="text-sm text-[#615d59] dark:text-[#a39e98]">
               © {currentYear} 青年周刊. 保留所有权利.
             </p>
-            <p className="text-sm text-[#a39e98] dark:text-[#615d59] flex items-center">
+            <p className="text-sm text-[#615d59] dark:text-[#a39e98] flex items-center">
               用
               <Heart className="w-4 h-4 mx-1 text-[#dd5b00]" />
               为年轻人创作

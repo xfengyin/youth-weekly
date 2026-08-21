@@ -11,7 +11,7 @@ from typing import Any
 
 from feedgen.feed import FeedGenerator
 
-from youth_weekly.core.config import get_config
+from youth_weekly.core.config import ROOT_DIR, get_config
 from youth_weekly.core.content import load_all_issues
 from youth_weekly.plugin.base import BasePlugin
 from youth_weekly.plugin.registry import register
@@ -25,21 +25,27 @@ class RssPlugin(BasePlugin):
     version: str = "1.0.0"
     description: str = "生成 RSS feed 文件"
 
+    # 产物路由:deploy.yml 会把 scripts/dist/rss.xml 拷贝到站点根目录,
+    # generate 产出的 rss.xml 必须与该路径一致,避免重复执行与落点漂移。
+    outputs: dict[str, str] = {"rss": "scripts/dist/rss.xml"}
+
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         执行 RSS 生成
 
         Args:
             params: 参数字典，支持:
-                - docs_dir: 文档根目录
-                - output_path: 输出文件路径
+                - docs_dir: 文档根目录(默认 ROOT_DIR/docs)
+                - output_path: 输出文件路径(默认 ROOT_DIR/scripts/dist/rss.xml)
 
         Returns:
             生成的 RSS 数据
         """
         params = params or {}
-        docs_dir = Path(params.get("docs_dir", "docs"))
-        output_path = Path(params.get("output_path", "scripts/dist/rss.xml"))
+        docs_dir = Path(params.get("docs_dir", str(ROOT_DIR / "docs")))
+        output_path = Path(
+            params.get("output_path", str(ROOT_DIR / "scripts" / "dist" / "rss.xml"))
+        )
 
         config = get_config()
         issues = load_all_issues(docs_dir, reverse=True)
