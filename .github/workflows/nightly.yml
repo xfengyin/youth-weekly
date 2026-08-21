@@ -1,0 +1,92 @@
+name: Nightly Security Scan
+
+on:
+  schedule:
+    # 每周一 02:00 UTC（北京时间 10:00）全量安全扫描
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+# 最小化权限：只读仓库 + 允许在失败时自动开 Issue
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  security-scan:
+    name: Security Scan (bandit / pip-audit / npm audit)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4  # action 保持 @v4 大版本；uv 工具版本固定
+        with:
+          version: '0.12.5'
+          enable-cache: true
+          cache-dependency-glob: 'scripts/uv.lock'
+
+      - name: Install Python dependencies
+        working-directory: scripts
+        run: |
+          uv sync --all-extras
+
+      - name: Run bandit (Python 安全扫描, 含中危)
+        id: bandit
+        continue-on-error: true  # 失败不中断 job，由下方汇总步骤开 Issue 并置红
+        working-directory: scripts
+        run: |
+          uv run bandit -r src/youth_weekly/ -ll -i
+
+      - name: Run pip-audit (Python 依赖漏洞)
+        id: pipaudit
+        continue-on-error: true
+        working-directory: scripts
+        run: |
+          uv run pip-audit --strict
+
+      - name: Run npm audit (前端依赖漏洞)
+        id: npmaudit
+        continue-on-error: true
+        working-directory: web
+        run: |
+          npm ci --no-fund
+          npm audit --audit-level=high
+
+      - name: Report failures & open issue
+        if: steps.bandit.outcome == 'failure' || steps.pipaudit.outcome == 'failure' || steps.npmaudit.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const parts = [];
+            if ('${{ steps.bandit.outcome }}' === 'failure') parts.push('- **bandit**：Python 代码存在安全问题（-ll -i）');
+            if ('${{ steps.pipaudit.outcome }}' === 'failure') parts.push('- **pip-audit**：Python 依赖存在已知漏洞');
+            if ('${{ steps.npmaudit.outcome }}' === 'failure') parts.push('- **npm audit**：前端依赖存在已知漏洞');
+            const summary = parts.join('\n');
+            const title = '⚠️ 夜间安全扫描失败（' + new Date().toISOString().slice(0, 10) + '）';
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['security'],
+            });
+            if (!open.some((i) => i.title.startsWith('⚠️ 夜间安全扫描失败'))) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body:
+                  '夜间安全扫描发现以下问题：\n' + summary +
+                  '\n\n详见 Actions 日志：https://github.com/' +
+                  context.repo.owner + '/' + context.repo.repo + '/actions',
+                labels: ['security'],
+              });
+            }
+            core.setFailed('安全扫描失败：\n' + summary);

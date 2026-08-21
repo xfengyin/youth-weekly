@@ -36,7 +36,7 @@ concurrency:
 jobs:
   build:
     name: Build & Upload Artifact
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
@@ -58,15 +58,16 @@ jobs:
           python-version: '3.12'
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v4  # action 保持 @v4 大版本；uv 工具版本固定
         with:
+          version: '0.12.5'
           enable-cache: true
           cache-dependency-glob: "scripts/uv.lock"
 
       - name: Install dependencies
         run: |
           cd web
-          npm install --no-audit --no-fund
+          npm ci --no-fund
           cd ../scripts
           uv sync --no-dev
 
@@ -75,6 +76,29 @@ jobs:
           cd scripts
           uv run youth-weekly generate
           uv run youth-weekly rss
+
+      - name: Sync generated artifacts into web/public
+        run: |
+          # 生成器当前把 JSON 产物写到 scripts/dist/；按站点产物白名单同步到 web/public/，
+          # 由 Next.js 静态导出自动复制进 out/（搜索页依赖 /search-data.json）。
+          # T-B 重构若改为生成器直接写 web/public/，本步骤保持幂等（源不存在则跳过）。
+          mkdir -p web/public
+          # 搜索索引：前端 fetch /search-data.json
+          if [ -f "scripts/dist/search_index.json" ]; then
+            cp scripts/dist/search_index.json web/public/search-data.json
+            echo "✔ search-data.json synced (from search_index.json)"
+          fi
+          # T-B 站点产物白名单（issue_index / stats / site-data / issue-*）
+          for base in issue_index.json stats.json site-data.json; do
+            if [ -f "scripts/dist/$base" ]; then
+              cp "scripts/dist/$base" "web/public/$base"
+              echo "✔ $base synced"
+            fi
+          done
+          if ls scripts/dist/issue-*.json >/dev/null 2>&1; then
+            cp scripts/dist/issue-*.json web/public/
+            echo "✔ issue-*.json synced ($(ls scripts/dist/issue-*.json | wc -l) 个)"
+          fi
 
       - name: Build site
         run: |
@@ -112,10 +136,22 @@ jobs:
 
       - name: Verify deployment artifact
         run: |
-          if [ ! -f "output/index.html" ]; then
-            echo "❌ Verification failed: output/index.html not found"
-            exit 1
+          # 必需产物：站点入口 / RSS / 搜索数据（前端与订阅依赖）
+          test -f "output/index.html" || { echo "❌ output/index.html missing"; exit 1; }
+          test -f "output/rss.xml" || { echo "❌ output/rss.xml missing"; exit 1; }
+          test -f "output/search-data.json" || { echo "❌ output/search-data.json missing（搜索页依赖）"; exit 1; }
+          # T-B 产物契约（issue_index/site-data/issue-*）：T-B 落地后应为硬校验；
+          # 当前缺失仅警告，由集成验证任务 t9 复核最终契约。
+          for f in issue_index.json site-data.json; do
+            if [ -f "output/$f" ]; then echo "✔ $f"; else echo "⚠️ output/$f 缺失（T-B 产物约定未落地或路径变更）"; fi
+          done
+          if ls output/issue-*.json >/dev/null 2>&1; then
+            echo "✔ issue-*.json 存在（$(ls output/issue-*.json | wc -l) 个）"
+          else
+            echo "⚠️ output/issue-*.json 缺失（T-B 产物约定未落地或路径变更）"
           fi
+          # 安全响应头应随 web/public 自动进入产物
+          if [ -f "output/_headers" ]; then echo "✔ _headers 已进入产物"; else echo "⚠️ output/_headers 缺失"; fi
           echo "✅ Verification passed: $(find output -type f | wc -l) files ready"
 
       - name: Upload artifact
@@ -125,7 +161,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
     timeout-minutes: 10
     # 不绑定 environment，避免 environment 保护规则阻塞部署

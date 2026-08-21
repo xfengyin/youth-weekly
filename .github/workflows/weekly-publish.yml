@@ -25,7 +25,7 @@ concurrency:
 jobs:
   weekly-publish:
     name: Weekly Auto-Publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     steps:
@@ -41,9 +41,9 @@ jobs:
           python-version: '3.12'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4  # action 保持 @v4 大版本；uv 工具版本固定
         with:
-          version: "latest"
+          version: "0.12.5"
           enable-cache: true
           cache-dependency-glob: "scripts/uv.lock"
 
@@ -85,8 +85,11 @@ jobs:
           uv run youth-weekly issue
 
       # 3. 提交阶段：将新一期推送到 main
-      #    注意：commit message 使用 [skip ci] 仅用于跳过 ci.yml 的冗余校验，
-      #    不会跳过 deploy.yml（按设计 deploy 会自然触发并完成 Pages 部署）。
+      #    注意：commit message **不再带 [skip ci]**。
+      #    历史问题：GitHub 对 push 提交信息含 [skip ci] 时，会跳过该 push 触发的
+      #    **所有** push 事件工作流（含 deploy.yml），导致自动部署链路失效。
+      #    现方案：ci.yml 仅监听 pull_request（见 ci.yml），main push 无需跳过；
+      #    deploy.yml 由本次 push 自然触发，无需 dispatch。
       - name: Mark new issues as published
         if: steps.content_check.outputs.has_content == 'true'
         # 双保险：即使 issue_generator 默认 published: false，
@@ -115,7 +118,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "no_changes=true" >> $GITHUB_OUTPUT
           else
-            git commit -m "📰 自动生成新一期周刊 [skip ci]"
+            git commit -m "📰 自动生成新一期周刊"
             git push
             echo "no_changes=false" >> $GITHUB_OUTPUT
           fi

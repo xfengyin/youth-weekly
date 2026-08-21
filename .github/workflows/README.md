@@ -4,13 +4,14 @@
 
 ## Workflow 一览
 
-当前仓库实际存在 3 个工作流（release.yml / nightly.yml 已于 2026 年清理下线，不再列举）：
+当前仓库实际存在 4 个工作流（release.yml 已于 2026 年清理下线，不再列举）：
 
 | Workflow | 触发条件 | 职责 |
 | --- | --- | --- |
-| `ci.yml` | push (PR / main) | 单元测试、类型检查、构建校验 |
+| `ci.yml` | pull_request | 单元测试、类型检查、构建校验、安全扫描（硬门禁） |
 | `deploy.yml` | push main、手动 dispatch | 构建站点并部署到 GitHub Pages |
 | `weekly-publish.yml` | 每周一 cron、手动 dispatch | 采集内容、生成周刊、提交到 main |
+| `nightly.yml` | 每周一 cron、手动 dispatch | 全量安全扫描（bandit/pip-audit/npm audit），失败自动开 Issue |
 
 ## GitHub Pages 部署（双轨冲突解决方案）
 
@@ -27,15 +28,20 @@
 
 ### 2. weekly-publish 如何触发 deploy
 
-`weekly-publish.yml` **不再**显式 dispatch `deploy.yml`。完整链路：
+`weekly-publish.yml` **不**显式 dispatch `deploy.yml`，也**不再使用 `[skip ci]`**。完整链路：
 
 1. `weekly-publish.yml` 通过 cron 或手动触发。
-2. 采集 + 生成新一期周刊后，commit + push 到 `main`（commit message 末尾带 `[skip ci]`）。
-3. `[skip ci]` 仅跳过 `ci.yml` 的冗余校验，**不会**跳过 `deploy.yml`。
-4. `deploy.yml` 监听到 main 分支的 push，自然触发：build → upload artifact → deploy。
-5. 新周刊内容随主站一并发布到 GitHub Pages。
+2. 采集 + 生成新一期周刊后，commit + push 到 `main`（commit message **不带** `[skip ci]`）。
+3. `deploy.yml` 监听到 main 分支的 push，自然触发：build → upload artifact → deploy。
+4. 新周刊内容随主站一并发布到 GitHub Pages。
+5. `ci.yml` 仅监听 `pull_request`，main 的自动发布 push 不会触发冗余 CI。
 
-> 历史问题：旧版 `weekly-publish.yml` 末尾有 `gh api ... workflows/deploy.yml/dispatches` 步骤，会与 push 触发的 `deploy.yml` 形成级联冗余，造成资源浪费并偶发竞态。已删除该步骤。
+> ⚠️ 历史教训（T-D 重构修复）：旧版在 commit message 中带 `[skip ci]`，并声称"仅跳过 ci.yml、不会跳过 deploy.yml"。
+> 该断言与 GitHub 官方行为相悖——push 提交信息含 skip 关键词时，会跳过该 push 触发的**所有** push 事件工作流
+> （含 deploy.yml），导致自动部署链路静默失效。T-D 重构后：commit 不再带 skip 关键词 + ci.yml 改为 PR-only，
+> 从根上消除该问题。
+
+> 历史问题：更早版本 `weekly-publish.yml` 末尾有 `gh api ... workflows/deploy.yml/dispatches` 步骤，会与 push 触发的 `deploy.yml` 形成级联冗余，造成资源浪费并偶发竞态。已删除该步骤。
 
 ### 3. concurrency group 的作用
 
