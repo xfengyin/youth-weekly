@@ -1,11 +1,8 @@
+const config = require('./utils/config')
+
 App({
   onLaunch() {
-    // 展示本地存储能力
-    const logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())
-    wx.setStorageSync('logs', logs)
-
-    // 检查更新
+    // 检查更新（基础库 >= 1.9.90）
     this.checkUpdate()
   },
 
@@ -22,7 +19,7 @@ App({
                 if (res.confirm) {
                   updateManager.applyUpdate()
                 }
-              }
+              },
             })
           })
         }
@@ -31,7 +28,6 @@ App({
   },
 
   globalData: {
-    userInfo: null,
-    apiBaseUrl: 'https://xfengyin.github.io/youth-weekly/api'
-  }
+    baseUrl: config.baseUrl,
+  },
 })

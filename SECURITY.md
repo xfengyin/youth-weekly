@@ -19,7 +19,7 @@
 
 请通过以下方式私下报告：
 
-- 📧 邮箱：youth-weekly-security@example.com
+- 📧 邮箱：contact@youth-weekly.com
 - 🔐 GitHub Security Advisories：在仓库的 "Security" 标签页提交
 
 ### 报告内容

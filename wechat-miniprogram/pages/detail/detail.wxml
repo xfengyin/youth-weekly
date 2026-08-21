@@ -4,8 +4,16 @@
     <text style="color: #6b7280;">加载中...</text>
   </view>
 
+  <!-- 内容不存在（非法 slug / 无此期次） -->
+  <view wx:elif="{{notFound}}" class="empty">
+    <text>该期周刊不存在或已被移除</text>
+    <navigator url="/pages/list/list" open-type="switchTab" style="color: #0ea5e9; font-size: 28rpx; margin-top: 20rpx;">
+      返回周刊列表
+    </navigator>
+  </view>
+
   <!-- 内容 -->
-  <block wx:if="{{!loading && issue}}">
+  <block wx:else>
     <!-- 头部信息 -->
     <view class="card" style="background: linear-gradient(135deg, #0ea5e9, #8b5cf6); color: white;">
       <view style="font-size: 26rpx; opacity: 0.9; margin-bottom: 16rpx;">
@@ -16,7 +24,7 @@
       </view>
     </view>
 
-    <!-- 文章正文 -->
+    <!-- 文章正文（rich-text 内容已在 JS 侧 HTML 转义） -->
     <view class="card">
       <rich-text nodes="{{content}}"></rich-text>
     </view>

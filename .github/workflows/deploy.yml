@@ -36,7 +36,7 @@ concurrency:
 jobs:
   build:
     name: Build & Upload Artifact
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
@@ -58,23 +58,40 @@ jobs:
           python-version: '3.12'
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v4  # action 保持 @v4 大版本；uv 工具版本固定
         with:
+          version: '0.12.5'
           enable-cache: true
           cache-dependency-glob: "scripts/uv.lock"
 
       - name: Install dependencies
         run: |
           cd web
-          npm install --no-audit --no-fund
+          npm ci --no-fund
           cd ../scripts
           uv sync --no-dev
 
       - name: Generate content
         run: |
           cd scripts
+          # rss 已在 generate 默认白名单内（cli.py），无需单独执行
           uv run youth-weekly generate
-          uv run youth-weekly rss
+
+      - name: Verify T-B artifacts in web/public
+        run: |
+          # T-B 管线（t5）的 generate 直接把站点 JSON 产物写进 web/public/，
+          # Next.js 静态导出会自动复制进 out/。这里做契约硬校验：缺失即 fail。
+          for f in search-data.json issue_index.json site-data.json; do
+            test -f "web/public/$f" || { echo "❌ web/public/$f 缺失（generate 未产出，契约被破坏）"; exit 1; }
+            echo "✔ web/public/$f"
+          done
+          if ls web/public/issue-*.json >/dev/null 2>&1; then
+            echo "✔ web/public/issue-*.json（$(ls web/public/issue-*.json | wc -l) 个）"
+          else
+            echo "❌ web/public/issue-*.json 缺失（generate 未产出单期 JSON）"
+            exit 1
+          fi
+          test -f "web/public/_headers" || { echo "❌ web/public/_headers 缺失"; exit 1; }
 
       - name: Build site
         run: |
@@ -99,10 +116,13 @@ jobs:
             exit 1
           fi
 
-          # 复制 RSS 文件到网站根目录（如有）
+          # 复制 RSS 文件到网站根目录（generate 的 rss 插件默认输出 scripts/dist/rss.xml）
           if [ -f "scripts/dist/rss.xml" ]; then
             echo "📰 Copying RSS feed"
             cp scripts/dist/rss.xml output/rss.xml
+          else
+            echo "❌ scripts/dist/rss.xml 缺失（rss 插件未产出）"
+            exit 1
           fi
 
           # 关键：禁用 Jekyll，否则以 _ 开头的文件（如 _next）会被忽略
@@ -112,10 +132,19 @@ jobs:
 
       - name: Verify deployment artifact
         run: |
-          if [ ! -f "output/index.html" ]; then
-            echo "❌ Verification failed: output/index.html not found"
+          # 必需产物：站点入口 / RSS / 搜索数据 / 索引 / 站点元数据 / 单期 JSON / 安全头
+          test -f "output/index.html" || { echo "❌ output/index.html missing"; exit 1; }
+          test -f "output/rss.xml" || { echo "❌ output/rss.xml missing"; exit 1; }
+          test -f "output/search-data.json" || { echo "❌ output/search-data.json missing（搜索页依赖）"; exit 1; }
+          test -f "output/issue_index.json" || { echo "❌ output/issue_index.json missing"; exit 1; }
+          test -f "output/site-data.json" || { echo "❌ output/site-data.json missing"; exit 1; }
+          if ls output/issue-*.json >/dev/null 2>&1; then
+            echo "✔ output/issue-*.json（$(ls output/issue-*.json | wc -l) 个）"
+          else
+            echo "❌ output/issue-*.json 缺失"
             exit 1
           fi
+          test -f "output/_headers" || { echo "❌ output/_headers 缺失（安全响应头未随部署）"; exit 1; }
           echo "✅ Verification passed: $(find output -type f | wc -l) files ready"
 
       - name: Upload artifact
@@ -125,7 +154,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
     timeout-minutes: 10
     # 不绑定 environment，避免 environment 保护规则阻塞部署

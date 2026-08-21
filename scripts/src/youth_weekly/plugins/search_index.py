@@ -11,6 +11,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from youth_weekly.core.config import ROOT_DIR
 from youth_weekly.core.content import load_all_issues
 from youth_weekly.core.utils import safe_int
 from youth_weekly.plugin import BasePlugin, register
@@ -26,27 +27,31 @@ class SearchIndexPlugin(BasePlugin):
     version: str = "1.0.0"
     description: str = "生成搜索索引 JSON 文件"
 
+    # 产物路由:前端在 /search-data.json 读取(web/src/app/search/page.tsx)
+    outputs: dict[str, str] = {"search_data": "web/public/search-data.json"}
+
     def execute(self, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         执行搜索索引生成
 
         Args:
             params: 参数字典,支持:
-                - docs_dir: 文档根目录
-                - output_path: 输出文件路径
+                - docs_dir: 文档根目录(默认 ROOT_DIR/docs)
+                - output_path: 输出文件路径(默认 ROOT_DIR/web/public/search-data.json)
                 - issues: 预加载的 issues 列表(可选)
 
         Returns:
             生成的搜索索引数据
         """
         params = params or {}
-        docs_dir = Path(params.get("docs_dir", ""))
-        # 默认输出到 web/public/search-data.json:前端期望文件名为 search-data.json,
-        # 且 Next.js 会自动把 web/public/ 复制到 out/(部署产物)。
-        output_path = (
-            Path(params["output_path"])
-            if "output_path" in params
-            else Path("web/public/search-data.json")
+        docs_dir = Path(params.get("docs_dir", str(ROOT_DIR / "docs")))
+        # 默认输出到 ROOT_DIR/web/public/search-data.json:前端期望文件名为 search-data.json,
+        # 且 Next.js 会自动把 web/public/ 复制到 out/(部署产物)。使用 ROOT_DIR 锚定,
+        # 避免运行目录(CWD)不同导致产物落点漂移。
+        output_path = Path(
+            params.get(
+                "output_path", str(ROOT_DIR / "web" / "public" / "search-data.json")
+            )
         )
 
         issues = params.get("issues") or load_all_issues(docs_dir, reverse=True)

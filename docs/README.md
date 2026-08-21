@@ -19,7 +19,7 @@
 
 - [GitHub Issue 投稿](https://github.com/xfengyin/youth-weekly/issues/new?template=content_submission.md)
 - Fork 后提交 Pull Request
-- 邮件发送至 youth-weekly@xfengyin.com
+- 邮件发送至 contact@youth-weekly.com
 
 详见 [CONTRIBUTING.md](../CONTRIBUTING.md)
 

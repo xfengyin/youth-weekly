@@ -1,6 +1,6 @@
 # 青年周刊项目架构审查报告 (Architecture Review)
 
-**审查日期**: 2026-06-11
+**审查日期**: 2026-06-11（快照日期；后续变更见 git 历史与 T-A 基础重构，2026-08 已按快照口径更新过时描述）
 **审查范围**: 全栈项目 (Python后端 + Next.js前端 + CI/CD)
 **审查标准**: OWASP安全规范、PEP 8、Python企业级工程规范、React/Next.js最佳实践
 **审查结论**: 架构设计优良，安全基线达标，但存在 5 个P0级问题需立即修复
@@ -13,9 +13,9 @@
 youth-weekly/
 ├── web/                          # Next.js 14 前端 (SSG)
 │   ├── src/app/                  # App Router 页面与组件
-│   ├── package.json              # React 18, next-themes, DOMPurify
+│   ├── package.json              # React 18, next-themes, react-markdown（默认安全渲染）
 │   └── next.config.js            # output: 'export' 静态导出
-├── scripts/                      # Python 3.11+ 后端脚本
+├── scripts/                      # Python 3.12+ 后端脚本
 │   ├── src/youth_weekly/         # 核心包
 │   │   ├── core/                 # 业务核心 (采集/策展/生成/LLM)
 │   │   ├── plugin/               # OCP 插件架构
@@ -25,7 +25,7 @@ youth-weekly/
 │   └── uv.lock                   # 锁定依赖
 ├── docs/                         # 周刊内容 (Markdown + frontmatter)
 │   └── issues/
-├── .github/workflows/            # CI/CD (5 个 workflow)
+├── .github/workflows/            # CI/CD (3 个 workflow)
 ├── config.yaml                   # Pydantic 配置源
 └── content_sources.yaml          # 采集源配置
 ```
@@ -38,10 +38,10 @@ youth-weekly/
 | 前端运行时 | React | 18.3.1 | 稳定，支持 Server Components |
 | 前端语言 | TypeScript | 5.7.x | strict 模式开启 |
 | 前端样式 | Tailwind CSS | 3.4.x | 设计系统规范 |
-| 后端语言 | Python | 3.11+ | 类型注解完整 |
+| 后端语言 | Python | 3.12+ | 类型注解完整 |
 | 配置系统 | Pydantic | 2.0+ | 企业级配置管理 |
 | 包管理 | uv | latest | 现代 Python 包管理 |
-| CI/CD | GitHub Actions | - | 5 个 workflow 完整覆盖 |
+| CI/CD | GitHub Actions | - | 3 个 workflow 完整覆盖 |
 | 部署目标 | GitHub Pages | - | 静态站点托管 |
 
 ---
@@ -89,7 +89,7 @@ LLMProvider (抽象接口)
 | 路径遍历 | `Path.is_relative_to()` 标准库校验 | 优于字符串前缀匹配 |
 | SQL 注入 | SQLite 参数化查询 (`?` 占位符) | 安全 |
 | 日志注入 | 参数化 logging (`logger.info("%s", value)`) | 安全 |
-| XSS (前端) | `DOMPurify.sanitize()` 过滤 HTML | 中等防护 |
+| XSS (前端) | react-markdown 默认不渲染原始 HTML + 外链 `rel="noopener noreferrer"` | 安全 |
 | 模板注入 | Jinja2 `autoescape=True` | 安全 |
 
 ### 2.5 CI/CD 流程
@@ -116,7 +116,11 @@ Push/PR → CI Workflow
 - **修复**: 前往 https://github.com/xfengyin/youth-weekly/settings/pages 选择 **GitHub Actions**
 - **影响**: 网站完全不可访问
 
-### 3.2 前端 `dangerouslySetInnerHTML` XSS 风险
+### 3.2 前端 `dangerouslySetInnerHTML` XSS 风险 —— ✅ 已修复（2026-06 快照后）
+
+> 快照时的代码使用 `dangerouslySetInnerHTML` + `DOMPurify.sanitize()`（当时 `web/package.json` 引入 DOMPurify）。
+> **当前状态**：已改为 `react-markdown`（+ remark-gfm）渲染 Markdown，默认不执行 `dangerouslySetInnerHTML`，
+> 不再依赖 DOMPurify（`web/package.json` 已无该依赖），外链统一 `rel="noopener noreferrer"`。原始描述保留如下供追溯：
 
 - **文件**: `web/src/app/issues/[slug]/page.tsx:82`
 - **代码**:
@@ -131,7 +135,7 @@ Push/PR → CI Workflow
 />
 ```
 - **风险**: `div`/`span` 容器标签在 DOMPurify 0day 或配置放松时可能成为 XSS 载体
-- **修复建议**: 使用 `react-markdown` 组件渲染 Markdown，彻底消除 HTML 注入面
+- **修复建议**: 使用 `react-markdown` 组件渲染 Markdown，彻底消除 HTML 注入面（**已按此落地**）
 
 ### 3.3 `process.cwd()` 路径依赖导致构建环境不一致
 
@@ -189,11 +193,12 @@ return resp.content
 - **问题**: 分类配置在两个文件中同时存在，维护时容易遗漏同步
 - **修复**: `content_sources.yaml` 的分类引用 `config.yaml` 中的定义，或增加配置校验脚本
 
-### 4.5 pre-commit Python 版本不匹配
+### 4.5 pre-commit Python 版本不匹配 —— ✅ 已修复
 
 - **文件**: `.pre-commit-config.yaml:18`
 - **问题**: `language_version: python3.14` 与 `requires-python = ">=3.11"` 和 CI 的 Python 3.12 不一致
 - **修复**: 改为 `python3` 或与 CI 一致的版本
+- **当前状态**: 已统一为 `language_version: python3`，且 T-A 基础重构将 `requires-python` / black / mypy 统一为 **3.12**，与 CI matrix（3.12）一致
 
 ---
 
@@ -235,7 +240,7 @@ return resp.content
 | **性能优化** | 72/100 | 缺少响应大小限制、批量优化和缓存策略 |
 | **可测试性** | 68/100 | Python 测试覆盖良好，前端完全缺失 |
 | **可维护性** | 80/100 | 文档和配置较完善，pre-commit 版本不一致 |
-| **CI/CD** | 90/100 | 5 个 workflow 完整，权限最小化 |
+| **CI/CD** | 90/100 | 3 个 workflow 完整，权限最小化 |
 | **综合评分** | **79/100** | 企业级基线，优先处理 P0 问题 |
 
 ---

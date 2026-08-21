@@ -17,11 +17,33 @@ from pydantic import BaseModel, Field, ValidationError
 logger = logging.getLogger(__name__)
 
 
+def _find_project_root(start: Path) -> Path | None:
+    """
+    从 start 开始逐级向上查找"项目根"——即包含 config.yaml(或 scripts/ 目录)的祖先目录。
+
+    源码树/editable 安装下 __file__ 解析到仓库内,祖先链必然命中;
+    wheel 安装到 site-packages 时通常找不到标记,返回 None 交由调用方降级。
+    """
+    current = start
+    for _ in range(10):  # 向上最多 10 层,避免失控
+        if (current / "config.yaml").is_file() or (current / "scripts").is_dir():
+            return current
+        parent = current.parent
+        if parent == current:
+            break
+        current = parent
+    return None
+
+
 def _resolve_root_dir() -> Path:
     """
     解析项目根目录(按优先级):
     1. 环境变量 YOUTH_WEEKLY_ROOT
-    2. 路径推算(向后兼容 fallback)
+    2. 从 __file__ 向上查找带 config.yaml/scripts 标记的祖先目录
+    3. 路径推算 fallback(向后兼容)
+
+    非 editable 安装(wheel)到 site-packages 时,第 2/3 步都解析不到项目根,
+    会告警并建议设置 YOUTH_WEEKLY_ROOT;避免静默使用错误根目录。
     """
     # 优先级 1: 环境变量
     env_root = os.environ.get("YOUTH_WEEKLY_ROOT")
@@ -32,8 +54,21 @@ def _resolve_root_dir() -> Path:
             return root_path
         logger.warning("YOUTH_WEEKLY_ROOT path not exists: %s", root_path)
 
-    # 优先级 2: 路径推算 fallback
-    fallback_root = Path(__file__).resolve().parent.parent.parent.parent.parent
+    # 优先级 2: 祖先目录标记查找(editable/源码树均命中)
+    start = Path(__file__).resolve()
+    found = _find_project_root(start)
+    if found is not None:
+        logger.debug("ROOT_DIR from project marker: %s", found)
+        return found
+
+    # 优先级 3: 旧式固定层级推算(仅对 scripts/src/youth_weekly/core 布局成立)
+    fallback_root = start.parent.parent.parent.parent.parent
+    if not (fallback_root / "config.yaml").exists():
+        logger.warning(
+            "ROOT_DIR fallback %s 不含 config.yaml;"
+            "若为 wheel 安装请设置 YOUTH_WEEKLY_ROOT 环境变量指向仓库根",
+            fallback_root,
+        )
     logger.debug("ROOT_DIR from fallback: %s", fallback_root)
     return fallback_root
 

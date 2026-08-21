@@ -25,7 +25,7 @@ UV          ?= uv
 USE_UV ?= 1
 
 # 若 USE_UV=1，所有命令通过 uv run 执行，否则需自行激活虚拟环境
-ifdef USE_UV
+ifeq ($(USE_UV),1)
     PY_RUN    := $(UV) run
     PIP_RUN   := $(UV) pip
 else
@@ -49,8 +49,8 @@ help: ## 显示本 Makefile 的所有可用目标
 ##@ 安装与环境
 
 .PHONY: install
-install: ## 安装 Python 依赖（uv sync + dev 依赖）
-	cd $(SCRIPTS_DIR) && $(UV) sync --extra dev
+install: ## 安装 Python 依赖（uv sync + dev/lint/test 全部组）
+	cd $(SCRIPTS_DIR) && $(UV) sync --all-groups
 
 .PHONY: install-hooks
 install-hooks: ## 安装 pre-commit Git 钩子

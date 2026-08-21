@@ -12,12 +12,35 @@
 - API 文档站点
 - 国际化支持
 
+### 已变更（T-A 基础重构）
+- 统一 Python 运行时为 3.12（pyproject/CI/.python-version/config.yaml 一致）
+- 统一 Node 运行时要求为 >=20
+- 新增 `.env.example` 与 GitHub Pages `_headers` 安全响应头
+- 统一维护者联系邮箱为 contact@youth-weekly.com
+- 修正 Makefile `USE_UV` 判断语义与 config.yaml 无效插件引用
+
+### 已变更（T-B 管线重构）
+- `generate` 默认只执行纯静态白名单（issue_index/issue_json/rss/search_index/site_data/stats），
+  不再触发 collect（网络采集）/issue（新建期刊）等有副作用插件；显式传插件名可覆盖
+- `generate` 任一插件失败或缺失返回非 0，CI/定时任务可感知失败
+- 插件新增 `outputs` 元数据，`generate` 按声明路由产物：
+  search-data.json / issue_index.json / issue-<slug>.json / site-data.json 落 web/public，
+  rss.xml / stats.json / artifacts-manifest.json 落 scripts/dist（manifest 含 size+SHA-256）
+- 新增 `youth-weekly validate`：Pydantic 校验 frontmatter（title/date 必填、slug 纯数字、
+  published 布尔、date 格式、cover 本地引用存在），失败返回非 0
+- 内容缓存签名改为（目录名, README mtime）元组集合，删除最新一期也能正确失效
+- frontmatter date 统一归一化为 YYYY-MM-DD 字符串（修复未加引号日期与字符串混用导致
+  stats 比较崩溃的问题）
+- 移除未使用的运行时依赖 jinja2/markdown 与死模板 templates/newsletter.html；
+  合并 optional-dependencies 与 dependency-groups 双轨（保留 PEP 735 group）
+- 新增 pytest 覆盖管线重构（白名单/失败语义/产物路由/manifest/validate/缓存失效）
+
 ## [1.0.0] - 2026-05-25
 
 ### 🎉 主要变更
 
 #### 架构升级
-- 升级到 Python 3.14（PEP 649/749 延迟注解求值）
+- 统一 Python 运行时为 3.12（现代类型注解 + uv；历史文档中的 3.14 表述为当时规划，实际落地为 3.12）
 - 集成 uv 包管理器（速度提升 10-100 倍）
 - 重构为现代企业级架构
 - 引入 Pydantic 进行类型化配置管理

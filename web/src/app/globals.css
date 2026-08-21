@@ -25,17 +25,21 @@
     rgba(0, 0, 0, 0.01) 0px 0.175px 1.04062px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #191919;
-    --color-bg-alt: #202020;
-    --color-text: rgba(255, 255, 255, 0.95);
-    --color-text-secondary: #a39e98;
-    --color-text-muted: #615d59;
-    --color-border: rgba(255, 255, 255, 0.1);
-    --color-badge-bg: rgba(0, 117, 222, 0.15);
-    --color-badge-text: #62aef0;
-  }
+/*
+ * 深色变量挂载在 `.dark` 类上（next-themes 使用 class 策略，darkMode: 'class'），
+ * 与 Tailwind 的 dark: 变体保持一致；此前挂在 @media (prefers-color-scheme)
+ * 上会导致“系统深色 + 站点手动浅色”时自定义组件（card/callout/btn 等）仍按
+ * 系统色渲染，主题开关与页面样式脱节。
+ */
+.dark {
+  --color-bg: #191919;
+  --color-bg-alt: #202020;
+  --color-text: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: #a39e98;
+  --color-text-muted: #615d59;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-badge-bg: rgba(0, 117, 222, 0.15);
+  --color-badge-text: #62aef0;
 }
 
 @layer base {
@@ -60,27 +64,27 @@
 
   .prose-custom h1 {
     @apply text-3xl font-bold mt-10 mb-5;
-    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
     color: rgba(0, 0, 0, 0.95);
     letter-spacing: -0.025em;
   }
 
   .prose-custom h2 {
     @apply text-2xl font-bold mt-8 mb-4;
-    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
     color: rgba(0, 0, 0, 0.95);
     letter-spacing: -0.02em;
   }
 
   .prose-custom h3 {
     @apply text-xl font-semibold mt-6 mb-3;
-    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
     color: rgba(0, 0, 0, 0.95);
   }
 
   .prose-custom h4 {
     @apply text-lg font-semibold mt-4 mb-2;
-    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
     color: rgba(0, 0, 0, 0.95);
   }
 
@@ -243,7 +247,7 @@
 
   /* ── Serif Heading Utility ── */
   .font-serif-heading {
-    font-family: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+    font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
   }
 
   /* ── Warm Section Background ── */

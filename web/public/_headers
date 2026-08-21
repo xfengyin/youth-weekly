@@ -1,0 +1,16 @@
+# =============================================================================
+# GitHub Pages 安全响应头（随静态导出自动部署到站点根目录）
+# 参考：https://docs.github.com/zh/pages/getting-started-with-github-pages
+# 说明：CSP 需按站点实际资源（图片域名、字体、内联样式/脚本）验证后启用，
+#       先保持注释，确认无资源被拦截后再放开。
+# =============================================================================
+
+/*
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+# 启用示例（验证通过后取消注释）：
+# /*
+#   Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'

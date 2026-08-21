@@ -1,56 +1,51 @@
-const app = getApp()
+const { fetchIssueIndex, fetchSiteData } = require('../../utils/request')
 
 Page({
   data: {
     latestIssue: null,
     recentIssues: [],
-    categories: [
-      { id: 'tech', name: '科技', icon: '🚀' },
-      { id: 'anime', name: '二次元', icon: '🎨' },
-      { id: 'gaming', name: '游戏', icon: '🎮' },
-      { id: 'stories', name: '故事', icon: '📖' },
-      { id: 'tools', name: '工具', icon: '🛠️' },
-      { id: 'watching', name: '在看', icon: '👀' },
-    ],
-    loading: true
+    categories: [],
+    loading: true,
   },
 
   onLoad() {
-    this.loadIssues()
+    this.loadData()
   },
 
   onPullDownRefresh() {
-    this.loadIssues().then(() => {
-      wx.stopPullDownRefresh()
-    })
+    // 兼容旧基础库：不用 Promise.prototype.finally
+    this.loadData().then(
+      () => wx.stopPullDownRefresh(),
+      () => wx.stopPullDownRefresh()
+    )
   },
 
-  async loadIssues() {
+  /** 并行加载：周刊索引 + 站点分类（均为 T-B JSON 产物） */
+  async loadData() {
     this.setData({ loading: true })
-    
+
     try {
-      // 这里应该从服务器获取数据
-      // 模拟数据
-      const mockIssues = [
-        {
-          issue: 1,
-          title: '青年周刊 · 创刊号',
-          date: '2026-04-08',
-          description: '欢迎来到青年周刊！这是一份为年轻人打造的内容聚合周刊...',
-          slug: '001'
-        }
-      ]
-      
+      const [issues, siteData] = await Promise.all([
+        fetchIssueIndex(),
+        fetchSiteData(),
+      ])
+
+      const issueList = Array.isArray(issues) ? issues : []
+      const categories = (siteData && Array.isArray(siteData.categories))
+        ? siteData.categories
+        : []
+
       this.setData({
-        latestIssue: mockIssues[0],
-        recentIssues: mockIssues,
-        loading: false
+        latestIssue: issueList[0] || null,
+        recentIssues: issueList,
+        categories,
+        loading: false,
       })
     } catch (error) {
       console.error('加载失败:', error)
       wx.showToast({
-        title: '加载失败',
-        icon: 'none'
+        title: '加载失败，请下拉重试',
+        icon: 'none',
       })
       this.setData({ loading: false })
     }
@@ -58,21 +53,27 @@ Page({
 
   goToIssue(e) {
     const slug = e.currentTarget.dataset.slug
+    if (!slug) return
     wx.navigateTo({
-      url: `/pages/detail/detail?slug=${slug}`
+      url: `/pages/detail/detail?slug=${slug}`,
     })
   },
 
   goToAllIssues() {
     wx.switchTab({
-      url: '/pages/list/list'
+      url: '/pages/list/list',
     })
   },
 
   onShareAppMessage() {
+    const { latestIssue } = this.data
     return {
-      title: '青年周刊 - 为年轻人打造的内容聚合周刊',
-      path: '/pages/index/index'
+      title: latestIssue
+        ? `${latestIssue.title} - 青年周刊`
+        : '青年周刊 - 为年轻人打造的内容聚合周刊',
+      path: latestIssue
+        ? `/pages/detail/detail?slug=${latestIssue.slug}`
+        : '/pages/index/index',
     }
-  }
+  },
 })

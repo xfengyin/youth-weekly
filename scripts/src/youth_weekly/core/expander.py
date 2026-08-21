@@ -110,6 +110,11 @@ class ContentExpander:
             "editorial", DEFAULT_EDITORIAL_SYSTEM
         )
         try:
+            # LLM 未配置/不可用属于预期降级,仅 DEBUG 记录;provider 真实调用
+            # 失败(网络/响应异常)才记 ERROR,避免每次生成都刷错误日志
+            if not self.is_available():
+                logger.debug("LLM expansion unavailable, using fallback editorial")
+                return self._fallback_editorial(issue_number, date)
             response = self._get_provider().chat(system, prompt)
             return response.text
         except Exception as exc:
@@ -131,6 +136,9 @@ class ContentExpander:
             "article", DEFAULT_ARTICLE_SYSTEM
         )
         try:
+            if not self.is_available():
+                logger.debug("LLM expansion unavailable, using fallback article")
+                return self._fallback_article(item)
             response = self._get_provider().chat(system, prompt)
             return response.text
         except Exception as exc:

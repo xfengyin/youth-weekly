@@ -12,8 +12,10 @@ from . import collect  # noqa: F401
 from . import example  # noqa: F401
 from . import issue  # noqa: F401
 from . import issue_index  # noqa: F401
+from . import issue_json  # noqa: F401
 from . import rss  # noqa: F401
 from . import search_index  # noqa: F401
+from . import site_data  # noqa: F401
 from . import stats  # noqa: F401
 from .collect import CollectPlugin
 
@@ -21,22 +23,28 @@ from .collect import CollectPlugin
 from .example import ExamplePlugin, HelloWorldPlugin
 from .issue import IssuePlugin
 from .issue_index import IssueIndexPlugin
+from .issue_json import IssueJsonPlugin
 from .rss import RssPlugin
 from .search_index import SearchIndexPlugin
+from .site_data import SiteDataPlugin
 from .stats import StatsPlugin
 
 __all__ = [
     "ExamplePlugin",
     "HelloWorldPlugin",
     "IssueIndexPlugin",
+    "IssueJsonPlugin",
     "SearchIndexPlugin",
+    "SiteDataPlugin",
     "StatsPlugin",
     "RssPlugin",
     "CollectPlugin",
     "IssuePlugin",
     "example",
     "issue_index",
+    "issue_json",
     "search_index",
+    "site_data",
     "stats",
     "rss",
     "collect",

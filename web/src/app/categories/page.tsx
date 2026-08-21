@@ -1,73 +1,32 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { getCategories } from '../lib/content'
 
-const categories = [
-  {
-    id: 'editorial',
-    name: '刊首语',
-    icon: '📝',
-    description: '每周话题或编辑寄语，分享我们的观察和思考',
-    accent: '#0075de',
-  },
-  {
-    id: 'tech',
-    name: '科技新势力',
-    icon: '🚀',
-    description: 'AI工具、编程技巧、效率软件推荐，让你走在技术前沿',
-    accent: '#2a9d99',
-  },
-  {
-    id: 'anime',
-    name: '二次元次元壁',
-    icon: '🎨',
-    description: 'ACG资讯、动漫评论、原创插画，守护你的次元梦',
-    accent: '#ff64c8',
-  },
-  {
-    id: 'gaming',
-    name: '游戏研究所',
-    icon: '🎮',
-    description: '游戏评测、攻略心得、行业动态，玩出专业态度',
-    accent: '#1aae39',
-  },
-  {
-    id: 'stories',
-    name: '青春故事会',
-    icon: '📖',
-    description: '成长故事、职场经验、学习心得，陪你走过迷茫期',
-    accent: '#dd5b00',
-  },
-  {
-    id: 'tools',
-    name: '好工具',
-    icon: '🛠️',
-    description: '生产力工具、生活助手推荐，提升效率的利器',
-    accent: '#615d59',
-  },
-  {
-    id: 'watching',
-    name: '在看什么',
-    icon: '👀',
-    description: '影视、书籍、播客推荐及评论，丰富你的精神世界',
-    accent: '#391c57',
-  },
-  {
-    id: 'gallery',
-    name: '一周图鉴',
-    icon: '📷',
-    description: '视觉内容精选，用图片记录精彩瞬间',
-    accent: '#0075de',
-  },
-  {
-    id: 'jobs',
-    name: '谁在招人',
-    icon: '💼',
-    description: '招聘信息、实习机会、职场动态',
-    accent: '#dd5b00',
-  },
-]
+export const metadata: Metadata = {
+  title: '内容分类',
+  description: '浏览青年周刊全部内容板块：科技、二次元、游戏、成长、好工具等。',
+  alternates: { canonical: 'categories/' },
+}
+
+/**
+ * 分类装饰色：仅负责视觉（按 id 映射），分类数据本身来自
+ * site-data.json（config.yaml 生成），避免内容双份维护。
+ */
+const ACCENTS: Record<string, string> = {
+  editorial: '#0075de',
+  tech: '#2a9d99',
+  anime: '#ff64c8',
+  gaming: '#1aae39',
+  stories: '#dd5b00',
+  tools: '#615d59',
+  watching: '#391c57',
+  gallery: '#0075de',
+  jobs: '#dd5b00',
+}
 
 export default function CategoriesPage() {
+  const categories = getCategories()
   return (
     <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -103,7 +62,7 @@ export default function CategoriesPage() {
                     {category.name}
                   </h2>
                   <p className="text-sm text-[#615d59] dark:text-[#a39e98] leading-relaxed">
-                    {category.description}
+                    {category.tagline}
                   </p>
                 </div>
               </div>
@@ -111,7 +70,7 @@ export default function CategoriesPage() {
               <div className="mt-6">
                 <div
                   className="h-[2px] w-full rounded-full opacity-30"
-                  style={{ backgroundColor: category.accent }}
+                  style={{ backgroundColor: ACCENTS[category.id] ?? '#0075de' }}
                 />
               </div>
             </div>

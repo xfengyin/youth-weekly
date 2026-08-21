@@ -59,8 +59,10 @@ const config: Config = {
         },
       },
       fontFamily: {
+        // next/font 生成的是哈希字体族名（如 __Inter_xxxx），必须通过
+        // CSS 变量引用才能真正生效；字面 'Inter'/'Noto Serif SC' 匹配不到。
         sans: [
-          'Inter',
+          'var(--font-inter)',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
@@ -69,8 +71,9 @@ const config: Config = {
           'sans-serif',
         ],
         serif: [
-          '"Noto Serif SC"',
+          'var(--font-noto-serif-sc)',
           '"Songti SC"',
+          '"SimSun"',
           'Georgia',
           'serif',
         ],

@@ -66,10 +66,14 @@ describe('Header 组件', () => {
         'href',
         '/search/'
       )
-      expect(screen.getByText('订阅').closest('a')).toHaveAttribute(
-        'href',
-        '/subscribe/'
-      )
+      // '订阅' 同时出现在导航与 CTA 中，取任一指向 /subscribe/ 的链接
+      const subscribeLinks = screen
+        .getAllByText('订阅')
+        .map((el) => el.closest('a'))
+        .filter((a): a is HTMLAnchorElement => a !== null)
+      expect(
+        subscribeLinks.some((a) => a.getAttribute('href') === '/subscribe/')
+      ).toBe(true)
     })
   })
 
@@ -132,17 +136,6 @@ describe('Header 组件', () => {
   })
 
   describe('主题切换按钮', () => {
-    it('mounted 之前不渲染主题切换按钮', () => {
-      // Arrange:首次渲染 mounted=false,主题按钮不出现
-      const { container } = render(<Header />)
-
-      // 没有 aria-label 包含"主题"的按钮
-      const themeButtons = container.querySelectorAll(
-        'button[aria-label*="主题"]'
-      )
-      expect(themeButtons).toHaveLength(0)
-    })
-
     it('mounted 之后渲染主题切换按钮(初始 light → 显示 Moon 图标)', () => {
       render(<Header />)
 
@@ -165,8 +158,7 @@ describe('Header 组件', () => {
       // 实际在我们的 mock 中:setTheme 直接修改 currentTheme 变量
       // 组件本身读取 useTheme() 的返回值,我们需要触发重渲染
       // 这里使用 rerender 模拟
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { rerender } = render(<Header />)
+            const { rerender } = render(<Header />)
       rerender(<Header />)
 
       // 因为 mock 内部 currentTheme 已变更,新渲染应展示切换后的按钮

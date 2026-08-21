@@ -68,7 +68,7 @@ export default function Home() {
             </div>
 
             <div className="card p-8 md:p-10">
-              <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] mb-5">
+              <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98] mb-5">
                 <Calendar className="w-4 h-4" />
                 <span>{latestIssue.date}</span>
                 <span>·</span>
@@ -111,7 +111,7 @@ export default function Home() {
                 href={`/issues/${issue.slug}/`}
                 className="card p-7 group"
               >
-                <div className="flex items-center space-x-2 text-sm text-[#a39e98] dark:text-[#615d59] mb-4">
+                <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98] mb-4">
                   <Calendar className="w-4 h-4" />
                   <span>{issue.date}</span>
                 </div>
@@ -173,7 +173,7 @@ export default function Home() {
                 <h3 className="font-bold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-1.5 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
                   {category.name}
                 </h3>
-                <p className="text-sm text-[#a39e98] dark:text-[#615d59]">
+                <p className="text-sm text-[#615d59] dark:text-[#a39e98]">
                   {category.desc}
                 </p>
               </Link>

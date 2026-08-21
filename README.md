@@ -196,7 +196,7 @@ https://xfengyin.github.io/youth-weekly/rss.xml
 |---------|------|------|
 | GitHub Issue | 使用投稿模板提交 | [内容投稿](https://github.com/xfengyin/youth-weekly/issues/new?template=content_submission.md) |
 | Pull Request | Fork 后在 `docs/issues/` 提交 Markdown | [贡献指南](./CONTRIBUTING.md) |
-| 邮件 | 发送至编辑部邮箱 | youth-weekly@xfengyin.com |
+| 邮件 | 发送至编辑部邮箱 | contact@youth-weekly.com |
 
 **内容要求：** 原创或已获授权 · Markdown 格式 · 500-3000 字 · 配图注明来源
 
@@ -282,8 +282,10 @@ npm run dev          # 访问 http://localhost:3000
 # 运行自动化脚本（可选）
 cd ../scripts
 uv sync
-uv run youth-weekly collect    # 采集内容
-uv run youth-weekly generate   # 生成周刊
+uv run youth-weekly collect    # 采集内容(写 scripts/.curated_content.json)
+uv run youth-weekly issue      # 生成新一期周刊(需先 collect)
+uv run youth-weekly validate   # 校验周刊 frontmatter/资产引用
+uv run youth-weekly generate   # 生成纯静态站点产物(web/public/*.json + scripts/dist/*)
 uv run youth-weekly rss        # 生成 RSS
 ```
 
@@ -293,7 +295,7 @@ uv run youth-weekly rss        # 生成 RSS
 
 ```bash
 # 1. 同步依赖（含 dev 工具链）
-cd scripts && uv sync --extra dev && cd ..
+cd scripts && uv sync --all-groups && cd ..
 
 # 2. 安装 Git 钩子（仅需执行一次）
 uv run pre-commit install

@@ -1,8 +1,8 @@
 name: CI
 
+# CI 仅在 PR 触发：main 分支的自动发布（weekly-publish 推送）无需重复 CI，
+# 且 deploy.yml 会在该 push 上自然触发部署。
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -20,7 +20,7 @@ jobs:
   # 共享一次 Setup Python / Install uv / uv sync
   quality:
     name: Quality (lint/test/build/cli-smoke)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -36,38 +36,38 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4  # action 保持 @v4 大版本；uv 工具版本固定
         with:
-          version: 'latest'
+          version: '0.12.5'
           enable-cache: true
           cache-dependency-glob: 'scripts/uv.lock'
 
       - name: Install dependencies
         working-directory: scripts
         run: |
-          uv sync --all-extras
+          # T-B 后 pyproject 仅含 [dependency-groups]（dev/lint/test），无 [project.optional-dependencies]
+          uv sync --all-groups
 
-      # 1) 代码风格与静态检查：本地必须先跑 black/isort，CI 仅作最终防线
-      #    容忍初次构建的格式问题（开发者本地 pre-commit 已兜底）
+      # 1) 代码风格与静态检查：本地 pre-commit 已兜底，CI 硬校验（失败即失败）
       - name: Run black
         working-directory: scripts
         run: |
-          uv run black --check src/youth_weekly/ tests/ || echo "::warning::Black formatting issues found"
+          uv run black --check src/youth_weekly/ tests/
 
       - name: Run isort
         working-directory: scripts
         run: |
-          uv run isort --check-only src/youth_weekly/ tests/ || echo "::warning::isort issues found"
+          uv run isort --check-only src/youth_weekly/ tests/
 
       - name: Run flake8
         working-directory: scripts
         run: |
-          uv run flake8 src/youth_weekly/ tests/ || echo "::warning::Flake8 warnings found"
+          uv run flake8 src/youth_weekly/ tests/
 
       - name: Run mypy
         working-directory: scripts
         run: |
-          uv run mypy src/youth_weekly/ || echo "::warning::mypy type issues found"
+          uv run mypy src/youth_weekly/
 
       # 2) 单元测试 + 覆盖率
       - name: Run tests
@@ -104,11 +104,24 @@ jobs:
         run: |
           uv run youth-weekly config
 
-  # 安全扫描：仅产生警告不阻塞 PR，由 nightly 兜底
+      # 5) 生成物契约检查：generate 必须幂等（输出与已提交产物一致），
+      #    若产生 diff 说明 JSON 产物过期未同步提交，PR 应一并更新产物。
+      - name: Artifact contract check (generate must be idempotent)
+        run: |
+          cd scripts
+          uv run youth-weekly generate
+          cd ..
+          if ! git diff --quiet -- web/public/; then
+            echo "❌ generate 产出与已提交产物不一致：请将最新产物一并提交"
+            git diff --stat -- web/public/
+            exit 1
+          fi
+          echo "✅ 生成产物与提交一致（web/public/ 无 diff）"
+
+  # 安全扫描：PR 硬失败（发现即阻塞合并）；全量定时兜底见 nightly.yml（每周一）
   security:
-    name: Security Scan (warning only)
-    runs-on: ubuntu-latest
-    continue-on-error: true  # 漏洞不阻塞 PR，每日全量扫描见 nightly.yml
+    name: Security Scan
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -120,16 +133,17 @@ jobs:
           python-version: '3.12'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4  # action 保持 @v4 大版本；uv 工具版本固定
         with:
-          version: 'latest'
+          version: '0.12.5'
           enable-cache: true
           cache-dependency-glob: 'scripts/uv.lock'
 
       - name: Install dependencies
         working-directory: scripts
         run: |
-          uv sync --all-extras
+          # T-B 后 pyproject 仅含 [dependency-groups]（dev/lint/test），无 [project.optional-dependencies]
+          uv sync --all-groups
 
       - name: Run bandit
         working-directory: scripts
@@ -139,12 +153,14 @@ jobs:
       - name: Run pip-audit
         working-directory: scripts
         run: |
-          uv run pip-audit --strict
+          # 只审计外部依赖，跳过本地未发布的 youth-weekly-scripts 可编辑包
+          uv export --all-groups --format requirements-txt --no-hashes | grep -v '^-e ' > /tmp/audit-req.txt
+          uv run pip-audit -r /tmp/audit-req.txt --strict
 
   # 前端：独立 Node 环境
   frontend:
     name: Frontend (lint/type-check/test/build)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -171,8 +187,8 @@ jobs:
 
       - name: Test
         working-directory: web
-        # 容忍覆盖率不足（项目初期），不阻塞 PR；覆盖率由专门的覆盖率报告跟踪
-        run: npm test -- --coverage --watchAll=false || echo "::warning::Frontend tests had failures or low coverage"
+        # 测试失败即阻塞（覆盖率不足不阻塞，由覆盖率报告单独跟踪）
+        run: npm test -- --coverage --watchAll=false
 
       - name: Build
         working-directory: web

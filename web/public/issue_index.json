@@ -1,0 +1,98 @@
+[
+  {
+    "issue": 12,
+    "title": "青年周刊 · 第 12 期",
+    "date": "2026-08-17",
+    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 540392",
+    "slug": "012",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 11,
+    "title": "青年周刊 · 第 11 期",
+    "date": "2026-08-10",
+    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 538291",
+    "slug": "011",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 10,
+    "title": "青年周刊 · 第 10 期",
+    "date": "2026-08-03",
+    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 535539",
+    "slug": "010",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 9,
+    "title": "青年周刊 · 第 9 期",
+    "date": "2026-07-27",
+    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 532074",
+    "slug": "009",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 8,
+    "title": "青年周刊 · 第 8 期",
+    "date": "2026-07-13",
+    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 524771",
+    "slug": "008",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 7,
+    "title": "青年周刊 · 第 7 期",
+    "date": "2026-07-10",
+    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 523833",
+    "slug": "007",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 6,
+    "title": "青年周刊 · 第六期",
+    "date": "2026-05-11",
+    "description": "本期关注 AI 音乐创作革命、5G-A 商用加速，以及毕业季特别策划。",
+    "slug": "006",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 5,
+    "title": "青年周刊 · 第五期",
+    "date": "2026-05-04",
+    "description": "本期关注 GitHub 20周年特辑、AI 编程助手横评，以及五月游戏大作前瞻。",
+    "slug": "005",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 4,
+    "title": "青年周刊 · 第四期",
+    "date": "2026-04-27",
+    "description": "本期关注苹果发布会、TypeScript 6.0 发布，以及五一档电影推荐。",
+    "slug": "004",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 3,
+    "title": "青年周刊 · 第三期",
+    "date": "2026-04-20",
+    "description": "本期关注 AI 生成内容的最新发展、NVIDIA 新显卡发布，以及五一假期游戏推荐。",
+    "slug": "003",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 2,
+    "title": "青年周刊 · 第二期",
+    "date": "2026-04-13",
+    "description": "本期聚焦 AI 编程工具的最新进展、4月新番导视，以及独立游戏开发的入门指南。",
+    "slug": "002",
+    "cover": "./assets/cover.png"
+  },
+  {
+    "issue": 1,
+    "title": "青年周刊 · 创刊号",
+    "date": "2026-04-08",
+    "description": "欢迎来到青年周刊！这是一份为年轻人打造的内容聚合周刊，涵盖科技、二次元、游戏、成长等多个领域。",
+    "slug": "001",
+    "cover": "./assets/cover.png"
+  }
+]

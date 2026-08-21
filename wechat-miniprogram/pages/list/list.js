@@ -1,8 +1,9 @@
+const { fetchIssueIndex } = require('../../utils/request')
+
 Page({
   data: {
     issues: [],
     loading: true,
-    hasMore: false
   },
 
   onLoad() {
@@ -10,36 +11,28 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.loadIssues().then(() => {
-      wx.stopPullDownRefresh()
-    })
+    // 兼容旧基础库：不用 Promise.prototype.finally
+    this.loadIssues().then(
+      () => wx.stopPullDownRefresh(),
+      () => wx.stopPullDownRefresh()
+    )
   },
 
+  /** 周刊列表：真实数据来自 issue_index.json（T-B 产物） */
   async loadIssues() {
     this.setData({ loading: true })
-    
+
     try {
-      // 模拟数据
-      const mockIssues = [
-        {
-          issue: 1,
-          title: '青年周刊 · 创刊号',
-          date: '2026-04-08',
-          description: '欢迎来到青年周刊！这是一份为年轻人打造的内容聚合周刊...',
-          slug: '001'
-        }
-      ]
-      
+      const issues = await fetchIssueIndex()
       this.setData({
-        issues: mockIssues,
+        issues: Array.isArray(issues) ? issues : [],
         loading: false,
-        hasMore: false
       })
     } catch (error) {
       console.error('加载失败:', error)
       wx.showToast({
-        title: '加载失败',
-        icon: 'none'
+        title: '加载失败，请下拉重试',
+        icon: 'none',
       })
       this.setData({ loading: false })
     }
@@ -47,8 +40,9 @@ Page({
 
   goToDetail(e) {
     const slug = e.currentTarget.dataset.slug
+    if (!slug) return
     wx.navigateTo({
-      url: `/pages/detail/detail?slug=${slug}`
+      url: `/pages/detail/detail?slug=${slug}`,
     })
-  }
+  },
 })

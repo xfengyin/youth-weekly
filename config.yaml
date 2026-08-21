@@ -16,7 +16,7 @@ site:
 
 author:
   name: "青年周刊编辑部"
-  email: "youth-weekly@example.com"
+  email: "contact@youth-weekly.com"
   github: "https://github.com/xfengyin/youth-weekly"
 
 paths:
@@ -76,13 +76,12 @@ rss:
 
 build:
   node_version: "20"
-  python_version: "3.11"
+  python_version: "3.12"
   output_dir: "web/out"
 
 ocp:
   exclude_plugins:
     - "example"
-    - "hello_world"
 
 # LLM 杂志化扩展配置
 # 启用后,采集到的链接会自动调用大模型改写成杂志式文章

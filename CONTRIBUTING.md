@@ -50,7 +50,7 @@ docs(readme): update installation instructions
 
 ### 环境要求
 
-- Python 3.14+
+- Python 3.12+
 - uv 包管理器
 - Node.js 20+
 - Git
