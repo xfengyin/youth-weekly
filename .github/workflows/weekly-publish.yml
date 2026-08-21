@@ -90,24 +90,10 @@ jobs:
       #    **所有** push 事件工作流（含 deploy.yml），导致自动部署链路失效。
       #    现方案：ci.yml 仅监听 pull_request（见 ci.yml），main push 无需跳过；
       #    deploy.yml 由本次 push 自然触发，无需 dispatch。
-      - name: Mark new issues as published
-        if: steps.content_check.outputs.has_content == 'true'
-        # 双保险：即使 issue_generator 默认 published: false，
-        # 也在这里把当次新增的 README.md 中的 published 翻转为 true，
-        # 避免任何历史草稿残留导致新一期无法被网站展示
-        run: |
-          for f in docs/issues/*/README.md; do
-            # 仅处理本次 run 内新生成的文件(目录中尚无历史 published=true 的内容)
-            if grep -q "^published: false" "$f"; then
-              # 避免误改过去历史草稿:仅翻转为当次生成且无历史发布记录的目录
-              issue_num=$(basename "$(dirname "$f")")
-              if [ ! -f "docs/issues/$issue_num/assets/cover.png" ] || [ "$issue_num" -ge 7 ]; then
-                sed -i 's/^published: false$/published: true/' "$f"
-                echo "→ Marked $f as published"
-              fi
-            fi
-          done
-
+      # 注：已移除旧的 published 翻转步骤——issue_generator 的 _build_frontmatter
+      # 固定写入 published: true（生成即发布）。旧逻辑（grep 翻转 + cover/期号护栏）
+      # 与生成器契约矛盾且护栏失效（issue_num>=7 会误发布历史草稿），由 t9 集成验证移除。
+      # 如需引入人工审核流程，应在 issue_generator 侧用配置控制，而非在 workflow 翻转。
       - name: Commit generated issue
         id: commit
         if: steps.content_check.outputs.has_content == 'true'
