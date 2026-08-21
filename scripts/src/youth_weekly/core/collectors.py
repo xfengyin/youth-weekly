@@ -341,18 +341,31 @@ class GitHubTrendingCollector(BaseCollector):
         except requests.RequestException as exc:
             logger.error("Failed to fetch GitHub trending: %s", exc)
             return []
+        except ValueError as exc:
+            # 响应不是合法 JSON(网关错误页等),与 RSS/HN 路径一致地降级为空结果
+            logger.error("GitHub API returned invalid JSON: %s", exc)
+            return []
 
-        items: list[ContentItem] = [
-            ContentItem(
-                title=f"{repo['full_name']} - \u2b50 {repo['stargazers_count']}",
-                url=repo["html_url"],
-                description=(repo.get("description", "")[:200] or ""),
-                source=name,
-                category=category,
-                score=repo.get("stargazers_count", 0),
+        items: list[ContentItem] = []
+        for repo in data.get("items", [])[:max_items]:
+            # 健壮字段提取:畸形条目(非 dict/缺关键字段)跳过而非抛异常
+            if not isinstance(repo, dict):
+                continue
+            full_name = repo.get("full_name")
+            html_url = repo.get("html_url")
+            if not full_name or not html_url:
+                continue
+            stars = repo.get("stargazers_count", 0)
+            items.append(
+                ContentItem(
+                    title=f"{full_name} - \u2b50 {stars}",
+                    url=html_url,
+                    description=(repo.get("description") or "")[:200],
+                    source=name,
+                    category=category,
+                    score=stars,
+                )
             )
-            for repo in data.get("items", [])[:max_items]
-        ]
 
         logger.info("Collected %d items from %s", len(items), name)
         return items

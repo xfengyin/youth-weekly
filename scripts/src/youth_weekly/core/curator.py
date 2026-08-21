@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from .collectors import ContentItem
-from .config import get_dedup_db_path
+from .config import ROOT_DIR, get_dedup_db_path
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,9 @@ class ContentCurator:
         if self._db is None:
             db_path = Path(self.dedup_db_path)
             if not db_path.is_absolute():
-                db_path = Path.cwd() / db_path
+                # 相对路径统一相对 ROOT_DIR 解析,与 collect.py 的
+                # ROOT_DIR / raw_db_path 语义一致,避免依赖运行目录(CWD)
+                db_path = ROOT_DIR / db_path
             db_path.parent.mkdir(parents=True, exist_ok=True)
             self._db = sqlite3.connect(str(db_path))
             self._db.execute("PRAGMA journal_mode=WAL")
@@ -101,13 +103,17 @@ class ContentCurator:
         db = self._get_db()
 
         # 1) 一次查询拉取所有候选指纹
+        # 注:占位符数量 = 单次运行去重前的唯一指纹数(各源 max_items 之和,当前
+        # content_sources.yaml 约 60 个),远低于 SQLite 变量上限(999/3.2 万),
+        # 无需分批;若未来单源 max_items 大幅上调,再改为按 500 一批查询。
+        # 注:占位符由固定数量的 "?" 拼接、值全部走参数绑定,无注入风险(bandit B608 误报)。
         candidate_fps = {item.fingerprint for item in items}
         placeholders = ",".join("?" * len(candidate_fps))
         existing: set[str] = set()
         if candidate_fps:
             cursor = db.execute(
                 f"SELECT fingerprint FROM content_fingerprints "
-                f"WHERE fingerprint IN ({placeholders})",
+                f"WHERE fingerprint IN ({placeholders})",  # nosec B608 - 参数化查询,见上注释
                 tuple(candidate_fps),
             )
             existing = {row[0] for row in cursor.fetchall()}
@@ -277,16 +283,20 @@ class ContentCurator:
         max_items: int = 5,
     ) -> list[ContentItem]:
         """
-        选择 Top N 条目
+        选择 Top N 条目。
+
+        契约:返回按 score 降序的前 max_items 条。为稳妥起见,内部对副本按 score
+        降序排序(稳定排序,同分保持原相对顺序),不要求调用方预先排序,
+        也不修改传入列表。
 
         Args:
-            items: 已排序的内容条目列表
+            items: 内容条目列表(无需预先排序)
             max_items: 最大条目数
 
         Returns:
-            Top N 条目列表
+            Top N 条目列表(按 score 降序)
         """
-        return items[:max_items]
+        return sorted(items, key=lambda x: x.score, reverse=True)[:max_items]
 
     def close(self) -> None:
         """关闭数据库连接"""

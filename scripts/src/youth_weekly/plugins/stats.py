@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from youth_weekly.core.config import ROOT_DIR
-from youth_weekly.core.content import get_issue_count, load_all_issues
+from youth_weekly.core.content import load_all_issues
 from youth_weekly.plugin import BasePlugin, register
 
 logger = logging.getLogger(__name__)
@@ -50,8 +50,11 @@ class StatsPlugin(BasePlugin):
         issues = params.get("issues") or load_all_issues(docs_dir, reverse=True)
         dates = [issue.get("date", "") for issue in issues if issue.get("date")]
 
+        # 复用已传入的 issues 计算总数(与 get_issue_count 语义一致:仅计已发布),
+        # 避免以不同缓存 key 再触发一次全量加载
+        total_issues = sum(1 for issue in issues if issue.get("published", True))
         stats: dict[str, Any] = {
-            "total_issues": get_issue_count(docs_dir),
+            "total_issues": total_issues,
             "first_issue_date": min(dates) if dates else None,
             "last_issue_date": max(dates) if dates else None,
             "generated_at": datetime.now().isoformat(),
