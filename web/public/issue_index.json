@@ -1,5 +1,13 @@
 [
   {
+    "issue": 13,
+    "title": "青年周刊 · 第 13 期",
+    "date": "2026-08-22",
+    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 541966、sindresorhus/awesome - ⭐ 498759、public-apis/public-apis - ⭐ 468207",
+    "slug": "013",
+    "cover": "./assets/cover.png"
+  },
+  {
     "issue": 12,
     "title": "青年周刊 · 第 12 期",
     "date": "2026-08-17",

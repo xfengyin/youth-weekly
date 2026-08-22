@@ -24,15 +24,15 @@
 ---
 
 <!-- AUTO_ISSUE_START -->
-## 📰 最新一期 · 第 12 期
+## 📰 最新一期 · 第 13 期
 
-> **2026-08-17** | 第 12 期
+> **2026-08-22** | 第 13 期
 
-**青年周刊 · 第 12 期**
+**青年周刊 · 第 13 期**
 
-本期关注 codecrafters-io/build-your-own-x - ⭐ 540392
+本期关注 codecrafters-io/build-your-own-x - ⭐ 541966、sindresorhus/awesome - ⭐ 498759、public-apis/public-apis - ⭐ 468207
 
-👉 [阅读第 12 期全文](https://xfengyin.github.io/youth-weekly/issues/012/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
+👉 [阅读第 13 期全文](https://xfengyin.github.io/youth-weekly/issues/013/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
 <!-- AUTO_ISSUE_END -->
 ---
 
