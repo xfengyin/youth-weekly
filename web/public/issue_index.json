@@ -3,7 +3,7 @@
     "issue": 13,
     "title": "青年周刊 · 第 13 期",
     "date": "2026-08-22",
-    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 541966、sindresorhus/awesome - ⭐ 498759、public-apis/public-apis - ⭐ 468207",
+    "description": "AI 开始触碰火箭、活体组织与真金白银——本期聊技术的边界：当它越来越能「造」时，什么该做、什么不该做。",
     "slug": "013",
     "cover": "./assets/cover.png"
   },
@@ -11,7 +11,7 @@
     "issue": 12,
     "title": "青年周刊 · 第 12 期",
     "date": "2026-08-17",
-    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 540392",
+    "description": "AI 内容开始打上隐形水印，隐私与安全的警钟又响——本期聊一个被技术时代忽略的词：信任，到底该怎么建立。",
     "slug": "012",
     "cover": "./assets/cover.png"
   },
@@ -19,7 +19,7 @@
     "issue": 11,
     "title": "青年周刊 · 第 11 期",
     "date": "2026-08-10",
-    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 538291",
+    "description": "AI 编程助手开始「自动动手」，芯片与空中出租车也在加速——本期聊一个关键问题：把控制权交给机器之前，先想清楚什么？",
     "slug": "011",
     "cover": "./assets/cover.png"
   },
@@ -27,7 +27,7 @@
     "issue": 10,
     "title": "青年周刊 · 第 10 期",
     "date": "2026-08-03",
-    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 535539",
+    "description": "AI 热潮开始撞上现实的墙：内存短缺、节奏之争、安全告急——本期聊聊在约束里找机会的人，凭什么笑到最后。",
     "slug": "010",
     "cover": "./assets/cover.png"
   },
@@ -35,7 +35,7 @@
     "issue": 9,
     "title": "青年周刊 · 第 9 期",
     "date": "2026-07-27",
-    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 532074",
+    "description": "亲手重写一个 Git 或数据库，比刷一百篇教程更懂编程——本期从「重建」聊起，也看 AI 基建与机器人的新动向。",
     "slug": "009",
     "cover": "./assets/cover.png"
   },
@@ -43,7 +43,7 @@
     "issue": 8,
     "title": "青年周刊 · 第 8 期",
     "date": "2026-07-13",
-    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 524771",
+    "description": "Starship 复飞、Claude 印度降价、算力争夺战：年轻人如何不被时代的算力焦虑裹挟。",
     "slug": "008",
     "cover": "./assets/cover.png"
   },
@@ -51,7 +51,7 @@
     "issue": 7,
     "title": "青年周刊 · 第 7 期",
     "date": "2026-07-10",
-    "description": "本期关注 codecrafters-io/build-your-own-x - ⭐ 523833",
+    "description": "GPT-5.6 与 AI Agent 的疯狂一周；与其收藏一万个教程，不如亲手造一个轮子。",
     "slug": "007",
     "cover": "./assets/cover.png"
   },
@@ -59,7 +59,7 @@
     "issue": 6,
     "title": "青年周刊 · 第六期",
     "date": "2026-05-11",
-    "description": "本期关注 AI 音乐创作革命、5G-A 商用加速，以及毕业季特别策划。",
+    "description": "Suno 3.0 让普通人也能写歌；5G-A 万兆网络真的来了吗；毕业季：第一份工作该怎么选。",
     "slug": "006",
     "cover": "./assets/cover.png"
   },
@@ -67,7 +67,7 @@
     "issue": 5,
     "title": "青年周刊 · 第五期",
     "date": "2026-05-04",
-    "description": "本期关注 GitHub 20周年特辑、AI 编程助手横评，以及五月游戏大作前瞻。",
+    "description": "GitHub 20 年给年轻人的一课；四款 AI 编程助手实测横评；五月游戏大作前瞻与备战清单。",
     "slug": "005",
     "cover": "./assets/cover.png"
   },
@@ -75,7 +75,7 @@
     "issue": 4,
     "title": "青年周刊 · 第四期",
     "date": "2026-04-27",
-    "description": "本期关注苹果发布会、TypeScript 6.0 发布，以及五一档电影推荐。",
+    "description": "M4 MacBook Air 降价了，但你真需要换机吗？本期：TypeScript 6.0、五一档电影与代码审查指南。",
     "slug": "004",
     "cover": "./assets/cover.png"
   },
@@ -83,7 +83,7 @@
     "issue": 3,
     "title": "青年周刊 · 第三期",
     "date": "2026-04-20",
-    "description": "本期关注 AI 生成内容的最新发展、NVIDIA 新显卡发布，以及五一假期游戏推荐。",
+    "description": "AI 生成视频来了，真实感正在被重新定义。本期：RTX 5090 值不值得买、五一游戏清单，以及对抗挫败感的方法。",
     "slug": "003",
     "cover": "./assets/cover.png"
   },
@@ -91,7 +91,7 @@
     "issue": 2,
     "title": "青年周刊 · 第二期",
     "date": "2026-04-13",
-    "description": "本期聚焦 AI 编程工具的最新进展、4月新番导视，以及独立游戏开发的入门指南。",
+    "description": "GPT-5 刷屏了，但我劝你先别急着换工具。本期：新番导视、独立游戏开发第一课，以及把工具用深的三个方法。",
     "slug": "002",
     "cover": "./assets/cover.png"
   },
@@ -99,7 +99,7 @@
     "issue": 1,
     "title": "青年周刊 · 创刊号",
     "date": "2026-04-08",
-    "description": "欢迎来到青年周刊！这是一份为年轻人打造的内容聚合周刊，涵盖科技、二次元、游戏、成长等多个领域。",
+    "description": "信息过载时代，如何搭建自己的信息食谱？创刊号替你筛好第一批内容，并教你把它变成能力。",
     "slug": "001",
     "cover": "./assets/cover.png"
   }

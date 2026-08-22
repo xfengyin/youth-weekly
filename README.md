@@ -30,7 +30,7 @@
 
 **青年周刊 · 第 13 期**
 
-本期关注 codecrafters-io/build-your-own-x - ⭐ 541966、sindresorhus/awesome - ⭐ 498759、public-apis/public-apis - ⭐ 468207
+AI 开始触碰火箭、活体组织与真金白银——本期聊技术的边界：当它越来越能「造」时，什么该做、什么不该做。
 
 👉 [阅读第 13 期全文](https://xfengyin.github.io/youth-weekly/issues/013/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
 <!-- AUTO_ISSUE_END -->
