@@ -11,10 +11,12 @@ on:
         required: false
         default: '手动触发周刊采集与发布'
 
-# 最小化权限：周刊只需写仓库内容（commit 推送新一期）
-# 注意：不需要 actions: write —— 主站部署由 deploy.yml 在收到 push 后自然触发
+# 最小化权限：
+# - contents: write：提交并推送新一期
+# - actions: write：用 GITHUB_TOKEN 显式触发 deploy.yml（GITHUB_TOKEN 的 push 不会自动触发其他 workflow）
 permissions:
   contents: write
+  actions: write
 
 # 并发控制：与 deploy.yml 使用不同的 group 名，互不阻塞；
 # 周刊生成原子性：同 workflow 下串行进行，新运行不打断旧运行。
@@ -97,11 +99,9 @@ jobs:
           uv run youth-weekly validate
 
       # 3. 提交阶段：将新一期推送到 main
-      #    注意：commit message **不再带 [skip ci]**。
-      #    历史问题：GitHub 对 push 提交信息含 [skip ci] 时，会跳过该 push 触发的
-      #    **所有** push 事件工作流（含 deploy.yml），导致自动部署链路失效。
-      #    现方案：ci.yml 仅监听 pull_request（见 ci.yml），main push 无需跳过；
-      #    deploy.yml 由本次 push 自然触发，无需 dispatch。
+      #    注意：commit message **不再带 [skip ci]**；但 GITHUB_TOKEN push 不会触发
+      #    其他 workflow（GitHub 防递归机制），所以部署由下方
+      #    "Trigger deploy workflow" 步骤显式 dispatch 触发。
       # 注：已移除旧的 published 翻转步骤——issue_generator 的 _build_frontmatter
       # 固定写入 published: true（生成即发布）。旧逻辑（grep 翻转 + cover/期号护栏）
       # 与生成器契约矛盾且护栏失效（issue_num>=7 会误发布历史草稿），由 t9 集成验证移除。
@@ -122,8 +122,19 @@ jobs:
             echo "no_changes=false" >> $GITHUB_OUTPUT
           fi
 
+      # 3.5 显式触发部署
+      # GITHUB_TOKEN 的 push 不会触发其他 workflow（GitHub 防递归机制），
+      # 所以必须在提交后显式调用 deploy.yml 的 workflow_dispatch。
+      - name: Trigger deploy workflow
+        if: steps.commit.outputs.no_changes == 'false'
+        run: |
+          curl -sS -f -X POST \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches" \
+            -d '{"ref":"main"}'
+
       # 4. 汇总结果
-      #    主站部署由 deploy.yml 在收到上方 push 后自然触发，无需在此 dispatch。
       - name: Notify result
         if: always()
         run: |
@@ -135,5 +146,5 @@ jobs:
           elif [ "${{ steps.commit.outputs.no_changes }}" = "true" ]; then
             echo "ℹ️ No new content to publish this week"
           else
-            echo "✅ New weekly issue published; deploy.yml will be triggered by the push to main"
+            echo "✅ New weekly issue published; deploy workflow has been explicitly triggered"
           fi
