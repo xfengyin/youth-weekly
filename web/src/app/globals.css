@@ -128,6 +128,93 @@
     color: rgba(255, 255, 255, 0.95);
   }
 
+  /* ── 杂志化排版增强（t15）────────────────────────────── */
+
+  /* 标题锚点：sticky Header 下跳转不遮挡；h2 左侧序号条 */
+  .prose-custom h2,
+  .prose-custom h3,
+  .prose-custom h4 {
+    scroll-margin-top: 5.5rem;
+  }
+
+  .prose-custom h2 {
+    position: relative;
+    padding-left: 0.9rem;
+  }
+  .prose-custom h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.28em;
+    bottom: 0.28em;
+    width: 4px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--color-blue), #62aef0);
+  }
+
+  /* 表格：圆角容器 + 斑马纹，移动端横向滚动 */
+  .prose-custom .contains-table {
+    @apply my-6 overflow-x-auto rounded-notion-lg border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)];
+  }
+  .prose-custom table {
+    @apply w-full text-sm leading-relaxed;
+    border-collapse: collapse;
+    font-size: 0.925em;
+  }
+  .prose-custom thead th {
+    @apply font-semibold text-left px-4 py-2.5;
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .prose-custom tbody td {
+    @apply px-4 py-2.5 align-top;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+  }
+  .prose-custom tbody tr:nth-child(even) td {
+    background: color-mix(in srgb, var(--color-bg-alt) 60%, transparent);
+  }
+  .prose-custom tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* 图片：居中 + 圆角 + 阴影 */
+  .prose-custom img {
+    @apply my-6 mx-auto rounded-notion-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)];
+  }
+
+  /* 引用：左侧渐变竖条 + 图标装饰 */
+  .prose-custom blockquote {
+    position: relative;
+    border-left: none;
+    padding-left: 1.25rem;
+    background: linear-gradient(90deg, rgba(0,117,222,0.07), transparent 70%);
+    border-radius: 0 8px 8px 0;
+  }
+  .prose-custom blockquote::before {
+    content: '“';
+    position: absolute;
+    left: 0.15rem;
+    top: -0.35em;
+    font-size: 2.2em;
+    line-height: 1;
+    color: var(--color-blue);
+    opacity: 0.35;
+  }
+  .prose-custom blockquote p {
+    margin: 0.35em 0;
+  }
+  .prose-custom blockquote p + p {
+    margin-top: 0.6em;
+  }
+
+  /* 代码块：mono 增强 */
+  .prose-custom pre {
+    @apply text-sm;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
   /* ── Buttons (Notion Style) ── */
   .btn-primary {
     @apply font-semibold py-2 px-4 transition-all duration-150;
@@ -243,6 +330,45 @@
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-500;
+  }
+
+  /* ── 动效（克制：fade-in-up / hover lift）── */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out both;
+  }
+
+  /* 卡片悬浮：轻微上浮 + 阴影加深 */
+  .card-hover {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      rgba(0, 0, 0, 0.08) 0px 12px 32px,
+      rgba(0, 0, 0, 0.04) 0px 4px 12px;
+  }
+  :is(.dark) .card-hover:hover {
+    box-shadow:
+      rgba(0, 0, 0, 0.5) 0px 12px 32px,
+      rgba(0, 0, 0, 0.3) 0px 4px 12px;
+  }
+
+  /* 分类渐变图标卡 */
+  .category-icon-card {
+    @apply flex items-center justify-center w-14 h-14 rounded-2xl text-3xl;
+    box-shadow: inset 0 -2px 6px rgba(0, 0, 0, 0.08);
   }
 
   /* ── Serif Heading Utility ── */
