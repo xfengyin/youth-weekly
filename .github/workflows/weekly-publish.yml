@@ -86,6 +86,16 @@ jobs:
         run: |
           uv run youth-weekly issue
 
+      # 2.5 同步 README/docs 索引，并重新生成站点 JSON 产物（web/public/*.json）
+      - name: Sync README and regenerate artifacts
+        id: sync
+        if: steps.content_check.outputs.has_content == 'true'
+        working-directory: scripts
+        run: |
+          uv run python update_readme.py
+          uv run youth-weekly generate
+          uv run youth-weekly validate
+
       # 3. 提交阶段：将新一期推送到 main
       #    注意：commit message **不再带 [skip ci]**。
       #    历史问题：GitHub 对 push 提交信息含 [skip ci] 时，会跳过该 push 触发的
@@ -102,7 +112,8 @@ jobs:
         run: |
           git config user.email "action@github.com"
           git config user.name "青年周刊编辑部"
-          git add docs/issues/
+          # 同步新一期内容 + 自动更新的 README/索引 + 重新生成的站点 JSON 产物
+          git add docs/ web/public/ README.md
           if git diff --staged --quiet; then
             echo "no_changes=true" >> $GITHUB_OUTPUT
           else
