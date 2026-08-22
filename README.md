@@ -23,34 +23,17 @@
 
 ---
 
-## 📰 最新一期 · 第 6 期
+<!-- AUTO_ISSUE_START -->
+## 📰 最新一期 · 第 12 期
 
-> **2026年5月11日** | 时间过得真快！转眼已经到了第6期《青年周刊》。
+> **2026-08-17** | 第 12 期
 
-<table>
-<tr>
-<td width="50%" align="center">
-<img src="docs/issues/006/assets/suno-ai.jpeg" alt="Suno AI 3.0" width="400" />
-<br/><sub>🎵 Suno AI 3.0 — 音乐创作革命</sub>
-</td>
-<td width="50%" align="center">
-<img src="docs/issues/006/assets/black-myth-wukong.jpeg" alt="黑神话悟空" width="400" />
-<br/><sub>🎮《黑神话：悟空》最终前瞻</sub>
-</td>
-</tr>
-</table>
+**青年周刊 · 第 12 期**
 
-**本期亮点：**
+本期关注 codecrafters-io/build-your-own-x - ⭐ 540392
 
-| 板块 | 亮点内容 | 简介 |
-|:----:|---------|------|
-| 🚀 科技 | Suno AI 3.0 音乐创作革命 | 声音克隆与长音频生成 |
-| 📡 科技 | 5G-A 商用加速 | 万兆时代到来 |
-| 🎓 故事 | 毕业季特别策划 | 职场生存指南与面试技巧 |
-| 🎮 游戏 | 《黑神话：悟空》最终前瞻 | 离发售还有3个月 |
-
-👉 **[阅读第6期全文](https://xfengyin.github.io/youth-weekly/issues/006/)** · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
-
+👉 [阅读第 12 期全文](https://xfengyin.github.io/youth-weekly/issues/012/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
+<!-- AUTO_ISSUE_END -->
 ---
 
 ## 🎯 九大内容板块

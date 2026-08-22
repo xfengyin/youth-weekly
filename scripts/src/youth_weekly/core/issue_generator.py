@@ -175,6 +175,13 @@ class IssueGenerator:
         assets_dir = issue_dir / "assets"
         assets_dir.mkdir(parents=True, exist_ok=True)
 
+        # 确保新一期有可用封面（validate 要求 cover 本地引用存在）
+        template_cover = ROOT_DIR / "scripts" / "templates" / "cover-template.png"
+        cover_path = assets_dir / "cover.png"
+        if not cover_path.exists() and template_cover.exists():
+            cover_path.write_bytes(template_cover.read_bytes())
+            logger.info("Created default cover: %s", cover_path)
+
         logger.info("Generating issue #%s at %s", issue_slug, issue_dir)
 
         # 2. 准备内容扩展器
