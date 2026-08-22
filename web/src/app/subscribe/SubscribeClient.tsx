@@ -53,7 +53,7 @@ export default function SubscribeClient({ contactEmail }: SubscribeClientProps) 
         {/* Subscription Options */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
           {/* Email Subscription（功能规划中） */}
-          <div className="card p-7">
+          <div className="card card-hover p-7">
             <div className="flex items-center space-x-4 mb-6">
               <div className="p-3 bg-[#f2f9ff] dark:bg-[rgba(0,117,222,0.15)] rounded-notion">
                 <Mail className="w-5 h-5 text-[#0075de] dark:text-[#62aef0]" />
@@ -89,7 +89,7 @@ export default function SubscribeClient({ contactEmail }: SubscribeClientProps) 
           </div>
 
           {/* RSS Subscription */}
-          <div className="card p-7">
+          <div className="card card-hover p-7">
             <div className="flex items-center space-x-4 mb-6">
               <div className="p-3 bg-[rgba(221,91,0,0.06)] dark:bg-[rgba(221,91,0,0.12)] rounded-notion">
                 <Rss className="w-5 h-5 text-[#dd5b00]" />

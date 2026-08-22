@@ -162,7 +162,7 @@ export default function SearchClient() {
               <Link
                 key={result.slug}
                 href={`/issues/${result.slug}/`}
-                className="card p-6 block group"
+                className="card card-hover p-6 block group"
               >
                 <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98] mb-3">
                   <Calendar className="w-4 h-4" />

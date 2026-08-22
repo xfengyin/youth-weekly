@@ -1,13 +1,16 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useState, useEffect, useRef } from 'react'
 import { Sun, Moon, Menu, X, Rss } from 'lucide-react'
 
 export default function Header() {
   const { theme, setTheme } = useTheme()
+  const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // 移动菜单按钮引用：关闭后把焦点还给它，保证键盘导航不丢失
   const menuButtonRef = useRef<HTMLButtonElement>(null)
@@ -15,6 +18,21 @@ export default function Header() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // 滚动后 Header 加深阴影（杂志感层次）
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  /** 当前导航高亮（issues/[slug] 详情页也归属“周刊”） */
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/'
+    if (href === '/issues/') return pathname.startsWith('/issues')
+    return pathname.startsWith(href)
+  }
 
   // 移动菜单 a11y：打开时聚焦首个链接，支持 Esc 关闭
   useEffect(() => {
@@ -43,7 +61,13 @@ export default function Header() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 dark:bg-[#191919]/90 backdrop-blur-md border-b border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
+    <header
+      className={`sticky top-0 z-50 bg-white/90 dark:bg-[#191919]/90 backdrop-blur-md border-b transition-shadow ${
+        scrolled
+          ? 'shadow-[0_4px_20px_rgba(0,0,0,0.06)] border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]'
+          : 'border-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -59,7 +83,12 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-[15px] font-semibold text-[#615d59] dark:text-[#a39e98] hover:text-[rgba(0,0,0,0.95)] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                className={`text-[15px] font-semibold transition-colors ${
+                  isActive(item.href)
+                    ? 'text-[#0075de] dark:text-[#62aef0]'
+                    : 'text-[#615d59] dark:text-[#a39e98] hover:text-[rgba(0,0,0,0.95)] dark:hover:text-[rgba(255,255,255,0.95)]'
+                }`}
               >
                 {item.label}
               </Link>

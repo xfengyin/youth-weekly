@@ -66,7 +66,7 @@ export default function ArchivePage() {
                   <Link
                     key={issue.slug}
                     href={`/issues/${issue.slug}/`}
-                    className="card p-5 flex items-center justify-between group"
+                    className="card card-hover p-5 flex items-center justify-between group"
                   >
                     <div className="flex items-center space-x-5">
                       <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98] min-w-[100px]">

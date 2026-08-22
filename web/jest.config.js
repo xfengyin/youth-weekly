@@ -55,6 +55,8 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   clearMocks: true,
-  resetModules: true,
+  // 注意：不能用全局 resetModules —— 它会为每个测试重建 'react' 模块实例，
+  // 导致客户端 hook 组件（如 ReadingProgress）拿到第二个 React 副本而崩溃；
+  // 需要重置的测试（content.test.ts）已在自身 beforeEach 显式 resetModules。
   verbose: true,
 }

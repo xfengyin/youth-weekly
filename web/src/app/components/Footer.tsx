@@ -44,12 +44,14 @@ export default function Footer() {
               <br />
               科技、二次元、游戏、成长。
             </p>
-            <div className="mt-5 flex space-x-4">
+            {/* 社交/订阅图标：圆形徽章底色 + 品牌色 hover，更醒目 */}
+            <div className="mt-6 flex space-x-3">
               <a
                 href="https://github.com/xfengyin/youth-weekly"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#615d59] hover:text-[#4b4743] dark:text-[#a39e98] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
+                aria-label="GitHub 仓库"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eceae7] dark:bg-[rgba(255,255,255,0.08)] text-[#615d59] dark:text-[#a39e98] hover:bg-[#0075de] hover:text-white dark:hover:bg-[#0075de] dark:hover:text-white transition-colors"
               >
                 <Github className="w-5 h-5" />
               </a>
@@ -57,13 +59,15 @@ export default function Footer() {
                   否则部署到 /youth-weekly 子路径时指向站点根 → 404 */}
               <a
                 href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`}
-                className="text-[#615d59] hover:text-[#4b4743] dark:text-[#a39e98] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
+                aria-label="RSS 订阅"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eceae7] dark:bg-[rgba(255,255,255,0.08)] text-[#dd5b00] dark:text-[#ffb25e] hover:bg-[#dd5b00] hover:text-white dark:hover:bg-[#dd5b00] dark:hover:text-white transition-colors"
               >
                 <Rss className="w-5 h-5" />
               </a>
               <a
                 href="mailto:youth-weekly@example.com"
-                className="text-[#615d59] hover:text-[#4b4743] dark:text-[#a39e98] dark:hover:text-[rgba(255,255,255,0.95)] transition-colors"
+                aria-label="邮件联系"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eceae7] dark:bg-[rgba(255,255,255,0.08)] text-[#615d59] dark:text-[#a39e98] hover:bg-[#1aae39] hover:text-white dark:hover:bg-[#1aae39] dark:hover:text-white transition-colors"
               >
                 <Mail className="w-5 h-5" />
               </a>
