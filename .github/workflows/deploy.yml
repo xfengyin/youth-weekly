@@ -157,7 +157,10 @@ jobs:
     runs-on: ubuntu-24.04
     needs: build
     timeout-minutes: 10
-    # 不绑定 environment，避免 environment 保护规则阻塞部署
+    # deploy-pages v4 要求绑定 github-pages environment；
+    # 若仓库未配置 protection rules，绑定 environment 不会阻塞自动部署。
+    environment:
+      name: github-pages
 
     steps:
       # 配置 Pages（不传 enablement，因为 GITHUB_TOKEN 无 admin 权限）
