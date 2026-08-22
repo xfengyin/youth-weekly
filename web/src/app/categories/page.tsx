@@ -53,7 +53,7 @@ export default function CategoriesPage() {
             <div
               key={category.id}
               id={category.name}
-              className="card p-7 group"
+              className="card card-hover p-7 group"
             >
               <div className="flex items-start space-x-5">
                 <div className="text-4xl flex-shrink-0">{category.icon}</div>

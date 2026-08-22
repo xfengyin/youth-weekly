@@ -507,7 +507,7 @@ Netflix 版《三体》第一季已经上线，引发了热议。
 
 **主题：** 城市夜景
 
-![城市夜景示例](./assets/city-night.jpg)
+![城市夜景示例](./assets/city-night.jpeg)
 
 > 摄影师：@nightwalker
 > 地点：上海外滩
@@ -519,7 +519,7 @@ Netflix 版《三体》第一季已经上线，引发了热议。
 
 **主题：** 赛博朋克风格插画
 
-![赛博朋克插画示例](./assets/cyberpunk-art.jpg)
+![赛博朋克插画示例](./assets/cyberpunk-art.jpeg)
 
 > 设计师：@pixeldreamer
 > 工具：Procreate + Photoshop
@@ -530,7 +530,7 @@ Netflix 版《三体》第一季已经上线，引发了热议。
 
 **主题：** 2026年AI应用发展图谱
 
-![AI应用图谱示例](./assets/ai-landscape.jpg)
+![AI应用图谱示例](./assets/ai-landscape.jpeg)
 
 ---
 

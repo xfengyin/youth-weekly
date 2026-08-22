@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, BookOpen } from 'lucide-react'
+import { ArrowLeft, Calendar, BookOpen, ArrowRight } from 'lucide-react'
 import { getAllIssues } from '../lib/content'
+import { coverUrl } from '../lib/toc'
+import IssueCover from '../components/IssueCover'
 
 export const metadata: Metadata = {
   title: '所有周刊',
@@ -11,6 +13,7 @@ export const metadata: Metadata = {
 
 export default function IssuesPage() {
   const issues = getAllIssues()
+  const [latest, ...rest] = issues
 
   return (
     <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
@@ -32,49 +35,97 @@ export default function IssuesPage() {
           </p>
         </div>
 
-        {/* Issues Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {issues.map((issue) => (
-            <Link
-              key={issue.slug}
-              href={`/issues/${issue.slug}/`}
-              className="card p-7 group"
-            >
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center space-x-2 text-sm text-[#615d59] dark:text-[#a39e98]">
-                  <Calendar className="w-4 h-4" />
-                  <span>{issue.date}</span>
-                </div>
-                <span className="badge">
-                  第{issue.issue}期
+        {/* 最新一期：Feature 大卡片 */}
+        {latest && (
+          <Link
+            href={`/issues/${latest.slug}/`}
+            className="group card card-hover block overflow-hidden mb-10"
+          >
+            <div className="grid md:grid-cols-2">
+              <div className="relative aspect-[16/10] md:aspect-auto md:h-full overflow-hidden">
+                <IssueCover
+                  src={coverUrl(latest.slug)}
+                  alt={`${latest.title} 封面`}
+                  className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#0075de] via-[#2a9d99] to-[#8b5cf6]"
+                  imgClassName="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+                <span className="absolute top-4 left-4 badge !bg-[#0075de] !text-white !text-[13px]">
+                  最新一期
                 </span>
               </div>
-
-              <h2 className="text-xl font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-3 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors leading-snug">
-                {issue.title}
-              </h2>
-
-              <p className="text-[#615d59] dark:text-[#a39e98] text-sm line-clamp-3 mb-5 leading-relaxed">
-                {issue.description}
-              </p>
-
-              <div className="flex items-center justify-between pt-5 border-t border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)]">
-                <div className="flex items-center text-sm text-[#615d59] dark:text-[#a39e98]">
-                  <BookOpen className="w-4 h-4 mr-1.5" />
-                  <span>阅读全文</span>
+              <div className="p-7 md:p-9 flex flex-col justify-center">
+                <div className="flex items-center gap-3 text-sm text-[#615d59] dark:text-[#a39e98] mb-4">
+                  <span className="inline-flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {latest.date}
+                  </span>
+                  <span>·</span>
+                  <span className="badge !text-[12px]">第{latest.issue}期</span>
                 </div>
-                <span className="text-[#0075de] dark:text-[#62aef0] group-hover:translate-x-1 transition-transform">
-                  →
+                <h2 className="text-2xl md:text-[28px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-4 leading-snug group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
+                  {latest.title}
+                </h2>
+                {latest.description && (
+                  <p className="text-[#615d59] dark:text-[#a39e98] leading-relaxed mb-6 line-clamp-3">
+                    {latest.description}
+                  </p>
+                )}
+                <span className="inline-flex items-center gap-1.5 text-[#0075de] dark:text-[#62aef0] font-semibold text-[15px]">
+                  阅读本期
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
-            </Link>
-          ))}
-        </div>
+            </div>
+          </Link>
+        )}
+
+        {/* 其余期次：网格卡片 */}
+        {rest.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rest.map((issue) => (
+              <Link
+                key={issue.slug}
+                href={`/issues/${issue.slug}/`}
+                className="card card-hover group overflow-hidden flex flex-col"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <IssueCover
+                    src={coverUrl(issue.slug)}
+                    alt={`${issue.title} 封面`}
+                    className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#0075de] via-[#2a9d99] to-[#8b5cf6]"
+                    imgClassName="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                  <span className="absolute top-3 left-3 badge !bg-white/90 dark:!bg-black/60 !text-[#0075de] dark:!text-[#62aef0]">
+                    第{issue.issue}期
+                  </span>
+                </div>
+
+                <div className="p-6 flex flex-col flex-1">
+                  <div className="flex items-center text-sm text-[#615d59] dark:text-[#a39e98] mb-3">
+                    <Calendar className="w-4 h-4 mr-1.5" />
+                    {issue.date}
+                  </div>
+                  <h3 className="text-lg font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2 leading-snug group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors line-clamp-2">
+                    {issue.title}
+                  </h3>
+                  <p className="text-sm text-[#615d59] dark:text-[#a39e98] line-clamp-3 leading-relaxed flex-1">
+                    {issue.description}
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-1.5 text-[#0075de] dark:text-[#62aef0] text-sm font-semibold">
+                    <BookOpen className="w-4 h-4" />
+                    阅读全文
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
         {issues.length === 0 && (
           <div className="text-center py-20">
-            <BookOpen className="w-16 h-16 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
+            <BookOpen className="w-16 h-16 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
             <p className="text-[#615d59] dark:text-[#a39e98]">
               暂无周刊内容，敬请期待...
             </p>

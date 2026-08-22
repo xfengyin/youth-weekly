@@ -116,6 +116,22 @@ jobs:
             exit 1
           fi
 
+          # 同步周刊正文图片资产：docs/issues/<slug>/assets -> output/issues/<slug>/assets
+          # 正文 Markdown 用相对路径（如 ./assets/city-night.jpg），页面 URL 为
+          # /youth-weekly/issues/<slug>/，故图片必须落在同目录的 assets/ 下。
+          # web/out 中无 issues/ 目录，不会覆盖冲突；无 assets 目录的期次自动跳过。
+          asset_count=0
+          for dir in docs/issues/*/assets; do
+            [ -d "$dir" ] || continue
+            slug=$(basename "$(dirname "$dir")")
+            mkdir -p "output/issues/$slug/assets"
+            cp -r "$dir/." "output/issues/$slug/assets/"
+            n=$(find "$dir" -type f | wc -l)
+            asset_count=$((asset_count + n))
+            echo "📁 Synced $slug/assets ($n files)"
+          done
+          echo "✔ issues assets synced: $asset_count files total"
+
           # 复制 RSS 文件到网站根目录（generate 的 rss 插件默认输出 scripts/dist/rss.xml）
           if [ -f "scripts/dist/rss.xml" ]; then
             echo "📰 Copying RSS feed"
@@ -145,6 +161,10 @@ jobs:
             exit 1
           fi
           test -f "output/_headers" || { echo "❌ output/_headers 缺失（安全响应头未随部署）"; exit 1; }
+          # 周刊图片资产硬校验：至少一个期次的封面已随部署复制（T-M 资产同步）
+          test -f "output/issues/001/assets/cover.png" || { echo "❌ output/issues/001/assets/cover.png 缺失（assets 同步失败）"; exit 1; }
+          asset_total=$(find output/issues -type f 2>/dev/null | wc -l)
+          echo "✔ issues assets: $asset_total files under output/issues/"
           echo "✅ Verification passed: $(find output -type f | wc -l) files ready"
 
       - name: Upload artifact

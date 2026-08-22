@@ -49,7 +49,7 @@ jest.mock('fs', () => {
   }
 })
 
-let fsMock: { __setFs: (snapshot: FsSnapshot) => void }
+const fsMock = jest.requireMock('fs') as { __setFs: (snapshot: FsSnapshot) => void }
 
 // react-markdown v9 为纯 ESM，ts-jest(commonjs) 无法直接 require；
 // 此处以轻量桩替代：页面测试关注数据/渲染逻辑，不测试 markdown 解析本身。
@@ -100,15 +100,38 @@ const setPublicFiles = (files: Record<string, unknown>): void => {
   for (const [rel, data] of Object.entries(files)) {
     snapshot[publicFile(rel)] = typeof data === 'string' ? data : json(data)
   }
+  // 详情页现在会调用 getAllIssues()（上一篇/下一篇导航），
+  // 若未显式提供 issue_index.json，则从已注入的 issue-<slug>.json 自动推导。
+  if (!Object.keys(files).some((rel) => rel === 'issue_index.json')) {
+    const index = Object.keys(files)
+      .filter((rel) => /^issue-\d+\.json$/.test(rel))
+      .map((rel) => rel.replace(/^issue-/, '').replace(/\.json$/, ''))
+      .sort((a, b) => Number(b) - Number(a))
+      .map((slug) => {
+        const src = json(
+          (files[`issue-${slug}.json`] ?? {}) as Record<string, unknown>,
+        )
+        const parsed = JSON.parse(src) as Record<string, unknown>
+        return {
+          issue: Number(parsed.issue ?? slug),
+          title: String(parsed.title ?? `第${slug}期`),
+          date: String(parsed.date ?? ''),
+          description: typeof parsed.description === 'string' ? parsed.description : '',
+          slug,
+        }
+      })
+    snapshot[publicFile('issue_index.json')] = json(index)
+  }
   fsMock.__setFs(snapshot)
 }
 
 describe('issues/[slug]/page.tsx', () => {
   beforeEach(() => {
     notFoundMock.mockClear()
-    jest.resetModules()
-    // resetModules 后重新获取 fs mock
-    fsMock = jest.requireMock('fs') as { __setFs: (snapshot: FsSnapshot) => void }
+    // 注意：不能用 jest.resetModules() —— 它会重建 'react' 模块实例，
+    // 导致页面内的客户端 hook 组件（ReadingProgress 等）拿到第二个 React 副本，
+    // 渲染时 hooks dispatcher 为 null（Cannot read properties of null (reading 'useState')）。
+    // 页面模块本身无状态（数据每次从 fs mock 读取），模块缓存复用是安全的。
   })
 
   describe('generateStaticParams', () => {
