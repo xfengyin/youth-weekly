@@ -24,15 +24,15 @@
 ---
 
 <!-- AUTO_ISSUE_START -->
-## 📰 最新一期 · 第 14 期
+## 📰 最新一期 · 第 15 期
 
-> **2026-08-24** | 第 14 期
+> **2026-08-31** | 第 15 期
 
-**青年周刊 · 第 14 期**
+**青年周刊 · 第 15 期**
 
-本期关注 PrimeAgentOrchestrator: Memory-Primed Agent Spawning for Personal AI Infrastructure、Beyond Raw Transcripts: Structured Persona Extraction for LLM-Based Digital Twins、SDAD: Spec-Driven Agentic Development for the AI-Native SDLC
+AI 工具不再停留在「玩玩」——本期实测本地 4K 生成与 AI 代码评审，给出把 AI 放进工作流的 3 个姿势。
 
-👉 [阅读第 14 期全文](https://xfengyin.github.io/youth-weekly/issues/014/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
+👉 [阅读第 15 期全文](https://xfengyin.github.io/youth-weekly/issues/015/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
 <!-- AUTO_ISSUE_END -->
 ---
 
