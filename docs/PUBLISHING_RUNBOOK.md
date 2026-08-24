@@ -139,6 +139,10 @@ cd scripts && uv run python update_readme.py
 - [ ] 日期/期号正确；图片只用本期 `assets/` 中真实存在的文件
 - [ ] 版块结构符合模板（`##` 板块 / `###` 条目 / 列表 / 引用）
 
+> **草稿评审流程**：发布前草稿存于 `docs/plans/issue-NNN-draft.md`（不进入 docs/issues/），
+> 审校通过后再执行第③步 `make issue` 生成正式期次；未通过的修改留在草稿文件里迭代。
+> 草稿应同步更新 `docs/CONTENT_SCHEDULE.md` 的状态列（🚧 策划中 → ✍️ 草稿完成 → ✅ 已发布）。
+
 ### 发布动作
 - [ ] `git add docs/ web/public/ README.md`（覆盖内容、产物与索引）
 - [ ] commit message 描述本期主题
