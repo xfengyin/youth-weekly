@@ -175,6 +175,19 @@ bash scripts/rehearsal.sh --keep       # 结束后保留临时目录供检查（
   （3 个分类、7 条样本），可自行替换该文件做演练素材。
 - 演练结束后脚本自动检查真实仓库 `git status`，若有残留变更会以非 0 退出并提示。
 
+### 5.2 CI 演练门禁
+
+PR 到 main 时，`.github/workflows/ci.yml` 的 **Publish Rehearsal (offline)** job
+会自动运行一次无污染出刊演练（`bash scripts/rehearsal.sh`）：
+
+- 使用离线样例策展数据，不需要网络 / LLM API key，任何 PR 都可跑；
+- 验证「collect → issue → update_readme → generate → validate」全流程可用；
+- 演练只写临时目录，结束自带 `git status` 洁净检查——若流水线改坏并污染仓库，
+  job 直接失败，阻塞 PR 合并；
+- 环境与 quality job 一致（Python 3.12 + uv，`uv sync --frozen` 安装运行时依赖）。
+
+> 意义：出刊流水线一旦被改动，PR 阶段就能暴露问题，而不是等到周一自动发布时才发现。
+
 ---
 
 ## 6. 自动发布（CI 定时任务，无需人工）
