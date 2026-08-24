@@ -62,6 +62,8 @@ Thumbs.db
 # Logs
 logs/
 *.log
+# 出刊演练记录是受版本控制的内容工件（非运行日志），放行 docs/examples/ 下的 .log
+!docs/examples/*.log
 
 # Temporary files
 tmp/

@@ -71,6 +71,8 @@ uv run youth-weekly collect
   - 给每个条目补上价值锚点、洞察或行动建议（至少两项）；
   - 控制篇幅：每板块 2–4 条，每期 4–6 个板块 + 刊首语。
 - 主题定调：本周想聊什么？在刊首语里给出观点，而不是新闻串烧。
+- 先看排期与选题策划：`docs/CONTENT_SCHEDULE.md`（4 周排期/状态）与
+  `docs/plans/issue-NNN-plan.md`（当期选题策划：板块/素材/负责人/deadline）。
 
 ### ③ 生成新一期 + 同步 README
 
@@ -224,7 +226,9 @@ collect → 有内容则 issue → update_readme + generate + validate → 提�
 - [内容手册（价值观/模板/质量关卡）](./CONTENT_PLAYBOOK.md)
 - [AI 辅助内容生产指南（提示词模板/接 LLM API）](./AI_ASSIST.md)
 - [内容排期（未来 4 周）](./CONTENT_SCHEDULE.md)
+- [选题策划模板（每期一份）](./plans/issue-015-plan.md)
 - [演练样例策展数据](./examples/curated.sample.json)
+- [演练记录示例](./examples/rehearsal-015.log)
 - [架构说明](../ARCHITECTURE_REVIEW.md)
 - [脚本工具说明](../scripts/README.md)
 - [贡献指南](../CONTRIBUTING.md)
