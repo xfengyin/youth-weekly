@@ -1,0 +1,65 @@
+# 出刊演练记录 · rehearsal-015（M5 流程验证）
+
+- 执行时间：2026-08-24 22:51
+- 命令：bash scripts/rehearsal.sh（默认离线样例策展数据 docs/examples/curated.sample.json）
+- 结果：全流程成功——issue 001 生成（封面模板复制、LLM 未配置自动降级）→ README 同步 → generate 6 插件 0 失败 → validate 1 期 OK
+- 说明：演练在临时 WORKDIR 执行、结束后自动清理，不污染真实仓库；
+  日志中 "⚠️ 真实仓库出现变更" 一节为脚本自检对 M5 未提交变更（docs/plans/、docs/CONTENT_SCHEDULE.md）
+  的提示，属预期行为；M5 提交后复跑该检查通过（EXIT 0）。
+
+--- 以下为 rehearsal.sh 原始输出 ---
+
+==============================================
+青年周刊 · 出刊演练开始
+真实仓库：/vol2/@appshare/deepseek.harness/home/代码开发/youth-weekly
+演练目录：/tmp/youth-weekly-rehearsal.IR321g
+采集模式：样例策展数据（离线）
+==============================================
+==> [0/5] 准备临时工作区
+==> [1/5] collect：演练模式（样例策展数据替代网络采集)
+    （真实发布时执行：make collect)
+==> [2/5] issue：生成新一期
+2026-08-24 22:51:06 | INFO     | youth_weekly.core.issue_generator | Created default cover: /tmp/youth-weekly-rehearsal.IR321g/docs/issues/001/assets/cover.png
+2026-08-24 22:51:06 | INFO     | youth_weekly.core.issue_generator | Generating issue #001 at /tmp/youth-weekly-rehearsal.IR321g/docs/issues/001
+2026-08-24 22:51:06 | INFO     | youth_weekly.core.issue_generator | LLM expansion enabled: False
+2026-08-24 22:51:06 | INFO     | youth_weekly.core.issue_generator | Written README.md for issue #001
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugins.issue | Issue generated successfully at /tmp/youth-weekly-rehearsal.IR321g/docs/issues/001
+2026-08-24 22:51:06 | INFO     | youth_weekly.cli | Issue generated: /tmp/youth-weekly-rehearsal.IR321g/docs/issues/001
+==> [3/5] update_readme：同步 README 最新一期与索引表
+已更新 README.md 最新一期 → 第 1 期
+已更新 docs/README.md 索引 → 1 期
+==> [4/5] generate：重建站点 JSON 产物
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Executing plugin: issue_index
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugins.issue_index | Generated issues index: /tmp/youth-weekly-rehearsal.IR321g/web/public/issue_index.json
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Plugin issue_index executed successfully
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Executing plugin: issue_json
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugins.issue_json | Generated issue JSON: /tmp/youth-weekly-rehearsal.IR321g/web/public/issue-001.json
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Plugin issue_json executed successfully
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Executing plugin: rss
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Plugin rss executed successfully
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Executing plugin: search_index
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugins.search_index | Generated search index: /tmp/youth-weekly-rehearsal.IR321g/web/public/search-data.json
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Plugin search_index executed successfully
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Executing plugin: site_data
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugins.site_data | Generated site data: /tmp/youth-weekly-rehearsal.IR321g/web/public/site-data.json
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Plugin site_data executed successfully
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Executing plugin: stats
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugins.stats | Generated stats: /tmp/youth-weekly-rehearsal.IR321g/scripts/dist/stats.json
+2026-08-24 22:51:06 | INFO     | youth_weekly.plugin.registry | Plugin stats executed successfully
+2026-08-24 22:51:07 | INFO     | youth_weekly.cli | Plugins summary: 6 succeeded, 0 failed (6 total)
+2026-08-24 22:51:07 | INFO     | youth_weekly.cli | Artifacts manifest: /tmp/youth-weekly-rehearsal.IR321g/scripts/dist/artifacts-manifest.json
+==> [5/5] validate：校验 frontmatter 与资产引用
+2026-08-24 22:51:07 | INFO     | youth_weekly.cli | Validation OK: 1 issues validated under /tmp/youth-weekly-rehearsal.IR321g/docs
+
+==============================================
+✅ 出刊演练成功
+  - 新一期：/tmp/youth-weekly-rehearsal.IR321g/docs/issues/001/
+  - README 最新一期区块：/tmp/youth-weekly-rehearsal.IR321g/README.md
+  - 索引表：/tmp/youth-weekly-rehearsal.IR321g/docs/README.md
+  - 站点 JSON：/tmp/youth-weekly-rehearsal.IR321g/web/public/*.json（4 个)
+  - RSS/统计：/tmp/youth-weekly-rehearsal.IR321g/scripts/dist/
+==============================================
+⚠️ 警告：演练后真实仓库出现变更，请检查！
+ M docs/CONTENT_SCHEDULE.md
+?? docs/plans/
+（已清理临时 WORKDIR)
