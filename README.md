@@ -24,15 +24,15 @@
 ---
 
 <!-- AUTO_ISSUE_START -->
-## 📰 最新一期 · 第 13 期
+## 📰 最新一期 · 第 14 期
 
-> **2026-08-22** | 第 13 期
+> **2026-08-24** | 第 14 期
 
-**青年周刊 · 第 13 期**
+**青年周刊 · 第 14 期**
 
-AI 开始触碰火箭、活体组织与真金白银——本期聊技术的边界：当它越来越能「造」时，什么该做、什么不该做。
+本期关注 PrimeAgentOrchestrator: Memory-Primed Agent Spawning for Personal AI Infrastructure、Beyond Raw Transcripts: Structured Persona Extraction for LLM-Based Digital Twins、SDAD: Spec-Driven Agentic Development for the AI-Native SDLC
 
-👉 [阅读第 13 期全文](https://xfengyin.github.io/youth-weekly/issues/013/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
+👉 [阅读第 14 期全文](https://xfengyin.github.io/youth-weekly/issues/014/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
 <!-- AUTO_ISSUE_END -->
 ---
 
