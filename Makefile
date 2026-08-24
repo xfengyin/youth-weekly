@@ -124,6 +124,30 @@ ci: lint typecheck test audit ## 模拟 CI：lint + typecheck + test + audit
 pre-commit: ## 本地手动跑 pre-commit 全量检查
 	$(PY_RUN) pre-commit run --all-files
 
+##@ 出刊（weekly-publish）
+
+.PHONY: weekly-publish
+weekly-publish: ## 一键出刊：collect → issue → update_readme → generate → validate（有副作用，策展后使用）
+	@echo "▶ [1/5] 采集内容 (collect)"
+	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly collect
+	@echo "▶ [2/5] 生成新一期 (issue)"
+	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly issue
+	@echo "▶ [3/5] 同步 README 索引 (update_readme)"
+	cd $(SCRIPTS_DIR) && $(PY_RUN) python update_readme.py
+	@echo "▶ [4/5] 重建站点产物 (generate)"
+	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly generate
+	@echo "▶ [5/5] 校验 (validate)"
+	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly validate
+	@echo ""
+	@echo "✓ weekly-publish 完成：请审校 docs/issues/ 最新一期后按 Runbook 发布"
+	@echo "  （git add docs/ web/public/ README.md && git commit && git push）"
+
+.PHONY: weekly-check
+weekly-check: ## 出刊前快速门禁：README 索引一致性 + 周刊 frontmatter/资产校验
+	cd $(SCRIPTS_DIR) && $(PY_RUN) python update_readme.py --check
+	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly validate
+	@echo "✓ weekly-check 通过：README 索引与周刊校验均无差异"
+
 ##@ 清理
 
 .PHONY: clean
