@@ -61,13 +61,15 @@ jobs:
           mkdir -p scripts/dist
 
       # 1. 采集阶段
+      # 通过根目录 Makefile 的 collect 目标执行（仓库根运行；make 在 ubuntu runner 预装）。
+      # step 级 env 会透传给 make 子进程，供 LLM 采集/改写使用。
+      # 命令链与 docs/PUBLISHING_RUNBOOK.md §3 对齐。
       - name: Collect content from sources
         id: collect
-        working-directory: scripts
         env:
           YOUTH_WEEKLY_LLM_API_KEY: ${{ secrets.YOUTH_WEEKLY_LLM_API_KEY }}
         run: |
-          uv run youth-weekly collect
+          make collect
 
       - name: Check if collected content exists
         id: content_check
@@ -78,25 +80,22 @@ jobs:
             echo "has_content=false" >> $GITHUB_OUTPUT
           fi
 
-      # 2. 生成阶段
+      # 2. 生成阶段（make issue）
       - name: Generate new weekly issue
         id: generate
         if: steps.content_check.outputs.has_content == 'true'
-        working-directory: scripts
         env:
           YOUTH_WEEKLY_LLM_API_KEY: ${{ secrets.YOUTH_WEEKLY_LLM_API_KEY }}
         run: |
-          uv run youth-weekly issue
+          make issue
 
-      # 2.5 同步 README/docs 索引，并重新生成站点 JSON 产物（web/public/*.json）
+      # 2.5 同步 README/docs 索引 + 重新生成站点 JSON 产物 + 校验
+      #（make update-readme generate validate：等价于 Runbook 第③步 + 第④步自动门禁）
       - name: Sync README and regenerate artifacts
         id: sync
         if: steps.content_check.outputs.has_content == 'true'
-        working-directory: scripts
         run: |
-          uv run python update_readme.py
-          uv run youth-weekly generate
-          uv run youth-weekly validate
+          make update-readme generate validate
 
       # 3. 提交阶段：将新一期推送到 main
       #    注意：commit message **不再带 [skip ci]**；但 GITHUB_TOKEN push 不会触发
