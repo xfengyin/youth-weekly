@@ -1,0 +1,57 @@
+{
+  "tech": [
+    {
+      "title": "开源模型本地跑通 4K 视频生成",
+      "url": "https://example.com/sample/tech-1",
+      "description": "新权重只需 8GB 显存即可生成 4K 短视频，社区实测效果接近商业模型，并给出了分步部署教程。",
+      "source": "GitHub Trending",
+      "score": 92
+    },
+    {
+      "title": "用强化学习优化火箭发动机喷嘴设计",
+      "url": "https://example.com/sample/tech-2",
+      "description": "某研究团队将喷嘴几何参数化后用强化学习搜索，试车表现超过人工设计基线约 12%。",
+      "source": "Hacker News",
+      "score": 88
+    },
+    {
+      "title": "AI 代码评审工具实测：3 个团队一个月的数据",
+      "url": "https://example.com/sample/tech-3",
+      "description": "三个不同规模的团队接入 AI 代码评审一个月：合并时长中位数下降 31%，但误报率仍需人工把关。",
+      "source": "arXiv CS",
+      "score": 79
+    }
+  ],
+  "dev": [
+    {
+      "title": "终端复用神器：一个 Rust 写的 TUI 组件库",
+      "url": "https://example.com/sample/dev-1",
+      "description": "纯 Rust 实现的终端组件库，支持热重载与跨平台，README 附 5 分钟上手示例。",
+      "source": "JavaScript Weekly",
+      "score": 74
+    },
+    {
+      "title": "SQLite 作为应用数据库的 7 个反模式",
+      "url": "https://example.com/sample/dev-2",
+      "description": "一篇实战长文：哪些场景不该用 SQLite、并发写放大、WAL 模式下常见的坑与规避方法。",
+      "source": "Python Weekly",
+      "score": 71
+    }
+  ],
+  "anime": [
+    {
+      "title": "本季新番值得追的 3 部：从制作阵容到原作口碑",
+      "url": "https://example.com/sample/anime-1",
+      "description": "按「制作阵容 + 原作口碑 + 前两集表现」三维筛选，推荐 3 部适合年轻人下班后放松的新番。",
+      "source": "社区推荐",
+      "score": 68
+    },
+    {
+      "title": "漫展归来：本周线下活动观察与避坑指南",
+      "url": "https://example.com/sample/anime-2",
+      "description": "现场观察：场贩排队长、同人摊位分布、适合初次参展者的时间规划建议。",
+      "source": "社区推荐",
+      "score": 63
+    }
+  ]
+}
