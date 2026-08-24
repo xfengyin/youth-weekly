@@ -126,18 +126,33 @@ pre-commit: ## 本地手动跑 pre-commit 全量检查
 
 ##@ 出刊（weekly-publish）
 
-.PHONY: weekly-publish
-weekly-publish: ## 一键出刊：collect → issue → update_readme → generate → validate（有副作用，策展后使用）
-	@echo "▶ [1/5] 采集内容 (collect)"
+# 分步目标：供 CI（.github/workflows/weekly-publish.yml）与本地分步执行；
+# weekly-publish 为聚合目标，等价于依次执行 collect → issue → update-readme → generate → validate。
+# 流程与 docs/PUBLISHING_RUNBOOK.md 对齐。
+
+.PHONY: collect issue update-readme generate validate
+collect: ## 采集内容（网络，写 scripts/.curated_content.json）
+	@echo "▶ 采集内容 (collect)"
 	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly collect
-	@echo "▶ [2/5] 生成新一期 (issue)"
+
+issue: ## 生成新一期（需先 collect，写 docs/issues/NNN/）
+	@echo "▶ 生成新一期 (issue)"
 	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly issue
-	@echo "▶ [3/5] 同步 README 索引 (update_readme)"
+
+update-readme: ## 同步 README 最新一期 + docs/README 索引
+	@echo "▶ 同步 README 索引 (update_readme)"
 	cd $(SCRIPTS_DIR) && $(PY_RUN) python update_readme.py
-	@echo "▶ [4/5] 重建站点产物 (generate)"
+
+generate: ## 重建站点 JSON 产物（web/public + scripts/dist）
+	@echo "▶ 重建站点产物 (generate)"
 	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly generate
-	@echo "▶ [5/5] 校验 (validate)"
+
+validate: ## 校验周刊 frontmatter 与资产引用
+	@echo "▶ 校验 (validate)"
 	cd $(SCRIPTS_DIR) && $(PY_RUN) youth-weekly validate
+
+.PHONY: weekly-publish
+weekly-publish: collect issue update-readme generate validate ## 一键出刊：collect → issue → update_readme → generate → validate（有副作用，策展后使用）
 	@echo ""
 	@echo "✓ weekly-publish 完成：请审校 docs/issues/ 最新一期后按 Runbook 发布"
 	@echo "  （git add docs/ web/public/ README.md && git commit && git push）"
