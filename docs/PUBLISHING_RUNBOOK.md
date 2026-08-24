@@ -156,6 +156,25 @@ make weekly-check      # 出刊前快速门禁：update_readme --check + validat
 > 注意：`weekly-publish` 会真实调用网络采集并生成新一期（有副作用），
 > 适合编辑在策展后使用；纯校验用 `weekly-check` 即可。
 
+### 5.1 演练模式（rehearsal.sh）
+
+不想动真实仓库？用演练脚本在临时目录跑完整出刊流程
+（collect → issue → update_readme → generate → validate），验证流水线可用：
+
+```bash
+bash scripts/rehearsal.sh              # 默认：样例策展数据（离线，无网络副作用）
+bash scripts/rehearsal.sh --real       # 真实网络采集（需要网络 + LLM API key）
+bash scripts/rehearsal.sh --keep       # 结束后保留临时目录供检查（默认自动清理）
+```
+
+- 原理：通过 `YOUTH_WEEKLY_ROOT` 把项目根重定向到临时 WORKDIR，所有写入
+  （docs/issues/NNN、README、web/public/*.json、scripts/dist/*）都在临时目录；
+  脚本只拷贝所需骨架（config.yaml / README / content_sources.yaml / 封面模板 /
+  update_readme.py），不复制代码与依赖。
+- 默认采集模式使用样例策展数据 `docs/examples/curated.sample.json`
+  （3 个分类、7 条样本），可自行替换该文件做演练素材。
+- 演练结束后脚本自动检查真实仓库 `git status`，若有残留变更会以非 0 退出并提示。
+
 ---
 
 ## 6. 自动发布（CI 定时任务，无需人工）
@@ -190,6 +209,9 @@ collect → 有内容则 issue → update_readme + generate + validate → 提�
 ## 8. 相关文档
 
 - [内容手册（价值观/模板/质量关卡）](./CONTENT_PLAYBOOK.md)
+- [AI 辅助内容生产指南（提示词模板/接 LLM API）](./AI_ASSIST.md)
+- [内容排期（未来 4 周）](./CONTENT_SCHEDULE.md)
+- [演练样例策展数据](./examples/curated.sample.json)
 - [架构说明](../ARCHITECTURE_REVIEW.md)
 - [脚本工具说明](../scripts/README.md)
 - [贡献指南](../CONTRIBUTING.md)
