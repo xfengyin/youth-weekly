@@ -1,5 +1,13 @@
 [
   {
+    "issue": 14,
+    "title": "青年周刊 · 第 14 期",
+    "date": "2026-08-24",
+    "description": "本期关注 PrimeAgentOrchestrator: Memory-Primed Agent Spawning for Personal AI Infrastructure、Beyond Raw Transcripts: Structured Persona Extraction for LLM-Based Digital Twins、SDAD: Spec-Driven Agentic Development for the AI-Native SDLC",
+    "slug": "014",
+    "cover": "./assets/cover.png"
+  },
+  {
     "issue": 13,
     "title": "青年周刊 · 第 13 期",
     "date": "2026-08-22",
