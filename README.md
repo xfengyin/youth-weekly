@@ -24,15 +24,15 @@
 ---
 
 <!-- AUTO_ISSUE_START -->
-## 📰 最新一期 · 第 15 期
+## 📰 最新一期 · 第 16 期
 
-> **2026-08-31** | 第 15 期
+> **2026-08-31** | 第 16 期
 
-**青年周刊 · 第 15 期**
+**青年周刊 · 第 16 期**
 
-AI 工具不再停留在「玩玩」——本期实测本地 4K 生成与 AI 代码评审，给出把 AI 放进工作流的 3 个姿势。
+本期关注 codecrafters-io/build-your-own-x - ⭐ 544314、sindresorhus/awesome - ⭐ 501670、public-apis/public-apis - ⭐ 473709
 
-👉 [阅读第 15 期全文](https://xfengyin.github.io/youth-weekly/issues/015/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
+👉 [阅读第 16 期全文](https://xfengyin.github.io/youth-weekly/issues/016/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
 <!-- AUTO_ISSUE_END -->
 ---
 
