@@ -88,3 +88,6 @@ scripts/.content_dedup.db
 # Curated content (transient)
 .curated_content.json
 scripts/.curated_content.json
+
+# 已删除的死 submodule gitlink（youth-weekly）残留空目录，忽略以防被重新提交
+youth-weekly/
