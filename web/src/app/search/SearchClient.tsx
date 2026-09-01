@@ -48,7 +48,6 @@ export default function SearchClient() {
       .catch((err: unknown) => {
         if (cancelled) return
         // 记录错误到控制台，便于线上排查
-        // eslint-disable-next-line no-console
         console.error('[search] 加载搜索数据失败:', err)
         const message =
           err instanceof Error ? err.message : '加载搜索数据时发生未知错误'
