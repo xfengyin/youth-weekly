@@ -32,7 +32,6 @@ export default function IssueCover({ src, alt, className = '', imgClassName = ''
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- 静态导出下 next/image 需 unoptimized，直接用 img
     <img
       src={src}
       alt={alt}
