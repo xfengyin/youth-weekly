@@ -1,0 +1,38 @@
+name: Gemini PR Review
+
+# 用 Gemini CLI 对 Pull Request 做自动代码评审
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# 最小权限：读代码 + 在 PR 上写评论
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: gemini-pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Run Gemini PR Review
+        uses: google-github-actions/run-gemini-cli@v0.1.22
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          prompt: |
+            你是一个资深代码评审工程师。请评审 Pull Request #${{ github.event.pull_request.number }}（标题： ${{ github.event.pull_request.title }}）。
+            使用 GitHub 工具阅读完整的 diff 与改动文件，重点关注：
+            1. 安全漏洞（注入、XSS、敏感信息泄露、依赖风险）
+            2. 性能问题
+            3. 可维护性与潜在 bug
+            4. 测试覆盖
+            用中文给出简洁、有建设性的评审意见，并在该 PR 上以评论形式发布。
+            若改动无明显问题，也请留下一句确认性评论。
