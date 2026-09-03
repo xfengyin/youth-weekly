@@ -1,0 +1,33 @@
+name: Gemini Mention
+
+# 在 PR / Issue 评论中 @gemini-cli 即可召唤它定位问题
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  respond:
+    if: contains(github.event.comment.body, '@gemini-cli')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Run Gemini on mention
+        uses: google-github-actions/run-gemini-cli@v0.1.22
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          prompt: |
+            用户在评论中 @gemini-cli 请求帮助，原话：
+            """
+            ${{ github.event.comment.body }}
+            """
+            请使用 GitHub 工具查看上下文（所在 Issue/PR 的内容、相关文件与 diff），
+            定位问题并给出可操作的解决方案；若需要更多信息请说明。用中文回答，
+            并在该 Issue/PR 中以评论形式回复。
