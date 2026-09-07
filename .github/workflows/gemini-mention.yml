@@ -20,9 +20,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run Gemini on mention
+        if: ${{ env.GEMINI_API_KEY != '' }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         uses: google-github-actions/run-gemini-cli@v0.1.22
         with:
-          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          gemini_api_key: ${{ env.GEMINI_API_KEY }}
           prompt: |
             用户在评论中 @gemini-cli 请求帮助，原话：
             """
