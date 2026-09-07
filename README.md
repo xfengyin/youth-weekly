@@ -24,15 +24,15 @@
 ---
 
 <!-- AUTO_ISSUE_START -->
-## 📰 最新一期 · 第 16 期
+## 📰 最新一期 · 第 17 期
 
-> **2026-08-31** | 第 16 期
+> **2026-09-07** | 第 17 期
 
-**青年周刊 · 第 16 期**
+**青年周刊 · 第 17 期**
 
-本期关注 codecrafters-io/build-your-own-x - ⭐ 544314、sindresorhus/awesome - ⭐ 501670、public-apis/public-apis - ⭐ 473709
+本期关注 codecrafters-io/build-your-own-x - ⭐ 545806、sindresorhus/awesome - ⭐ 503926、public-apis/public-apis - ⭐ 476924
 
-👉 [阅读第 16 期全文](https://xfengyin.github.io/youth-weekly/issues/016/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
+👉 [阅读第 17 期全文](https://xfengyin.github.io/youth-weekly/issues/017/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
 <!-- AUTO_ISSUE_END -->
 ---
 
