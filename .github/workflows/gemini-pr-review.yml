@@ -24,9 +24,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run Gemini PR Review
+        if: ${{ env.GEMINI_API_KEY != '' }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         uses: google-github-actions/run-gemini-cli@v0.1.22
         with:
-          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          gemini_api_key: ${{ env.GEMINI_API_KEY }}
           prompt: |
             你是一个资深代码评审工程师。请评审 Pull Request #${{ github.event.pull_request.number }}（标题： ${{ github.event.pull_request.title }}）。
             使用 GitHub 工具阅读完整的 diff 与改动文件，重点关注：
