@@ -1,0 +1,39 @@
+name: Auto Close Security Issue
+
+# 自动化：当 Nightly Security Scan 通过时，自动关闭历史遗留的“夜间安全扫描失败”Issue。
+# 触发：Nightly Security Scan workflow 完成后。
+on:
+  workflow_run:
+    workflows: ["Nightly Security Scan"]
+    types: [completed]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  close-stale-security-issues:
+    name: Close resolved security scan issues
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Close open security-scan failure issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner, repo, state: 'open', labels: 'security', per_page: 100,
+            });
+            for (const issue of issues) {
+              if (issue.title.startsWith('⚠️ 夜间安全扫描失败')) {
+                await github.rest.issues.createComment({
+                  owner, repo, issue_number: issue.number,
+                  body: '本次 Nightly Security Scan 已通过 ✅，该失败记录自动关闭。',
+                });
+                await github.rest.issues.update({
+                  owner, repo, issue_number: issue.number, state: 'closed',
+                });
+                core.info(`closed #${issue.number} ${issue.title}`);
+              }
+            }
