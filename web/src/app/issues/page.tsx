@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, BookOpen, ArrowRight } from 'lucide-react'
+import { ArrowLeft, Calendar, ArrowRight } from 'lucide-react'
 import { getAllIssues } from '../lib/content'
 import { coverUrl } from '../lib/toc'
 import IssueCover from '../components/IssueCover'
@@ -11,126 +11,137 @@ export const metadata: Metadata = {
   alternates: { canonical: 'issues/' },
 }
 
+/**
+ * 往期陈列页（杂志陈列架版式）：
+ * - 刊头：青年周刊 masthead + BACK ISSUES
+ * - 最新一期：大封面 + 封面故事
+ * - 往期：竖版杂志封面网格（硬阴影 / 期号标签 / 悬浮微动效）
+ */
 export default function IssuesPage() {
   const issues = getAllIssues()
   const [latest, ...rest] = issues
 
   return (
-    <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-10">
-          <Link
-            href="/"
-            className="inline-flex items-center text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] font-semibold text-[15px] mb-5"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            返回首页
-          </Link>
-          <h1 className="text-3xl md:text-[40px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] leading-tight">
-            所有周刊
-          </h1>
-          <p className="mt-3 text-[#615d59] dark:text-[#a39e98]">
-            共 {issues.length} 期内容，每周更新
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#faf7f0] dark:bg-[#121110]">
+      <div className="mag-paper py-12 md:py-16">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          {/* ── 刊头 ── */}
+          <header className="mb-10">
+            <Link
+              href="/"
+              className="mb-6 inline-flex items-center text-[13px] font-bold tracking-wide text-[#615d59] dark:text-[#a39e98] transition-colors hover:text-[#e60012] dark:hover:text-[#ff5a5f]"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              返回首页
+            </Link>
 
-        {/* 最新一期：Feature 大卡片 */}
-        {latest && (
-          <Link
-            href={`/issues/${latest.slug}/`}
-            className="group card card-hover block overflow-hidden mb-10"
-          >
-            <div className="grid md:grid-cols-2">
-              <div className="relative aspect-[16/10] md:aspect-auto md:h-full overflow-hidden">
+            <div className="flex flex-wrap items-end justify-between gap-4 border-b-4 border-black pb-4 dark:border-white">
+              <div>
+                <h1 className="mag-masthead text-5xl leading-none text-[rgba(0,0,0,0.95)] sm:text-6xl dark:text-[rgba(255,255,255,0.95)]">
+                  青年周刊
+                </h1>
+                <div className="mt-2 flex items-center gap-3">
+                  <span className="h-1.5 w-14 bg-[#e60012]" aria-hidden="true" />
+                  <span className="text-[11px] font-black uppercase tracking-[0.4em] text-[#615d59] dark:text-[#a39e98]">
+                    Back Issues
+                  </span>
+                </div>
+              </div>
+              <span className="badge !text-[13px]">共 {issues.length} 期</span>
+            </div>
+          </header>
+
+          {/* ── 最新一期：大封面 ── */}
+          {latest && (
+            <Link
+              href={`/issues/${latest.slug}/`}
+              className="group mb-14 grid gap-6 border-2 border-black bg-white p-5 shadow-[8px_8px_0_rgba(0,0,0,0.85)] transition-transform duration-200 hover:-translate-y-0.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-8 md:p-7 dark:border-white dark:bg-[#1b1a18] dark:shadow-[8px_8px_0_rgba(255,255,255,0.75)]"
+            >
+              <div className="relative">
                 <IssueCover
                   src={coverUrl(latest.slug)}
                   alt={`${latest.title} 封面`}
-                  className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#0075de] via-[#2a9d99] to-[#8b5cf6]"
-                  imgClassName="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  className="aspect-[3/4] w-full border-2 border-black object-cover dark:border-white"
+                  imgClassName="aspect-[3/4] w-full border-2 border-black object-cover dark:border-white"
                 />
-                <span className="absolute top-4 left-4 badge !bg-[#0075de] !text-white !text-[13px]">
+                <span className="absolute left-0 top-0 bg-[#e60012] px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-white">
                   最新一期
                 </span>
               </div>
-              <div className="p-7 md:p-9 flex flex-col justify-center">
-                <div className="flex items-center gap-3 text-sm text-[#615d59] dark:text-[#a39e98] mb-4">
+
+              <div className="flex flex-col justify-center">
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#e60012]">
+                  Cover Story
+                </span>
+                <h2 className="mt-3 text-2xl font-black leading-snug text-[rgba(0,0,0,0.95)] transition-colors group-hover:text-[#e60012] md:text-3xl dark:text-[rgba(255,255,255,0.95)]">
+                  {latest.title}
+                </h2>
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px] text-[#615d59] dark:text-[#a39e98]">
                   <span className="inline-flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     {latest.date}
                   </span>
-                  <span>·</span>
                   <span className="badge !text-[12px]">第{latest.issue}期</span>
                 </div>
-                <h2 className="text-2xl md:text-[28px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-4 leading-snug group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">
-                  {latest.title}
-                </h2>
                 {latest.description && (
-                  <p className="text-[#615d59] dark:text-[#a39e98] leading-relaxed mb-6 line-clamp-3">
+                  <p className="mt-5 line-clamp-4 text-[15px] leading-[1.9] text-[#3f3b37] dark:text-[#c9c4bd]">
                     {latest.description}
                   </p>
                 )}
-                <span className="inline-flex items-center gap-1.5 text-[#0075de] dark:text-[#62aef0] font-semibold text-[15px]">
+                <span className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-black text-[#e60012]">
                   阅读本期
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </div>
-            </div>
-          </Link>
-        )}
+            </Link>
+          )}
 
-        {/* 其余期次：网格卡片 */}
-        {rest.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rest.map((issue) => (
-              <Link
-                key={issue.slug}
-                href={`/issues/${issue.slug}/`}
-                className="card card-hover group overflow-hidden flex flex-col"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden">
-                  <IssueCover
-                    src={coverUrl(issue.slug)}
-                    alt={`${issue.title} 封面`}
-                    className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#0075de] via-[#2a9d99] to-[#8b5cf6]"
-                    imgClassName="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                  <span className="absolute top-3 left-3 badge !bg-white/90 dark:!bg-black/60 !text-[#0075de] dark:!text-[#62aef0]">
-                    第{issue.issue}期
-                  </span>
-                </div>
+          {/* ── 往期：封面网格 ── */}
+          {rest.length > 0 && (
+            <>
+              <div className="mb-6 flex items-end justify-between border-b-2 border-black pb-2 dark:border-white">
+                <h2 className="text-2xl font-black tracking-[0.16em] text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
+                  往期回顾
+                </h2>
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#8d8781]">
+                  Archive
+                </span>
+              </div>
 
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-center text-sm text-[#615d59] dark:text-[#a39e98] mb-3">
-                    <Calendar className="w-4 h-4 mr-1.5" />
-                    {issue.date}
-                  </div>
-                  <h3 className="text-lg font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2 leading-snug group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors line-clamp-2">
-                    {issue.title}
-                  </h3>
-                  <p className="text-sm text-[#615d59] dark:text-[#a39e98] line-clamp-3 leading-relaxed flex-1">
-                    {issue.description}
-                  </p>
-                  <span className="mt-5 inline-flex items-center gap-1.5 text-[#0075de] dark:text-[#62aef0] text-sm font-semibold">
-                    <BookOpen className="w-4 h-4" />
-                    阅读全文
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </Link>
-            ))}
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6">
+                {rest.map((issue) => (
+                  <Link key={issue.slug} href={`/issues/${issue.slug}/`} className="group">
+                    <div className="relative overflow-hidden border-2 border-black shadow-[5px_5px_0_rgba(0,0,0,0.8)] transition-transform duration-200 group-hover:-translate-y-1 dark:border-white dark:shadow-[5px_5px_0_rgba(255,255,255,0.7)]">
+                      <IssueCover
+                        src={coverUrl(issue.slug)}
+                        alt={`${issue.title} 封面`}
+                        className="aspect-[3/4] w-full object-cover"
+                        imgClassName="aspect-[3/4] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                      />
+                      <span className="absolute bottom-0 left-0 right-0 bg-black/75 px-2.5 py-1.5 text-[11px] font-black tracking-wide text-white">
+                        第{issue.issue}期
+                      </span>
+                    </div>
+                    <h3 className="mt-3 line-clamp-2 text-[15px] font-bold leading-snug text-[rgba(0,0,0,0.95)] transition-colors group-hover:text-[#e60012] dark:text-[rgba(255,255,255,0.95)]">
+                      {issue.title}
+                    </h3>
+                    <p className="mt-1 text-[12px] text-[#8d8781]">{issue.date}</p>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ── 尾部 ── */}
+          <div className="mt-14 flex justify-between border-t border-black/15 pt-6 dark:border-white/15">
+            <Link href="/" className="text-sm font-bold text-[#e60012] hover:underline">
+              ← 返回首页
+            </Link>
+            <Link href="/subscribe/" className="text-sm font-bold text-[#e60012] hover:underline">
+              订阅周刊 →
+            </Link>
           </div>
-        )}
-
-        {/* Empty State */}
-        {issues.length === 0 && (
-          <div className="text-center py-20">
-            <BookOpen className="w-16 h-16 text-[#a39e98] dark:text-[#615d59] mx-auto mb-5" />
-            <p className="text-[#615d59] dark:text-[#a39e98]">
-              暂无周刊内容，敬请期待...
-            </p>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )

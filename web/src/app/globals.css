@@ -408,3 +408,111 @@
 :is(.dark) ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   杂志版式（Magazine Layout）
+   参考《周刊少年Jump》《知音漫客》《看天下》的封面 / 目次 / 栏目 / 社论版式
+   ══════════════════════════════════════════════════════════════ */
+
+/* 纸张质感：暖白纸底 + 细网点 */
+.mag-paper {
+  background-color: #faf7f0;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.dark .mag-paper {
+  background-color: #121110;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* 刊头：衬线粗黑，字距略宽 */
+.mag-masthead {
+  font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+/* 目次点线引导 */
+.mag-leader {
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.35);
+}
+
+.dark .mag-leader {
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+}
+
+/* 刊首语首字下沉（ReactMarkdown 输出为 <p>，需作用于首段） */
+.mag-dropcap > p:first-of-type::first-letter,
+.mag-dropcap::first-letter {
+  float: left;
+  font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
+  font-size: 3.6em;
+  line-height: 0.82;
+  font-weight: 900;
+  margin: 0.06em 0.12em 0 0;
+  color: #e60012;
+}
+
+/* 文章正文（杂志内文） */
+.prose-mag > * + * {
+  margin-top: 0.85em;
+}
+
+.prose-mag p {
+  margin: 0;
+}
+
+.prose-mag strong {
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.95);
+}
+
+.dark .prose-mag strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.prose-mag a {
+  color: #e60012;
+  text-decoration: none;
+}
+
+.prose-mag a:hover {
+  text-decoration: underline;
+}
+
+.prose-mag ul,
+.prose-mag ol {
+  padding-left: 1.25em;
+  list-style: disc;
+}
+
+.prose-mag ol {
+  list-style: decimal;
+}
+
+.prose-mag blockquote {
+  border-left: 3px solid #e60012;
+  padding-left: 0.9em;
+  color: #615d59;
+  font-style: normal;
+}
+
+.dark .prose-mag blockquote {
+  color: #a39e98;
+}
+
+.prose-mag code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+
+.dark .prose-mag code {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.prose-mag img {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
