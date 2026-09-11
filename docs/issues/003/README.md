@@ -237,6 +237,84 @@ GitHub 推出的 AI 驱动 Actions，能自动修复失败的 CI/CD、智能生�
 
 它的价值在于「不简化，但讲得清」：真正的专业，是把复杂的东西讲到外行能听懂、内行挑不出错。这本身就是一种值得练习的能力。
 
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### Diminutive Seahorses Top the 2026 Ocean Photographer of the Year Contest
+
+The annual competition highlights some of the most beloved, impressive, and little-seen aspects of our oceans.
+Do stories and artists like this matter to you? Become a Colossal Member today and suppor
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/ocean-photographer-of-the-year-2026-winners/)
+
+— via *This Is Colossal*
+
+---
+
+### Karla Wong’s Folkloric Portraits Conjure Mysterious Portals to Another World
+
+In Chicago, Karla Wong presents a suite of vivid paintings that double as mysterious portals.
+Do stories and artists like this matter to you? Become a Colossal Member today and support independent art
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/karla-wong-surreal-paintings-intuit-chicago/)
+
+— via *This Is Colossal*
+
+---
+
+### Could a Kid Do It? The Wa Transforms Buildings into Childlike Drawings
+
+In his series 'A Kid Could Do It,' The Wa transforms otherwise nondescript structures into jubilant, youthful drawings.
+Do stories and artists like this matter to you? Become a Colossal Member today a
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/a-kid-could-do-it-the-wa-pfffestival-murals/)
+
+— via *This Is Colossal*
+
+---
+
+## 谁在招人
+
+> 本周招聘信息精选
+
+### [远程职位分享] Supabase / Sourcegraph / Databento 的 5 个开发与云安全岗位
+
+我是 Real Job Work From Home 的站长，整理了站内 5 个适合开发者关注的远程岗位，分享给正在看机会的朋友。这是职位信息整理，不代表以下公司招聘；可以通过详情页跳转雇主官网申请。
+1. Supabase — Software Engineer, Branching
+做 CI/CD 执行平台和分布式任务调度，主要用 Go 、TypeScript 、AWS ；要求 3 年以上云基
+
+[阅读原文](https://www.v2ex.com/t/1240909#reply1)
+
+— via *V2EX 酷工作*
+
+---
+
+### [上海] 25K–35K+丰厚奖金 /增长负责人/AI 音乐和视频创作平台
+
+谱乐 AI 招聘｜增长负责人
+Head of Growth ｜国内及海外业务
+上海 · 可远程｜税前固定月薪 25K–35K ＋年度绩效奖金｜长期激励可谈
+关于谱乐 AI
+谱乐 AI 专注于 AI 音乐与创作工具，覆盖音乐创作、发行和 MV 制作，面向国内及海外用户提供产品与服务。
+随着业务发展，我们希望找到一位增长负责人，与创始团队一起判断增长机会、推动产品迭代，让更多用户发现产品、持续使用并愿
+
+[阅读原文](https://www.v2ex.com/t/1240844#reply0)
+
+— via *V2EX 酷工作*
+
+---
+
+### 来个 ios， base 杭州，薪资 open 邮箱： ZmVpZmVpY2hlbjE5OTlAZ21haWwuY29t
+
+业务是海外 AI 方向的，来能踏实干活的，创始人团队很有实力，量化投资出生+硅谷顶尖大厂算法就一个目标：成为 AI 时代先掌握生产资料的那批人，岗位具体要求在下面，不卡学历 [招聘]  iOS 研发工程师（原生 + 跨端）面议▍一、岗位职责1. 负责 iOS 客户端业务需求的技术实现与持续迭代，完成开发、联调、灰度、上线和复盘全流程。2. 负责 App 的构建、签名、打包与 App Store /
+
+[阅读原文](https://www.v2ex.com/t/1240778#reply7)
+
+— via *V2EX 酷工作*
+
+---
+
 ## 本周行动清单
 
 - [ ] 写下「我要用显卡/AI 视频做什么」，写不出来就别下单、别冲动转发

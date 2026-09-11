@@ -109,6 +109,83 @@ Rillet 靠「AI 记账」成了独角兽，你个人也可以用同样的思路�
 
 **试试看**：了解下「AI 越狱（jailbreak）」这个概念，明白护栏的局限，你就不会对它抱有不切实际的期待。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### Manga 'Kimi wa Yotsuba no Clover' Gets Anime Adaptation
+
+The official X (formerly Twitter) account of author Koushi announced on Tuesday that the Kimi wa Yotsuba no Clover (You Are a Four Leaf Clover) manga is receiving an anime adaptation, revealing an ann
+
+[阅读原文](https://myanimelist.net/news/74682926?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### Studio KAI Produces Hololive TV Anime 'Odeholo'
+
+Production company Kadokawa and entertainment company Cover Corporation announced on Monday that VTuber agency Hololive is producing a television anime titled Odeholo, revealing an announcement visual
+
+[阅读原文](https://myanimelist.net/news/74682835?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### Press Conference: Sparks of Tomorrow ED Artist Ginger Root & Art Director Mao Takayama
+
+Sparks of Tomorrow is a bright and inventive contribution to this season's stacked list&hellip;
+
+[阅读原文](https://animecorner.me/press-conference-sparks-of-tomorrow-ed-artist-ginger-root-art-director-mao-takayama/)
+
+— via *Anime Corner*
+
+---
+
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 当90万玩家一起“突围”：一场从玩家到官方，从游戏到现实的公益接力
+
+今年6月26日，《暗区突围》端内上线了一个名为&ldquo;突围吧少年&rdquo;的公益捐赠活动。筹集的善款将用于残障青少年捐赠脑机接口仿生假肢。
+那天，《暗区突围》联合腾讯公益、腾讯成长守护、四川省科技公益发展基金会，发起了&ldquo;科技赋能助残行动&rdquo;。玩家们可以直接在游戏中完成善款的捐赠。几个月后，这些善款变成了基于脑机接口技术的仿生智能假肢，捐赠给那些家庭经济困难的残障青少
+
+[阅读原文](http://www.chuapp.com/article/291622.html)
+
+— via *触乐*
+
+---
+
+### Workbuddy联动《和平精英》，AI如何连接游戏生态？
+
+AI进入工作和生活领域，能做到的事情可能完全不一样。而在使用AI工具的过程中，人们也会发现，一旦自己成为那个&ldquo;向AI发布需求&rdquo;的人，许多事情的内在逻辑又十分相似。
+一个职场人向AI办公助手提出需求时，往往会先提出问题，再说明自己想要什么，总结几份材料，分析一些表格，或是把一个简略的想法变成可执行的方案。AI既要读懂使用者的问题，也要做好&ldquo;落实&rdquo;的环节
+
+[阅读原文](http://www.chuapp.com/article/291620.html)
+
+— via *触乐*
+
+---
+
+### 触乐怪话：没有音乐的人会伤心
+
+触乐怪话，每天胡侃和游戏有关的屁事、鬼事、新鲜事。
+
+
+图/小罗
+
+很多年前，朋友推荐我一张他很喜欢的专辑，言语间充满对音乐制作的赞赏。我看封面觉得很眼熟，点进去听了一分钟发现果然如此：&ldquo;我听过这个！在写xxx的时候听这个专辑特别有那种氛围。&rdquo;
+朋友：&ldquo;&hellip;&hellip;对你来说只是你写东西时背景音乐吗。&rdquo;
+我：&ldquo;对不起
+
+[阅读原文](http://www.chuapp.com/article/291617.html)
+
+— via *触乐*
+
+---
+
 ## 青春故事会
 
 > 从「边界」里长出来的四个成长命题。
@@ -186,6 +263,41 @@ Rillet 的故事，属于「垂直 AI」（Vertical AI）这个大趋势——�
 一句话洞察：与其在大池子里和大鱼抢食，不如在小池塘里当大鱼。
 
 **试试看**：找一期讲「Vertical AI」的内容，记下三个「被 AI 改造的传统行业」。
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### iPhone 18 Pro Has Apple’s Fastest Lens Yet Thanks to Variable Aperture
+
+Apple has unveiled the iPhone 18 Pro and iPhone 18 Pro Max, its latest flagship slab smartphones. They promise significant improvements across all facets, including the camera.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/09/iphone-18-pro-has-apples-fastest-lens-yet-thanks-to-variable-aperture/)
+
+— via *PetaPixel*
+
+---
+
+### There Are 3,824 Comments on the FCC’s Latest Drone Ban; Nearly 99% of Them Oppose It
+
+The Federal Communications Commission (FCC) recently proposed a law to ban the import and sale of some foreign-made drones with "military-grade" technology on "national security" grounds. During a pub
+
+[阅读原文](https://petapixel.com/2026/09/09/there-are-3824-comments-on-the-fccs-latest-drone-ban-nearly-99-of-them-oppose-it/)
+
+— via *PetaPixel*
+
+---
+
+### A NASA Photo Processing Technique to Study Mars Has Discovered Ancient Art on Earth
+
+A rock art enthusiast used an image processing technique that scientists at NASA's Jet Propulsion Laboratory developed to improve the detail of satellite photos of Mars' rocky surface to reveal ancien
+
+[阅读原文](https://petapixel.com/2026/09/09/a-nasa-photo-processing-technique-to-study-mars-has-discovered-ancient-art-on-earth/)
+
+— via *PetaPixel*
+
+---
 
 ## 谁在招人
 

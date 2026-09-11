@@ -237,6 +237,87 @@ AI 日记类应用（Day One、Reflect 等）在「记录」之外，多了「�
 
 行动建议：挑一集你熟悉的公司，边听边记下「他们踩过哪些坑、怎么爬出来的」，比听「怎么成功的」有用得多。
 
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### Spanning 200+ Works, a New Book Celebrates the World of Fungi
+
+This October, Phaidon will release an expansive tome gathering more than 200 photographs, artworks, historical objects, and more all devoted to the vast diversity and creative potential of mycology.
+D
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/spanning-200-works-a-new-book-celebrates-the-world-of-fungi/)
+
+— via *This Is Colossal*
+
+---
+
+### ‘The Otherworld Is Home’ Explores Personal Reclamation, Cultural Identity, and Spiritual Passage
+
+The Haggerty Museum of Art at Marquette University hosts free exhibitions inviting a journey across multiple centuries and continents.
+Do stories and artists like this matter to you? Become a Colossal
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/haggerty-museum-of-art-otherworld-is-home/)
+
+— via *This Is Colossal*
+
+---
+
+### Edge-to-Edge Splendor Fills Maria Yolanda Liebana’s Buoyant Paintings
+
+Tarot, ancient mythologies, pop culture, and personal narrative converge in the NYC-based artist's maximal works.
+Do stories and artists like this matter to you? Become a Colossal Member today and sup
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/maria-yolanda-liebana-mixed-media-paintings/)
+
+— via *This Is Colossal*
+
+---
+
+## 谁在招人
+
+> 本周招聘信息精选
+
+### 深圳安全运营招聘
+
+帮朋友招人
+​深圳 驻场 安全运营 1 ～ 2 年经验 蓝中水平
+外包
+1.3 ～ 2.6
+具体看面试情况
+​感兴趣私我简历
+邮箱:Z3Rhd3dmNzFmX2pvYkAxNjMuY29t(base64 解码即可)
+
+[阅读原文](https://www.v2ex.com/t/1240774#reply0)
+
+— via *V2EX 酷工作*
+
+---
+
+### [深圳] AI 创业公司招一名运维开发工程师
+
+公司背景
+我们是一家深耕人工智能内容生成的技术型企业，聚焦大模型、Agent 、多模态等前沿人工智能技术的场景化落地与产品化，以 AI 技术重构内容创作全链路，为创作者、MCN 机构及内容团队打造高效易用、可规模化的 AI 内容生产工具。
+目前公司核心产品已完成市场验证，深受 C 端创作者与 B 端机构广泛认可，正处于从 1 到 100 的快速扩张阶段。
+团队深耕 LLM 应用等 AI 领域，技术
+
+[阅读原文](https://www.v2ex.com/t/1240770#reply2)
+
+— via *V2EX 酷工作*
+
+---
+
+### 招聘：
+高级 Java 工程师（预测市场）、英语 & 欧洲区负责人、市场经理-华语区、Global Head of Operation、财务 BP/财务经理、韩国/越南 Senior BD or BD Lead。
+
+Position 一：高级 Java 工程师（预测市场）Job Type: Full-Time ，remotePS1 、负责事件合约交易平台后端核心模块（撮合、风控、结算、定价、资产系统）的设计与开发，确保高性能、高可用及强一致性，并与智能合约团队协作完成链上资产对接。2 、要求 5 年以上 Java 经验，深入掌握 JVM 、并发、NIO/Netty 、Spring Cloud 、MySQL 、
+
+[阅读原文](https://www.v2ex.com/t/1240722#reply0)
+
+— via *V2EX 酷工作*
+
+---
+
 ## 本周行动清单
 
 - [ ] 列出旧设备「让我难受的三个场景」，列不满三条就先别换机

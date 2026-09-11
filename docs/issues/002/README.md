@@ -238,6 +238,86 @@ Geoffrey Moore 的经典判断：技术产品从「早期采用者」跨到「�
 
 播客的正确用法不是「听完就算」，而是挑一集和自己处境相关的内容，边听边记下 3 个能用的动作。
 
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### Say Hello to PÉPET, a Pear-Shaped, Palm-Size Paper Pal
+
+Ever imagined a pear or an apple with a personality?
+Do stories and artists like this matter to you? Become a Colossal Member today and support independent arts publishing for as little as $7 per mont
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/masae-nagao-takeo-pepet-paper-friends/)
+
+— via *This Is Colossal*
+
+---
+
+### Anna Ortiz Traverses the Multiple Realities of the Borderlands
+
+For Anna Ortiz, the jaguar is a fitting metaphor for entering into a mythic borderland.
+Do stories and artists like this matter to you? Become a Colossal Member today and support independent arts publ
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/anna-ortiz-shapeshifter-paintings/)
+
+— via *This Is Colossal*
+
+---
+
+### Hannah Buechler Loops Thousands of Colorful Loom Bands like Brushstrokes
+
+Th artist taps the small, colorful rubber bands as an accessible material for an inventive application.
+Do stories and artists like this matter to you? Become a Colossal Member today and support indep
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/hannah-buechler-loom-bands-wool-reliefs/)
+
+— via *This Is Colossal*
+
+---
+
+## 谁在招人
+
+> 本周招聘信息精选
+
+### [上海] 招聘前端工程师兼设计师（跨境支付行业）
+
+EMQ是一家提供跨境支付基础设施的公司，客户包括支付宝、腾讯支付和各类金融机构。目前研发团队在上海招聘一个职位：
+要求：
+
+有丰富的 web 前端开发经验（ TypeScript/CSS/HTML 及相关技术栈和 toolchain ）
+有比较好的英语沟通能力（工作语言为英语，需要用英语进行内部沟通）
+有积极的工作态度和好的协作心态
+
+加分项：
+有一定前端设计经验
+支付行业工作经验（非必需）
+
+[阅读原文](https://www.v2ex.com/t/1241300#reply0)
+
+— via *V2EX 酷工作*
+
+---
+
+### [上海] [内推] [鹰角] 9 月份内推职位
+
+应之前 HR 要求，再发一下鹰角 9 月份内推职位 详情见： https://app.mokahr.com/recommendation-apply/hypergryph/28713?recommendCode=NTAVXvy&amp;hash=%23%2Fjobs友情提示：鹰角，研发，发行，平台，职能等部门都有程序技术类和质量管理类的职位。福利待遇：10-19/5 每天有出勤补助 + 2 顿饭
+
+[阅读原文](https://www.v2ex.com/t/1241065#reply0)
+
+— via *V2EX 酷工作*
+
+---
+
+### 上海游戏公司诚招 Web 研发工程师 - 网站活动: 复杂动效图形渲染经验
+
+岗位职责1. 负责品牌官网与大型活动页的开发和维护，保障线上稳定性、性能体验与按期交付。2. 参与活动平台能力建设（组件化、模板化、发布流程、监控告警等），提升研发效率与复用率。任职要求1. 本科及以上学历，计算机相关专业优先，3 年及以上 Web 开发经验。2. 扎实掌握 HTML / CSS / JavaScript （ ES6+），理解浏览器渲染机制与前端工程化体系。3. 熟悉 React
+
+[阅读原文](https://www.v2ex.com/t/1241023#reply0)
+
+— via *V2EX 酷工作*
+
+---
+
 ## 本周行动清单
 
 - [ ] 用你最熟悉的项目，丢一个真实任务给 GPT-5，验证它是否值得你切换

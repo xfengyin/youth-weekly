@@ -114,6 +114,74 @@ awesome 系列列表是 GitHub 上最庞大的「资源合集」，从编程语�
 
 地图是用来指路的，不是用来背的。用它找到方向，然后立刻上路。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### 'Shuiro no Kamen' Reveals Additional Cast, Staff, Theme Songs, Second Promo
+
+The official website for the Shuiro no Kamen (The Vermilion Mask) television anime adaptation revealed additional cast, staff, second key visual (pictured), theme songs, and a second promotional video
+
+[阅读原文](https://myanimelist.net/news/74699348?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### Manga 'Eat-Man' Gets New Anime Adaptation
+
+Entertainment company Hakuhodo DY Music &amp; Pictures opened an official website for a new anime adaptation of Akihito Yoshitomi&#039;s Eat-Man manga, subtitled The Over Order, on Thursday, revealing
+
+[阅读原文](https://myanimelist.net/news/74696633?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Hyouken no Majutsushi ga Sekai wo Suberu II' Unveils Supporting Cast, Main Promo
+
+The official website for the television anime adaptation of Nana Mikoshiba&#039;s Hyouken no Majutsushi ga Sekai wo Suberu (The Iceblade Sorcerer Shall Rule the World) light novel unveiled supporting
+
+[阅读原文](https://myanimelist.net/news/74696432?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 天津光荣首度操刀，《三国志14》时隔6年推出“威力加强传承版”
+
+9月10日，《三国志14 with威力加强传承版》正式发售，登陆PS5、PS4、Switch和Steam。该作是基于2020年发售的《三国志14》及其威力加强版制作的“决定版”，完整收录了游戏本体、威力加强版、两个季票中的大部分DLC，同时加入军情、功劳、方策、名胜等新系统。已经拥有《三国志14》本体或威力加强版套装的玩家，也可以单独购买不含本体的“威力加强传承版”。不过，此前存档只能继承新武将、
+
+[阅读原文](https://www.yystv.cn/p/14388)
+
+— via *游研社*
+
+---
+
+### 天美这张“王炸”上桌了，底气藏在玩法里
+
+始于IP，陷于乐趣。今天，王者玩家又多了一个可以相约集合的地方。9月10日，《王者万象棋》终于正式上线。从开启预下载到上线当天，它始终稳居AppStore免费榜榜首，且在开服商业化内容非常克制的情况下，首日甚至冲到了畅销榜第9位，迎来了一个颇超出行业预期的开局。不过，比起成绩，在今天的社群讨论中，我发现了玩家们聊起它时反复提到的一个词：上头。在小红书上，我看到不少王者玩家原本只是冲着熟悉的英雄来试
+
+[阅读原文](https://www.yystv.cn/p/14389)
+
+— via *游研社*
+
+---
+
+### 离开待了27年的卡普空，《生化危机6》制作人在新作“放飞自我”
+
+2022年，即将50岁的小林裕幸从卡普空离职，成立了工作室GPTRACK50。小林裕幸在卡普空待了27年，曾担任《鬼泣4》《战国BASARA》《生化危机6》等作品的制作人。当时小林裕幸在公开信中表示：如果以60岁退休计算，自己的创作生涯可能只剩十年，他希望在这段时间再挑战一些新的东西。将于10月22日发售的《愚者不灭》，则是GPTRACK50成立后公开的第一款作品。并在几天前上线了免费的试玩Dem
+
+[阅读原文](https://www.yystv.cn/p/14390)
+
+— via *游研社*
+
+---
+
 ## 青春故事会
 
 ### 从「收藏教程」到「动手造轮子」：差的是那第一行代码

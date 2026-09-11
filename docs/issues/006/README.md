@@ -58,6 +58,40 @@ Rust 1.80 有几个值得注意的改进：借用检查器更聪明，少了很�
 
 对学 Rust 的人，这版最大的意义是**上手体验更顺了**。过去很多人被借用检查器的误报劝退，现在它更懂你的意图。如果你一直想学 Rust 又怕被编译器折磨，现在是个不错的入场时机——先从一个小 CLI 工具写起，比啃语法书有效得多。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### 'Psyren' Reveals Additional Cast, Staff, Opening Theme, Main Promo
+
+The official website for the television anime adaptation of Toshiaki Iwashiro&#039;s Psyren manga revealed additional cast, staff, opening theme, key visual (pictured), and the main promotional video
+
+[阅读原文](https://myanimelist.net/news/74702197?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Doukyo Shiteiru Kensei no Onna Shishou ga Kawaisugite Mainichi Shiawase desu' Announces Production Staff
+
+WWWave Corporation&#039;s Deregula animation label opened an official website for the television anime adaptation of Kennoji and R_ringo&#039;s Doukyo Shiteiru Kensei no Onna Shishou ga Kawaisugite Ma
+
+[阅读原文](https://myanimelist.net/news/74701299?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Sasaki to Pii-chan Season 2' Unveils Additional Cast, Staff, Opening Theme, First Promo
+
+The official website for the television anime adaptation of Buncololi&#039;s Sasaki to Pii-chan (Sasaki and Peeps) light novel unveiled additional cast, staff, a second key visual (pictured), the open
+
+[阅读原文](https://myanimelist.net/news/74700557?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
 ## 游戏研究所
 
 ### 《黑神话：悟空》最终前瞻：攒钱之外，先想清楚你要的是什么
@@ -211,6 +245,41 @@ Cursor 不只是编辑器，它的几个内置命令用好了，能顶半个队�
 - **行动**：知道再多道理，不落到「改变」上都是无效输入。
 
 适合总觉得「学了很多却原地踏步」的人。它不是鸡汤，是一份关于「如何真正改变自己」的操作说明。
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### The Unknown Photographer Who Got His First Camera From a German POW Soldier
+
+A photographer took thousands of incredible images of pivotal moments in postwar Europe and mid-century America with a Leica camera taken from a captured German soldier -- which were only discovered b
+
+[阅读原文](https://petapixel.com/2026/09/11/the-unknown-photographer-who-got-his-first-camera-from-a-german-pow-soldier/)
+
+— via *PetaPixel*
+
+---
+
+### Angelbird’s New CFexpress 4.0 Type A Memory Cards Are Ready for the FX5
+
+Wise isn't the only memory card company to show off a new product at IBC 2026 in Amsterdam. Long-time memory maker Angelbird is getting in on the fun, too, with a new generation of CFexpress 4.0 Type
+
+[阅读原文](https://petapixel.com/2026/09/11/angelbirds-new-cfexpress-4-0-type-a-memory-cards-are-ready-for-the-fx5/)
+
+— via *PetaPixel*
+
+---
+
+### What Happens When Your Photograph Becomes a Viral Meme?
+
+Shooting a viral image is a surefire sign that you're doing something right, right? Yet most photographers who shoot something trendworthy quickly lose control of their original work.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/11/what-happens-when-your-photograph-becomes-a-viral-meme/)
+
+— via *PetaPixel*
+
+---
 
 ## 谁在招人
 

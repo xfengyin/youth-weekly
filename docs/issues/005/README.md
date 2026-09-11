@@ -72,6 +72,40 @@ GitHub 有一句流传很广的话：*「GitHub is how people build software.」
 
 所以别把「AI 会写代码了」理解成「程序员没用了」，它真正的意思是：**写代码变便宜了，但判断、拆解和交付变贵了。** 想清楚这个，就知道该往哪使劲。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### 'Kyokou Suiri' Author to Launch 'Vampire Juujikai' Sequel in October 2026
+
+The official X account of Square Enix&#039;s Monthly Shounen Gangan announced on Friday that Kyokou Suiri (In/Spectre) author Kyou Shirodaira will launch a sequel manga of Vampire Juujikai, titled Vam
+
+[阅读原文](https://myanimelist.net/news/74702759?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Toaru Anbu no Item' Announces Additional Staff
+
+The official website for the television anime adaptation of Kazuma Kamachi&#039;s Toaru Anbu no Item (A Certain Dark Side&#039;s Item) light novel revealed additional staff and a key visual (pictured)
+
+[阅读原文](https://myanimelist.net/news/74702372?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Yasei no Last Boss ga Arawareta! 2nd Season' Unveils Additional Cast, Ending Theme, Second Promo
+
+The official website for the television anime adaptation of Firehead&#039;s Yasei no Last Boss ga Arawareta! (A Wild Last Boss Appeared!) light novel unveiled additional cast, the ending theme, and se
+
+[阅读原文](https://myanimelist.net/news/74702269?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
 ## 游戏研究所
 
 ### 五月游戏大作前瞻：攒钱之前，先想清楚哪款真适合你
@@ -222,6 +256,42 @@ Steve McConnell 的《代码大全》快三十年历史了，依然值得推荐�
 它表面是悬疑，内核是**关于「选择与代价」的哲学**——我们总幻想「如果当初」，却忘了每个选择背后都有它要付的账。适合喜欢烧脑、又不只想看爽片的观众。
 
 看完不妨问自己一个问题：如果今天的你是某个平行世界里的「另一个版本」，你会羡慕他还是庆幸？
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### Henry Wessel’s Candid California Photos Underscore the Art of Noticing
+
+“There is the world, and there is the photograph. The photograph is not the world, it’s a completely different thing."
+Do stories and artists like this matter to you? Become a Colossal Member today an
+
+[阅读原文](https://www.thisiscolossal.com/2026/09/henry-wessel-grolier-club-photography-california/)
+
+— via *This Is Colossal*
+
+---
+
+### Will Adobe’s AI-Driven, Record-Setting Revenue Ease Wall Street’s Worry?
+
+Adobe has had a busy start to the month. Last week, its Board of Directors selected Adobe's next President and CEO, and this week, the company posted record-setting Q3 financial results.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/11/will-adobes-ai-driven-record-setting-revenue-ease-wall-streets-worry/)
+
+— via *PetaPixel*
+
+---
+
+### Desview’s Three New Pro Video Monitors Have Accurate Color and Big, Bright Screens
+
+Desview has unveiled three new professional field monitors. The OL14 Pro, OL16 Max, and OL16 Ultra 12G are all built for professional video workflows and promise the features and performance that pros
+
+[阅读原文](https://petapixel.com/2026/09/11/desviews-three-new-pro-video-monitors-have-accurate-color-and-big-bright-screens/)
+
+— via *PetaPixel*
+
+---
 
 ## 谁在招人
 

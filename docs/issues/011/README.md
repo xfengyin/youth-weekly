@@ -109,6 +109,81 @@ Discovered Materials 用 AI 找材料，本质上是把 AI 当「发散器」—
 
 **试试看**：挑一期你领域里口碑好的播客，这周通勤时完整听完，并记下三个收获。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### 'Black Bullet' Light Novel Relaunches After 12 Years
+
+Publishing company Kadokawa announced on Wednesday that Shiden Kanzaki&#039;s action sci-fi light novel Black Bullet is relaunching following a 12-year hiatus. The reboot, titled Black Bullet: New Wor
+
+[阅读原文](https://myanimelist.net/news/74690587?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### Manga 'Kin to Tetsu' Concludes Serialization
+
+Ayaka Katayama&#039;s Kin to Tetsu (Fungus and Iron) has concluded with its 105th chapter in the October 2026 issue of Bessatsu Shounen Magazine on Tuesday, marking the end of the series&#039; five-ye
+
+[阅读原文](https://myanimelist.net/news/74690517?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Cheat Fuyo' Unveils Additional Cast, Opening Theme, First Promo
+
+The official website for the television anime adaptation of Asa Rokushima&#039;s Tsuihou sareta Cheat Fuyo Majutsushi wa Kimama na Second Life wo Ouka suru. Ore wa Buki dake ja Naku, Arayuru Mono ni &
+
+[阅读原文](https://myanimelist.net/news/74690257?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 触乐怪话：拼豆冥想
+
+触乐怪话，每天胡侃和游戏有关的屁事、鬼事、新鲜事。
+
+
+就是这种感觉！（图/小罗）
+
+前段时间，我听说王琳茜与陈可安老师都去做了潮人，玩了非常流行的拼豆。上个周末，我也赶了趟末班车。
+我一直以为，拼豆是今年重新火起来的。但有朋友提醒我，年轻人玩拼豆的风潮已经持续两年了。若干年前，拼豆曾在手工圈和二次元圈小范围流行过。当时我很佩服那种用极少融合豆就能拼出QQ人的功底。等到它在2024年再次成为风
+
+[阅读原文](http://www.chuapp.com/article/291629.html)
+
+— via *触乐*
+
+---
+
+### 是的，我想成为最了解《蓝色星原》的那个人
+
+&ldquo;确认角色一共有多少位，是否有新角色；确认角色技能改动情况，以及奇波合击的倍率；查看角色的推荐灵子，看看灵子推荐算法是否准确&hellip;&hellip;&rdquo;中二给我看了一份他为《蓝色星原：旅谣》线下试玩会准备的待办事项表格。
+表格分为6个大板块，从角色、奇波，到家园系统和世界探索，每个板块列出了5到10项需要在试玩中确认的内容。除了具体问题，他还备注了确认方式和希望达成的
+
+[阅读原文](http://www.chuapp.com/article/291628.html)
+
+— via *触乐*
+
+---
+
+### 腾讯游戏的长期战略：拥抱AI、理性投资，打造长青游戏
+
+编者按：在刚刚过去的2026年科隆国际游戏展上，一大批中国厂商站上舞台C位，吸引了玩家和从业者的广泛关注，其中腾讯更成为了人们瞩目的焦点。本届科隆展期间，腾讯游戏国际业务运营、战略与合规副总裁朱永毅时隔一年再次接受外媒GameIndustry.biz专访，详细介绍了腾讯游戏的长远战略，包括继续深耕服务型游戏领域，打造长青游戏，以更加审慎、理性的方式投资海外工作室，加强不同团队之间的联系和协作，以及
+
+[阅读原文](http://www.chuapp.com/article/291627.html)
+
+— via *触乐*
+
+---
+
 ## 青春故事会
 
 > 自动化时代，四个关于「掌控感」的成长命题。
@@ -186,6 +261,42 @@ The Verge 的 Decoder 采访了 Bose CEO Lila Snyder，聊这家 60 年老牌公
 一句话洞察：炫酷的 Demo 和能用的产品之间，隔着监管、成本和基建三条河。
 
 **试试看**：搜一篇关于 eVTOL 落地难点的科普，记住「最难的不是飞，是合规」。
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### Insta360’s Luna Pro Goes Global and Has Most of the Ultra’s Features
+
+Insta360 has announced the Luna Pro, the newest camera in its Luna Series of gimbal cameras co-engineered with Leica.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/10/insta360s-luna-pro-goes-global-and-has-most-of-the-ultras-features/)
+
+— via *PetaPixel*
+
+---
+
+### Sigma Celebrates You, the Photographer, As It Marks 65th Anniversary
+
+Amid the shuffle and chaos of Apple's annual iPhone event, yesterday also marked Sigma's 65th anniversary, and the company celebrated in very Sigma fashion with a sincere letter to the world and a bea
+
+[阅读原文](https://petapixel.com/2026/09/10/sigma-celebrates-you-the-photographer-as-it-marks-65th-anniversary/)
+
+— via *PetaPixel*
+
+---
+
+### Director Danny Boyle Says He Used AI to Animate Photos in Latest Film ‘Ink’
+
+The director Danny Boyle has taken the unusual step of admitting that he used generative AI on his latest movie, Ink.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/10/director-danny-boyle-says-he-used-ai-to-animate-photos-in-latest-film-ink/)
+
+— via *PetaPixel*
+
+---
 
 ## 谁在招人
 
