@@ -141,6 +141,40 @@ SDCC 上 Marvel 官宣了新一代恶灵骑士（Ryan Gosling）和黑豹的选�
 
 **试试看**：挑一个你喜欢的漫改 IP，查一查它换过几任主演、每次换人的市场反应如何，你会看懂这盘生意。
 
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 沙特要在巴黎建龙珠乐园？东映表示没听说过
+
+据路透社8月25日消息称，法国和沙特阿拉伯就巴黎附近价值60亿欧元的“龙珠Z”主题乐园项目，在近期达成协议。相关消息透露的当天，沙特王储穆罕默德·本·萨勒曼正在首都巴黎进行访问。根据新闻内容，该乐园将建于巴黎西北部的塞尔吉-蓬图瓦兹附近，预计将创造约22,000个就业岗位。法国总统顾问表示，这一想法源于马克龙与沙特王储，在马克龙2025年访问沙特阿拉伯期间，发现双方对《龙珠》都拥有共同热情。新闻报
+
+[阅读原文](https://www.yystv.cn/p/14382)
+
+— via *游研社*
+
+---
+
+### 为了省钱，付不起宣发费用的FPS厂商，合办了一场“免费发布会”
+
+同行并不永远是冤家。北京时间9月4日凌晨2点，首届“FPS游戏展”（The FPS Games Show）在Twitch平台独家播出。顾名思义，发布会展出的18款作品，都是清一色的射击游戏。这其中有《彩虹六号：围攻》和《逃离塔科夫》这两款运营多年的网游，有《严阵以待》等这两年的热门新作，还有《灰区战争》《光芒行动》等仍处于抢先体验阶段或即将推出的作品发预告片。展会的运作形式也很有FPS的快节奏风格
+
+[阅读原文](https://www.yystv.cn/p/14381)
+
+— via *游研社*
+
+---
+
+### 《三角洲行动》该怎么玩，越来越没有标准答案了
+
+“多元”是一种选择，更需要长期主义的努力。自从2024年公测以来，《三角洲行动》已经历了十一个赛季。9月4日，最新的“群星”赛季版本也准时与玩家们见了面。每个赛季照例的海量更新这么说可能很奇怪，但在今天这个时间点，《三角洲行动》带给我最奇妙的感受，却是“休闲”。是的，搜打撤，但是休闲。这就不得不描绘一下我在新赛季当天的“奇遇”：我和搭子跑刀路过一片水湾时，突然看到河边有一队鼠鼠玩家，手里没端枪而是
+
+[阅读原文](https://www.yystv.cn/p/14379)
+
+— via *游研社*
+
+---
+
 ## 青春故事会
 
 > 关于学习、成长和职业，本周的三个小想法。
@@ -198,6 +232,41 @@ Enigma 想把控制机器人变得像调音量一样简单，这背后藏着一�
 一句话洞察：深度内容帮你抵御碎片信息带来的焦虑。
 
 **试试看**：把这一期加进播客列表，听完用三句话向朋友解释「为什么关税没能把制造业岗位带回来」。
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### Wise’s MK-IV CFexpress 4.0 Type B Memory Cards Are Basically Future-Proof
+
+Wise Advanced, more commonly known as just Wise, has announced new CFexpress 4.0 Type B memory cards. The new MK-IV series cards introduce dual VPG certification, preparing Wise's memory cards for the
+
+[阅读原文](https://petapixel.com/2026/09/11/wises-mk-iv-cfexpress-4-0-type-b-memory-cards-are-basically-future-proof/)
+
+— via *PetaPixel*
+
+---
+
+### ON1 Photo RAW 2027 Promises Much Better Image Quality
+
+ON1 has unveiled Photo RAW 2027, the latest version of its all-in-one, nondestructive RAW photo editor and management software.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/10/on1-photo-raw-2027-promises-much-better-image-quality/)
+
+— via *PetaPixel*
+
+---
+
+### 40 Award-Winning Photos From Ocean Photographer of the Year 2026
+
+The winners of the Ocean Photographer of the Year 2026 competition have been revealed, showcasing an incredible array of exceptional underwater and marine-related photos that reflect the beauty of the
+
+[阅读原文](https://petapixel.com/2026/09/10/40-award-winning-photos-from-ocean-photographer-of-the-year-2026/)
+
+— via *PetaPixel*
+
+---
 
 ## 谁在招人
 

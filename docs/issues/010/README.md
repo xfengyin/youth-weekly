@@ -131,6 +131,40 @@ June 想帮企业简化 AI 落地，其实个人开发者也能用同样的思�
 
 **试试看**：回想一个你曾经追过的系列，想想它最近一次「重启」是成功还是翻车，原因是什么。
 
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 科隆游戏展上，我看到游戏行业“小”的一面
+
+我们在今年科隆玩到了哪些有意思的“小”作品？“小”不等于轻松。今年科隆开幕夜的最后一个播片，是《巫师3》的重制版和新资料片，算是本届科隆最猛的“料”之一。不过，你还记得开幕夜的第一个播片是什么吗？答案是《百战天虫：银河智战》。不记得是正常的。科隆游戏展是当下全世界规模最大的综合性电子游戏展，是各大厂商集中展示开发成果的舞台，高规格的大作，本来就会获得更多人瞩目。对于玩家乃至于媒体而言，有限的时间也
+
+[阅读原文](https://www.yystv.cn/p/14378)
+
+— via *游研社*
+
+---
+
+### 全球游戏产业的“心脏”，握在谁的手中
+
+今年的科隆游戏展，重拾了“The Heart of Gaming”（游戏业的心脏）的口号——在现场的任何醒目位置，你都能看到这条标语。它也确实比往年任何一届都更有底气这样自诩。在开展之前，官方便宣布所有展位空间首次售罄。原本在游戏展开幕前几天举办的开发者论坛devcom，正式更名为gamescom dev，使得整个活动在名义上延长至了一整周。根据展会结束后公布的数据，今年科隆展共吸引了来自131个
+
+[阅读原文](https://www.yystv.cn/p/14377)
+
+— via *游研社*
+
+---
+
+### 参展科隆游戏展之后，华为游戏中心正在拓展游戏出海的“后半程”
+
+上架容易，留下困难。刚刚结束的科隆游戏展，在本届首次实现了“所有可用展区全部售罄”。这一结果受多重因素影响：参展企业数量继续增长，亚洲厂商加快进入欧洲市场，发行、投资、技术服务等产业链上下游也在更积极地寻找全球合作机会……而对参展方而言，这也意味着科隆游戏展已经成为当下全球游戏行业最密集的交汇点之一。厂商可以在这里直面更多的真实玩家，同时也可以用更广阔的视野去观察用户变化和全球市场动向。今年，华为
+
+[阅读原文](https://www.yystv.cn/p/14375)
+
+— via *游研社*
+
+---
+
 ## 青春故事会
 
 > 从「约束」里长出来的三个成长命题。
@@ -198,6 +232,40 @@ Horizon3 的融资提醒我们：安全已经不是「公司的事」了。你�
 一句话洞察：好的讨论不给你答案，而是给你想清楚问题的工具。
 
 **试试看**：听完用一句话写下你自己的立场，再想一个「反对你立场」的理由，检验它站不站得住。
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### Google Pixel 11 Pro Fold Review: Some New Looks but the Same Old Phone
+
+Google uses the word “Pixel” for its smartphone lineup, but what was once a camera-centric drive to stand out from the pack has become more of a stay-at-home, iterative lateral crawl. Granted, foldabl
+
+[阅读原文](https://petapixel.com/2026/09/10/google-pixel-11-pro-fold-review-some-new-looks-but-the-same-old-phone/)
+
+— via *PetaPixel*
+
+---
+
+### BenQ’s New 4K Monitors Are Purpose-Built for Serious Video Editors
+
+BenQ has announced the Creative Pro PV3250U and PV2750U monitors. They are BenQ's first professional monitors designed specifically for video color grading that include 3D LUT hardware calibration and
+
+[阅读原文](https://petapixel.com/2026/09/10/benqs-new-4k-monitors-are-purpose-built-for-serious-video-editors/)
+
+— via *PetaPixel*
+
+---
+
+### The Beautiful iPhone Duo Has Serious Camera Compromises
+
+As we have seen time and again, foldable smartphones very rarely offer the same camera and photo features as their slab phone counterparts. Apple's debut foldable, the eye-catching and highly hyped iP
+
+[阅读原文](https://petapixel.com/2026/09/10/the-beautiful-iphone-duo-has-serious-camera-compromises/)
+
+— via *PetaPixel*
+
+---
 
 ## 谁在招人
 

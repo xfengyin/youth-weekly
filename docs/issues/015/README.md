@@ -81,6 +81,80 @@ title: 青年周刊 · 第 15 期
 
 你现在能做什么：对照文章检查你正在维护的项目——如果它用 SQLite 但出现写冲突，先看是不是踩了「每请求开新连接」这类反模式。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### Chitose Is in the Ramune Bottle Part 2 Trailer and October 13 Premiere Revealed, Sora Amamiya Joins Cast
+
+Chitose Is in the Ramune Bottle revealed a new trailer for its Cour 2, along with the theme songs and an October 13, 2026 premiere.
+
+[阅读原文](https://animecorner.me/chitose-is-in-the-ramune-bottle-part-2-trailer-and-october-13-premiere-revealed-sora-amamiya-joins-cast/)
+
+— via *Anime Corner*
+
+---
+
+### A Wild Last Boss Appeared Season 2 Reveals New Trailer, Cast and September 26 Streaming Premiere
+
+A Wild Last Boss Appeared has revealed its second Season 2 trailer, confirming that&hellip;
+
+[阅读原文](https://animecorner.me/a-wild-last-boss-appeared-season-2-reveals-new-trailer-cast-and-september-26-streaming-premiere/)
+
+— via *Anime Corner*
+
+---
+
+### BLACK TORCH Prepares For Final Episodes With New Trailer
+
+BLACK TORCH released a new “FINAL PV” trailer ahead of its concluding episodes, featuring footage from Episodes 11 and 12.
+
+[阅读原文](https://animecorner.me/black-torch-prepares-for-final-episodes-with-new-trailer/)
+
+— via *Anime Corner*
+
+---
+
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 2026年科隆游戏展：当中国游戏开始提供经验
+
+■ 1
+
+在科隆的最后一天，早上4点的时候，我在酒店大堂等去机场的出租车。有两个中国女孩从酒店的电梯里走出来&mdash;&mdash;在科隆游戏展（Gamescom）期间，这家距离会场大概7公里的酒店里至少有三分之一的客人来自中国。有我的同行，还有一些参展的厂商，有腾讯的员工，应该也有其他游戏厂商的员工。有一次，我上午才采访过《洛克王国：世界》的开发者，下午稍晚的时候就在酒店的电梯里遇到了他。
+
+[阅读原文](http://www.chuapp.com/article/291616.html)
+
+— via *触乐*
+
+---
+
+### 20年老牌IP加MMO，看起来过时的组合首测却爆了？
+
+点开《仙境传说》原声专辑的评论区，像打开一本童年回忆录。2015年，玩家评论听见《普隆德拉主题曲》就想落眼泪，想起了陪自己坐在南门角落闲聊的人；在登录曲《Title》下，有人回忆第一次听就惊为天人。他们偶尔循环这些歌曲回想青春，也不时提及即将上线的RO新游，希望和大家再聚一次。今年8月中旬，《Title》的最新评论为&ldquo;RO3快出了&rdquo;。
+
+听见一首老歌的时候
+
+这对于RO玩家
+
+[阅读原文](http://www.chuapp.com/article/291613.html)
+
+— via *触乐*
+
+---
+
+### 在电影和电视剧里讲游戏故事，这家公司是专业的
+
+&ldquo;这项工作确实变得比以前更容易了，却也不像一些人想象中那么容易。&rdquo;影视制片公司Story Kitchen联合创始人德米特里&middot;约翰逊（Dmitri Johnson）说。按照约翰逊和另一位联合创始人迈克&middot;戈德堡（Mike Goldberg）的说法，虽然近年来有一大批改编自热门游戏的影视剧在票房和口碑层面获得成功，但当他俩试图向其他制片厂的高层推销基于
+
+[阅读原文](http://www.chuapp.com/article/291570.html)
+
+— via *触乐*
+
+---
+
 ## 青春故事会
 
 ### 我用 AI 当「第二大脑」的三个月
@@ -122,6 +196,78 @@ title: 青年周刊 · 第 15 期
 为什么值得关心：听别人复盘比自己试错便宜得多；尤其是「上线后才发现的问题」，往往不会写进任何博客。
 
 你现在能做什么：把订阅列表里的资讯型 AI 播客减一半，换成两档「访谈/复盘型」节目，通勤时听两周，看哪档留下的印象最深。
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### 项目频道 - 天猫健康×瞿颖：这个夏天我不想红了
+
+全网最矛盾的女明星，当属瞿颖。明明热搜不断，却三番五次直白喊话：我真的不想红。你不想红？巧了，我们的肌肤也不想泛红。这个夏天，天猫健康携手直言“不想翻红”的瞿颖，发起一场“敷一敷，这夏不红了”的营销活动。活动回顾接到brief，我们真是挠破了头医用敷料，常被通俗地称为“医用面膜”。从行业属性看，它是需要符合相关安全与临床评价要求的医疗器械。所以在商业沟通上，它天然面临两道难题：1、表达空间十分有限
+
+[阅读原文](https://www.digitaling.com/projects/377019.html)
+
+— via *数英网*
+
+---
+
+### 文章频道 - 盘点苹果最新产品文案，英文/大陆/香港/台湾对比！
+
+200多条，互有胜负。今年的苹果发布会大家都看了吗？最戳我的一幕，大概是库克把镜头交给新CEO约翰·特纳斯——属于库克的apple时代真的结束了。此次发布会共推出5款重磅新品，价格依旧很美丽，但不影响我们欣赏苹果全系列新品的文案介绍！早在发布会预告期，就有网友发现亮点，内地与港澳台地区文案各不相同。这次我将英文版/大陆版/香港版/台湾版文案细细举出，让大家一次品得尽兴，感受妙处。iPhone Du
+
+[阅读原文](https://www.digitaling.com/articles/1574747.html)
+
+— via *数英网*
+
+---
+
+### 项目频道 - 天猫小黑盒×Mr.Miss：用音乐奏响友谊故事
+
+原标题：天猫小黑盒 Mr.Miss：「盒」你一起奏响友谊在2026年盛夏的尾声，天猫小黑盒再度与老朋友虾米音乐节携手，为乐迷新人类带来音乐新装备，也为我们带来了一个充满挑战的命题：如何在两大IP合作的第三年，挖掘出讲故事的新切角，让这群永远追逐新鲜感的「新人类」从中感受到新意？话不多说，先来看片：我们借虾米音乐节这个音乐交友的绝佳场域，邀请了一对十几年的音乐好友：Mr.Miss组合，打造了一个神奇
+
+[阅读原文](https://www.digitaling.com/projects/377103.html)
+
+— via *数英网*
+
+---
+
+## 谁在招人
+
+> 本周招聘信息精选
+
+### [上海 9.9 岗位更新] SHEIN 内推：算法/前端/ Java /AI Agent/安全/测试/iOS/数据/数据库， 18-90k
+
+更新了一批 SHEIN 当前上海 base 的全量 60+技术类岗位和对应薪资（上次发布是两个月前）。这批岗位方向覆盖前端、Java 、算法、AI Agent 、数据、数据库、测试、安全、架构。其中算法岗位最多，薪资范围最高可达 90K （薪资范围上下限主要看简历情况、最终职级定级，供大家谈薪参考）：1️⃣ 算法 / AI 方向｜ 35K-90K算法中台、广告商业化、海外广告、智能客服、NLP 、
+
+[阅读原文](https://www.v2ex.com/t/1240565#reply0)
+
+— via *V2EX 酷工作*
+
+---
+
+### 类 Fomo 社交应用项目，已获 BN 融资 招聘： Go 后端/DevOps Engineer
+
+SmartX 项目已获得 BN 旗下 VC 机构 YZi Labs 投资。
+相关公布信息 https://www.theblockbeats.info/flash/363465
+SmartX 是新一代 Web3 社交交易应用，覆盖 Meme 币、永续合约、美股、预测市场。依托链上真实数据打造可信跟单生态，智能匹配交易信号，实现一键极速跟单。
+推特 X： https://x.com/SmartXTe
+
+[阅读原文](https://www.v2ex.com/t/1240522#reply6)
+
+— via *V2EX 酷工作*
+
+---
+
+### 公司校招，家里有弟弟妹妹在上学的可以看看了
+
+主要是算法和 ai 、产品方面的。不加班，福利还不错，缺点是氛围普通吧。
+https://neitui.italent.cn/join-lianjia/sharejobs?shareId=55931d85-a4ba-4a92-aaee-a49277adead9&amp;language=zh_CN&amp;rt=1
+
+[阅读原文](https://www.v2ex.com/t/1240507#reply0)
+
+— via *V2EX 酷工作*
+
+---
 
 ## 编读往来
 

@@ -63,6 +63,74 @@ Anthropic 开始为印度用户提供以卢比计价的订阅方案。印度是 
 
 如果你对纯软件感到拥挤，不妨关注一下这些交叉地带——哪怕只是业余玩玩树莓派、学点嵌入式，也是在为下个十年埋种子。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### Webtoon 'SSS-Class Revival Hunter' Gets TV Anime in Winter 2027
+
+Production company Hayate opened an official website for a television anime adaptation of Sinnoa and Bill K&#039;s SSS-Class Revival Hunter webtoon on Wednesday, revealing the main cast, staff, a teas
+
+[阅读原文](https://myanimelist.net/news/74693008?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Tensei Goblin dakedo Shitsumon Aru?' Reveals Additional Staff, Theme Songs, Main Promo
+
+The official website for the television anime adaptation of Nazuna Miki&#039;s Tensei Goblin dakedo Shitsumon Aru? (So What&#039;s Wrong with Getting Reborn as a Goblin?) manga revealed additional sta
+
+[阅读原文](https://myanimelist.net/news/74691262?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### From The Apothecary Diaries to Jurassic Shadows: Norihiro Naganuma's Next Creative Challenge
+
+What happens when the director behind Kusuriya no Hitorigoto (The Apothecary Diaries) and Mahoutsukai no Yome (The Ancient Magus&#039; Bride) trades court intrigue and fantasy for dinosaurs, ninjas, a
+
+[阅读原文](https://myanimelist.net/news/74690718?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 好热，鹰角到底在P3R联动里加了什么
+
+厨子带薪做饭，能有多震撼美味？9月4日那天，我登上《明日方舟》，发现好友列表已经变成了一片蔚蓝的海洋——博士们仿佛怀着某种默契，纷纷将头像和名片背景换成了同一个蓝发少年的面孔。这一天，《明日方舟》与《女神异闻录3 Reload》（以下简称P3R）的联动活动“月行水上”正式上线了。可能绝大多数博士们，已经预料到自己的好友列表会在活动当日化作一片忧郁蓝调，却没人能想到，这次活动会一路在海外社群引起震动
+
+[阅读原文](https://www.yystv.cn/p/14384)
+
+— via *游研社*
+
+---
+
+### 怎么会有科学家模拟果蝇大脑玩《DOOM》啊？
+
+当果蝇掉进《神奇数字马戏团》。据外媒报道，这几天科学界发表了一项针对果蝇的重大研究突破。这项实验的参与团队涵盖英国剑桥大学、谷歌等知名机构，概括来说，他们通过一系列方法又结合AI的帮助，一定程度上重建了果蝇的大脑和中枢神经系统，进度相比同类实验来说最为领先，这项实验有助于人类进一步理解生物的大脑构造。其实早在今年3月，就有其他研究团队放出过类似的果蝇模型实验。理论上都是通过一些技术手段人工还原了果
+
+[阅读原文](https://www.yystv.cn/p/14385)
+
+— via *游研社*
+
+---
+
+### 时隔20年回归的《疯狂出租车》里，你将可以打卡真实景点
+
+一部让玩家等待了超过20年的续作，应该是什么样子？在今年科隆游戏展开幕夜大大小小的播片中，《疯狂出租车：极速环游》的出现，多少会让人产生一种老IP回归的兴奋感。《疯狂出租车》系列始于1999年的世嘉街机。和追求极致真实驾驶体验的游戏有些不同，《疯狂出租车》更在乎的是速度与乐趣。它的规则简单到几乎不需要解释：玩家驾驶出租车穿梭在城市里，在有限时间内接上乘客，再用最快、也最不守常规的方式把他们送到目的
+
+[阅读原文](https://www.yystv.cn/p/14380)
+
+— via *游研社*
+
+---
+
 ## 青春故事会
 
 ### 从星舰学「快速试错」：把你的失败周期压缩到最短

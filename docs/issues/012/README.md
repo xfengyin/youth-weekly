@@ -109,6 +109,92 @@ Wispr 的融资提醒我们，语音输入已经好用到可以日常使用了�
 
 **试试看**：如果你有硬件钱包，按上面的清单逐项自查一遍；没有的话，也记住「资产信息别外露」这个原则。
 
+## 二次元次元壁
+
+> ACG 资讯、动漫评论、原创推荐
+
+### Broadcast of 'Junket Bank' Postponed
+
+The official website of the Junket Bank anime series announced on Tuesday that the broadcast has been postponed indefinitely. The anime series adapted from Ikkou Tanaka&#039;s Junket Bank gambling thr
+
+[阅读原文](https://myanimelist.net/news/74688429?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### 'Kyouran Reijou Nia Liston' Reveals Additional Cast, Second Promo, Two Consecutive Cours
+
+The official website for the television anime adaptation of Umikaze Minamino&#039;s Kyouran Reijou Nia Liston: Byoujaku Reijou ni Tensei shita Kamigoroshi no Bujin no Karei naru Musouroku (Nia Liston:
+
+[阅读原文](https://myanimelist.net/news/74687352?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+### The Power of Will: Rie Takahashi and Saori Hayami on Rediscovering 'Magic Knight Rayearth'
+
+Since its debut in 1993, CLAMP&#039;s Magic Knight Rayearth has remained a beloved classic, remembered for its memorable heroines, imaginative fantasy world, and themes of friendship and willpower. No
+
+[阅读原文](https://myanimelist.net/news/74684465?_location=rss)
+
+— via *MyAnimeList News*
+
+---
+
+## 游戏研究所
+
+> 游戏评测、攻略心得、行业动态
+
+### 触乐怪话：含人量多少？
+
+触乐怪话，每天胡侃和游戏有关的屁事、鬼事、新鲜事。
+
+
+小罗惨被&ldquo;鉴&rdquo;（图/小罗）
+
+最近，我围观了一起闹得沸沸扬扬的绘圈&ldquo;鉴AI&rdquo;事件。
+因为绘圈非常重视原创性，对于任何与AI沾边的内容都深恶痛绝，约画稿的买方通常都会要求卖方纯手搓无AI。但这个圈子主要是私稿交易，缺乏真正意义上的监管机构，所以不管是买方还是卖方维权都基本上只能靠民间互相监督，
+
+[阅读原文](http://www.chuapp.com/article/291624.html)
+
+— via *触乐*
+
+---
+
+### 和“蛙儿子”告别
+
+《旅行青蛙：中国之旅》宣布即将停运停服的消息传来，许多还在养蛙的玩家都忙了起来。哪怕知道三个月后账号里所有的资料都会清零，他们还是努力在社交网络上发帖，和同好们交换着自己还没有收集到的明信片，把喜欢的场景截图留念。游戏里平时屯起来的高级食物都拿了出来，没有兑换的家具和装饰也都赶紧兑换了。蛙在装饰精致的小屋里吃饭睡觉的样子也全都被留存下来。
+
+玩家花殇分享给我蛙蛙踢被子的场面
+
+他们更像是在为蛙准备
+
+[阅读原文](http://www.chuapp.com/article/291625.html)
+
+— via *触乐*
+
+---
+
+### 触乐怪话：期待9月10日
+
+触乐怪话，每天胡侃和游戏有关的屁事、鬼事、新鲜事。
+
+
+
+对的对的，就是这样！（图/小罗）
+
+
+今天是9月9日，明天是9月10日。从前几天开始，有一个事情我一直在心里隐隐约约地存在，但是没有说出来，那就是我真的很期待9月10日。
+这种期待不算特别正式，也很少被付诸口头纸面，有时候还比较隐私。比如，我可以坦坦荡荡地在一篇稿件里说&ldquo;我期待某款产品给行业和品类带来新的启发&rdquo;，
+
+[阅读原文](http://www.chuapp.com/article/291623.html)
+
+— via *触乐*
+
+---
+
 ## 青春故事会
 
 > 从「信任」里长出来的四个成长命题。
@@ -186,6 +272,43 @@ Anthropic 的隐形水印新闻，牵出了一个大话题：AI 生成内容的�
 一句话洞察：安全感不是一次建成的，是每周维护出来的。
 
 **试试看**：把「周五数字体检」加进日历提醒，这周就做第一次。
+
+## 一周图鉴
+
+> 本周精选视觉内容
+
+### The Electrifying Finalists of the Music Photography Awards 2026
+
+Abbey Road Studios has announced the finalists of its Music Photography Awards 2026, a competition shining a light on photographers who capture the energy and artistry of the music scene.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/10/the-electrifying-finalists-of-the-music-photography-awards-2026/)
+
+— via *PetaPixel*
+
+---
+
+### Your Apple Watch Is Always Listening, Will Anyone Ever Be Honest Again?
+
+News just broke that the new Apple Watch Series 12 will have a feature called "Siri Recap" that uses "ambient listening" to "take notes" that users can later review as a summary.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/09/your-apple-watch-is-always-listening-will-anyone-ever-be-honest-again/)
+
+— via *PetaPixel*
+
+---
+
+### Apple’s iPhone Duo Argues No Other Foldable Has Gotten It Right
+
+Apple has finally unveiled its first foldable phone, the iPhone Duo. It features a book-style design, a relatively small outer display, and an expansive 7.6-inch inner display.
+[Read More]
+
+[阅读原文](https://petapixel.com/2026/09/09/apples-iphone-duo-argues-no-other-foldable-has-gotten-it-right/)
+
+— via *PetaPixel*
+
+---
 
 ## 谁在招人
 
