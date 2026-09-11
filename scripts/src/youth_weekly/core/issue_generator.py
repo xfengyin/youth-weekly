@@ -292,6 +292,7 @@ class IssueGenerator:
         sections.extend(self._build_editorial_section(editorial))
 
         # 按配置驱动的板块顺序输出(保持与前6期结构一致,空板块显示占位提示)
+        empty_sections: list[str] = []
         for section_id, section_name in self._section_order:
             if section_id == "editorial":
                 continue
@@ -303,7 +304,21 @@ class IssueGenerator:
                     )
                 )
             else:
+                empty_sections.append(section_name)
                 sections.extend(self._build_empty_section(section_name, section_id))
+
+        # 板块完整性门禁：有板块为空时给出醒目告警，便于发布前补齐。
+        # 根因通常是 content_sources.yaml 缺少该板块的采集源（见
+        # tests/test_source_coverage.py 的回归校验）。
+        if empty_sections:
+            logger.warning(
+                "⚠️ 本期有 %d 个板块没有采集到内容，将显示占位提示：%s。"
+                "请检查 scripts/content_sources.yaml 中对应分类的源是否 enabled/可用。",
+                len(empty_sections),
+                "、".join(empty_sections),
+            )
+        else:
+            logger.info("✓ 所有 %d 个内容板块均已采集到内容", len(self._section_order) - 1)
 
         # 编读往来 / 结尾
         sections.extend(self._build_footer(issue_number, publish_date))

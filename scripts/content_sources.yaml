@@ -4,12 +4,16 @@
 # 重要：source_categories 是**源分类(采集层)**,与 config.yaml 中
 # 的 categories(**板块分类(展示层)**)是两个不同的概念。
 #   - config.yaml#categories: 9 个固定板块(editorial/tech/anime/...),控制周刊目录结构
-#   - source_categories(本文件): 5 个采集分类(tech/dev/ai/research/oss),控制采集源归类
+#   - source_categories(本文件): 采集分类,控制采集源归类
 # 两者通过 expander.CATEGORY_TO_SECTION 建立映射;调整本文件时请同步
 # expander.py 与 config.yaml。
+#
+# ⚠️ 每个展示板块都必须有可用采集源，否则该板块会以「暂无内容」占位。
+# 板块 → 源分类映射见 expander.py#CATEGORY_TO_SECTION；新增分类请同步补充
+# source_categories 条目与 tests/test_source_coverage.py 的覆盖校验。
 
 sources:
-  # ====== RSS 新闻源 ======
+  # ====== 科技 / 开发（板块：科技新势力、好工具）======
   - id: hackernews
     name: Hacker News
     type: hackernews
@@ -74,7 +78,6 @@ sources:
     enabled: false
     max_items: 5
 
-  # ====== 科技新闻 ======
   - id: techcrunch
     name: TechCrunch
     type: rss
@@ -91,33 +94,338 @@ sources:
     enabled: true
     max_items: 5
 
+  # 中文科技源（提升「科技新势力」中文内容占比）
+  - id: ifanr
+    name: 爱范儿
+    type: rss
+    url: "https://www.ifanr.com/feed"
+    category: tech
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: geekpark
+    name: 极客公园
+    type: rss
+    url: "https://www.geekpark.net/rss"
+    category: tech
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: tmtpost
+    name: 钛媒体
+    type: rss
+    url: "https://www.tmtpost.com/rss.xml"
+    category: tech
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: thepaper
+    name: 澎湃新闻
+    type: rss
+    url: "https://feedx.net/rss/thepaper.xml"
+    category: tech
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: ruanyifeng
+    name: 阮一峰的网络日志
+    type: rss
+    url: "https://feeds.feedburner.com/ruanyifeng"
+    category: dev
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  # ====== 二次元（板块：二次元次元壁）======
+  - id: myanimelist_news
+    name: MyAnimeList News
+    type: rss
+    url: "https://myanimelist.net/rss/news.xml"
+    category: anime
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: anime_corner
+    name: Anime Corner
+    type: rss
+    url: "https://animecorner.me/feed/"
+    category: anime
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: honeys_anime
+    name: Honey's Anime
+    type: rss
+    url: "https://honeysanime.com/feed/"
+    category: anime
+    enabled: true
+    max_items: 3
+    delay: 0
+
+  - id: otaku_usa
+    name: Otaku USA Magazine
+    type: rss
+    url: "https://otakuusamagazine.com/feed/"
+    category: anime
+    enabled: true
+    max_items: 3
+    delay: 0
+
+  # ====== 游戏（板块：游戏研究所）======
+  - id: yystv
+    name: 游研社
+    type: rss
+    url: "https://www.yystv.cn/rss/feed"
+    category: gaming
+    enabled: true
+    max_items: 5
+    delay: 0
+
+  - id: chuapp
+    name: 触乐
+    type: rss
+    url: "https://www.chuapp.com/feed"
+    category: gaming
+    enabled: true
+    max_items: 5
+    delay: 0
+
+  - id: gcores
+    name: 机核 GCORES
+    type: rss
+    url: "https://www.gcores.com/rss"
+    category: gaming
+    enabled: true
+    max_items: 5
+    delay: 0
+
+  - id: gamespot
+    name: GameSpot News
+    type: rss
+    url: "https://www.gamespot.com/feeds/news/"
+    category: gaming
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: polygon
+    name: Polygon
+    type: rss
+    url: "https://www.polygon.com/rss/index.xml"
+    category: gaming
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  # ====== 青春故事（板块：青春故事会）======
+  - id: v2ex_career
+    name: V2EX 职场话题
+    type: rss
+    url: "https://www.v2ex.com/feed/career.xml"
+    category: stories
+    enabled: true
+    max_items: 5
+    delay: 0
+
+  - id: v2ex_share
+    name: V2EX 分享发现
+    type: rss
+    url: "https://www.v2ex.com/feed/share.xml"
+    category: stories
+    enabled: true
+    max_items: 5
+    delay: 0
+
+  - id: sspai
+    name: 少数派
+    type: rss
+    url: "https://sspai.com/feed"
+    category: stories
+    enabled: true
+    max_items: 5
+    delay: 0
+
+  - id: farnam_street
+    name: Farnam Street
+    type: rss
+    url: "https://fs.blog/feed/"
+    category: stories
+    enabled: true
+    max_items: 3
+    delay: 0
+
+  - id: scott_young
+    name: Scott H Young
+    type: rss
+    url: "https://www.scotthyoung.com/blog/feed/"
+    category: stories
+    enabled: true
+    max_items: 3
+    delay: 0
+
+  # ====== 在看什么（板块：在看什么）======
+  - id: initium
+    name: 端传媒
+    type: rss
+    url: "https://theinitium.com/feed/"
+    category: watching
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: nytimes_cn
+    name: 纽约时报中文网
+    type: rss
+    url: "https://cn.nytimes.com/rss/"
+    category: watching
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: film_stage
+    name: The Film Stage
+    type: rss
+    url: "https://thefilmstage.com/feed/"
+    category: watching
+    enabled: true
+    max_items: 3
+    delay: 0
+
+  - id: lithub
+    name: Literary Hub
+    type: rss
+    url: "https://lithub.com/feed/"
+    category: watching
+    enabled: true
+    max_items: 3
+    delay: 0
+
+  - id: marginalian
+    name: The Marginalian
+    type: rss
+    url: "https://www.themarginalian.org/feed/"
+    category: watching
+    enabled: true
+    max_items: 3
+    delay: 0
+
+  # ====== 一周图鉴（板块：一周图鉴）======
+  - id: colossal
+    name: This Is Colossal
+    type: rss
+    url: "https://www.thisiscolossal.com/feed/"
+    category: gallery
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: petapixel
+    name: PetaPixel
+    type: rss
+    url: "https://petapixel.com/feed/"
+    category: gallery
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: digitaling
+    name: 数英网
+    type: rss
+    url: "https://www.digitaling.com/rss"
+    category: gallery
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  # ====== 谁在招人（板块：谁在招人）======
+  - id: v2ex_jobs
+    name: V2EX 酷工作
+    type: rss
+    url: "https://www.v2ex.com/feed/jobs.xml"
+    category: jobs
+    enabled: true
+    max_items: 5
+    delay: 0
+
+  - id: weworkremotely
+    name: We Work Remotely
+    type: rss
+    url: "https://weworkremotely.com/categories/remote-programming-jobs.rss"
+    category: jobs
+    enabled: true
+    max_items: 4
+    delay: 0
+
+  - id: hn_jobs
+    name: Hacker News Jobs
+    type: rss
+    url: "https://hnrss.org/jobs"
+    category: jobs
+    enabled: true
+    max_items: 4
+    delay: 0
+
 # 源分类的采集阈值(仅控制采集/策展数量,板块展示由 config.yaml#categories 决定)
-# ID 命名应与 config.yaml#categories 或 CATEGORY_TO_SECTION 中的 key 对齐
-# 若新增源分类,请在 expander.py 的 CATEGORY_TO_SECTION 中添加映射,
-# 或复用 config.yaml#categories 中已有的 ID。
+# 每个展示板块都必须至少有一个 source_category 映射到它（见 expander.py）
 source_categories:
-  tech:  # 复用 config.yaml 中的 tech 板块 ID
+  tech:  # → 板块「科技新势力」
     id: tech
     min_items: 3
     max_items: 5
 
-  dev:  # 源分类,最终映射到 config.yaml 中的 tools 板块
+  dev:  # → 板块「好工具」
     id: dev
     min_items: 3
     max_items: 5
 
-  ai:  # 源分类,最终映射到 config.yaml 中的 tech 板块
+  ai:  # → 板块「科技新势力」
     id: ai
     min_items: 3
     max_items: 5
 
-  research:  # 源分类,最终映射到 config.yaml 中的 tech 板块
+  research:  # → 板块「科技新势力」
     id: research
     min_items: 2
     max_items: 4
 
-  oss:  # 源分类,最终映射到 config.yaml 中的 tools 板块
+  oss:  # → 板块「好工具」
     id: oss
+    min_items: 2
+    max_items: 4
+
+  anime:  # → 板块「二次元次元壁」
+    id: anime
+    min_items: 2
+    max_items: 4
+
+  gaming:  # → 板块「游戏研究所」
+    id: gaming
+    min_items: 2
+    max_items: 4
+
+  stories:  # → 板块「青春故事会」
+    id: stories
+    min_items: 2
+    max_items: 4
+
+  watching:  # → 板块「在看什么」
+    id: watching
+    min_items: 2
+    max_items: 4
+
+  gallery:  # → 板块「一周图鉴」
+    id: gallery
+    min_items: 2
+    max_items: 4
+
+  jobs:  # → 板块「谁在招人」
+    id: jobs
     min_items: 2
     max_items: 4
 
@@ -139,5 +447,7 @@ collection:
   # 请求间隔（秒），防止被封；collect 插件在源之间真实 sleep
   delay_between_sources: 2
   # 单个源可通过 `delay: <秒>` 字段覆盖此值（0 表示该源不等待）
+  # 注：新增中文/独立源普遍设置 delay: 0（不同站点无共享限流），
+  #     保留默认 2s 用于 HackerNews/GitHub 等有明确限流的源。
   # User-Agent
   user_agent: "YouthWeekly/1.0 (Content Aggregator)"
