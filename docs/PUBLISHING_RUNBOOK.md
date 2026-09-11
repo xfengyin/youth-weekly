@@ -69,7 +69,12 @@ uv run youth-weekly collect
 - 打开 `scripts/.curated_content.json`（按采集分类组织），按 [CONTENT_PLAYBOOK](./CONTENT_PLAYBOOK.md) 的标准：
   - 保留「删掉会觉得少了点什么」的条目；
   - 给每个条目补上价值锚点、洞察或行动建议（至少两项）；
-  - 控制篇幅：每板块 2–4 条，每期 4–6 个板块 + 刊首语。
+  - 控制篇幅：每板块 2–4 条。
+- **板块完整性（硬要求）**：9 个固定板块（刊首语 + 科技新势力 / 二次元次元壁 / 游戏研究所 /
+  青春故事会 / 好工具 / 在看什么 / 一周图鉴 / 谁在招人）**每个都必须有内容**。
+  某板块为空时，`issue` 生成阶段会打印 `⚠️ 本期有 N 个板块没有采集到内容` 告警；
+  处理方式：检查 `scripts/content_sources.yaml` 中该板块对应分类的源是否 `enabled: true` 且可访问，
+  或临时补充/替换源。采集分类 → 板块的映射见 `core/expander.py#CATEGORY_TO_SECTION`。
 - 主题定调：本周想聊什么？在刊首语里给出观点，而不是新闻串烧。
 - 先看排期与选题策划：`docs/CONTENT_SCHEDULE.md`（4 周排期/状态）与
   `docs/plans/issue-NNN-plan.md`（当期选题策划：板块/素材/负责人/deadline）。
@@ -132,7 +137,8 @@ cd scripts && uv run python update_readme.py
 
 ### 内容质量（对照 CONTENT_PLAYBOOK）
 - [ ] 有刊首语：一个观点 + 有温度，结尾抛出问题或邀请
-- [ ] 每板块 2–4 条；每期 4–6 个板块 + 行动清单 + 金句
+- [ ] **9 个板块全部有内容**（无「本期该板块暂无精选内容」占位）+ 行动清单 + 金句
+- [ ] 每板块 2–4 条
 - [ ] 每条含「具体事实/数据/案例/操作步骤」至少 2 种，无纯链接罗列
 - [ ] 标题有信息量（如「XXX 实测：3 个新功能让重构快 1 倍」而非「XXX 发布新版」）
 - [ ] 无空洞套话（赋能/风口/不可错过）；简体中文、口语化但有密度
@@ -220,6 +226,8 @@ collect → 有内容则 issue → update_readme + generate + validate → 提�
 | `validate` 报 cover 引用不存在 | 文中引用了 assets 里没有的图 | 补图或改引用 |
 | `update_readme.py --check` 报差异 | README 索引过期 | 跑 `uv run python update_readme.py` |
 | 采集条目为 0 | 网络 / 源全部 disabled / API key 失效 | 查网络与 `content_sources.yaml` 的 `enabled` |
+| 某板块每期都是空的 | 该板块对应分类在 `content_sources.yaml` 没有启用源 | 补源；跑 `pytest tests/test_source_coverage.py` 校验覆盖 |
+| 某个源突然失效（空/403/超时） | 目标站点改版或限流 | 在 `content_sources.yaml` 换用同分类备用源（每个分类建议 ≥2 个） |
 | 期号不对 | issue 生成器按上一期递增 | 检查 `docs/issues/` 最大期号与 frontmatter |
 | push 后未部署 | GITHUB_TOKEN push 不触发 workflow | 手动 dispatch deploy.yml |
 
