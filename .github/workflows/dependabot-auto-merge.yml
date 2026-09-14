@@ -27,6 +27,19 @@ jobs:
     name: Auto-merge green Dependabot PRs
     runs-on: ubuntu-24.04
     steps:
+      - name: Debug context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -x
+          gh --version
+          jq --version
+          echo "REPO=[$REPO]"
+          gh pr list --repo "$REPO" --state open --limit 100 \
+            --json number,title,author,mergeable,isDraft | tee /tmp/dbg.json | head -c 500
+          echo
+          echo "字节数: $(wc -c < /tmp/dbg.json)"
       - name: Merge green dependabot PRs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
