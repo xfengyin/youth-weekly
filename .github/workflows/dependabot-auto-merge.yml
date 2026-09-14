@@ -27,19 +27,6 @@ jobs:
     name: Auto-merge green Dependabot PRs
     runs-on: ubuntu-24.04
     steps:
-      - name: Debug context
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -x
-          gh --version
-          jq --version
-          echo "REPO=[$REPO]"
-          gh pr list --repo "$REPO" --state open --limit 100 \
-            --json number,title,author,mergeable,isDraft | tee /tmp/dbg.json | head -c 500
-          echo
-          echo "字节数: $(wc -c < /tmp/dbg.json)"
       - name: Merge green dependabot PRs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,17 +34,13 @@ jobs:
         run: |
           set -euo pipefail
           echo "== 扫描 open 的 Dependabot PR =="
+          # gh 的 author.login 是 app/dependabot（REST 是 dependabot[bot]，GraphQL 裸查是 dependabot），用正则兜住三种写法
           gh pr list --repo "$REPO" --state open --limit 100 \
-            --json number,title,author,mergeable,isDraft > /tmp/prs.json
-
-          jq -r '.[] | select(.author.login == "dependabot" or .author.login == "dependabot[bot]") | select(.isDraft == false) | "\(.number)\t\(.mergeable)\t\(.title)"' /tmp/prs.json \
-          | while IFS=$'\t' read -r num mergeable title; do
+            --json number,title,author,isDraft \
+            --jq '.[] | select(.author.login | test("dependabot")) | select(.isDraft == false) | "\(.number)\t\(.title)"' \
+          | while IFS=$'\t' read -r num title; do
               [ -z "${num:-}" ] && continue
-              echo "---- PR #$num ($mergeable): $title"
-              if [ "$mergeable" != "MERGEABLE" ]; then
-                echo "   跳过：当前不可合并（$mergeable）"
-                continue
-              fi
+              echo "---- PR #$num: $title"
 
               checks=$(gh pr checks "$num" --repo "$REPO" --json name,bucket,state 2>/dev/null || echo '[]')
               total=$(echo "$checks" | jq 'length')
