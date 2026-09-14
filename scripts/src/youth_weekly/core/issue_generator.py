@@ -318,7 +318,9 @@ class IssueGenerator:
                 "、".join(empty_sections),
             )
         else:
-            logger.info("✓ 所有 %d 个内容板块均已采集到内容", len(self._section_order) - 1)
+            logger.info(
+                "✓ 所有 %d 个内容板块均已采集到内容", len(self._section_order) - 1
+            )
 
         # 编读往来 / 结尾
         sections.extend(self._build_footer(issue_number, publish_date))
