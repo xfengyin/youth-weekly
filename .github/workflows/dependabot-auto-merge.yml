@@ -37,7 +37,7 @@ jobs:
           gh pr list --repo "$REPO" --state open --limit 100 \
             --json number,title,author,mergeable,isDraft > /tmp/prs.json
 
-          jq -r '.[] | select(.author.login == "dependabot[bot]") | select(.isDraft == false) | "\(.number)\t\(.mergeable)\t\(.title)"' /tmp/prs.json \
+          jq -r '.[] | select(.author.login == "dependabot" or .author.login == "dependabot[bot]") | select(.isDraft == false) | "\(.number)\t\(.mergeable)\t\(.title)"' /tmp/prs.json \
           | while IFS=$'\t' read -r num mergeable title; do
               [ -z "${num:-}" ] && continue
               echo "---- PR #$num ($mergeable): $title"
