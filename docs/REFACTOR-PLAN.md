@@ -1,6 +1,6 @@
 # 重构升级方案（执行中）
 
-> 状态：**已提交 PR [#89](https://github.com/xfengyin/youth-weekly/pull/89)**（分支 `refactor/execute-2026-09`）｜最后更新：2026-09-15
+> 状态：**✅ 已合并进 main**（PR [#89](https://github.com/xfengyin/youth-weekly/pull/89) squash 合并为 `b835790`，CI 五个 job 全绿：Quality 3.12/3.13、Frontend、Rehearsal、Security）｜最后更新：2026-09-15
 > 本地验证：pytest 169 passed（cov 门槛达标）｜black/isort/flake8/mypy 全绿｜eslint/tsc 干净｜jest 75 passed｜next build 26 页成功
 > 分析基础：全仓只读审查（代码结构 / 依赖 / 产物 / CI / git 入库统计），每条结论均有 file:line 依据。
 > 原则：ponytail —— 能删就删、复用已有、标准库与原生能力优先、不为「以后可能需要」造抽象。
