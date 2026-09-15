@@ -79,10 +79,6 @@ build:
   python_version: "3.12"
   output_dir: "web/out"
 
-ocp:
-  exclude_plugins:
-    - "example"
-
 # LLM 杂志化扩展配置
 # 启用后,采集到的链接会自动调用大模型改写成杂志式文章
 llm:

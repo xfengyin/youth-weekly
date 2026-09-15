@@ -9,7 +9,6 @@ from __future__ import annotations
 
 # 导入即注册,业务插件需在包内显式导入才能被注册
 from . import collect  # noqa: F401
-from . import example  # noqa: F401
 from . import issue  # noqa: F401
 from . import issue_index  # noqa: F401
 from . import issue_json  # noqa: F401
@@ -20,7 +19,6 @@ from . import stats  # noqa: F401
 from .collect import CollectPlugin
 
 # 公共 API 重导出
-from .example import ExamplePlugin, HelloWorldPlugin
 from .issue import IssuePlugin
 from .issue_index import IssueIndexPlugin
 from .issue_json import IssueJsonPlugin
@@ -30,8 +28,6 @@ from .site_data import SiteDataPlugin
 from .stats import StatsPlugin
 
 __all__ = [
-    "ExamplePlugin",
-    "HelloWorldPlugin",
     "IssueIndexPlugin",
     "IssueJsonPlugin",
     "SearchIndexPlugin",
@@ -40,7 +36,6 @@ __all__ = [
     "RssPlugin",
     "CollectPlugin",
     "IssuePlugin",
-    "example",
     "issue_index",
     "issue_json",
     "search_index",

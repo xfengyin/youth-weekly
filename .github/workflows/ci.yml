@@ -1,8 +1,10 @@
 name: CI
 
-# CI 仅在 PR 触发：main 分支的自动发布（weekly-publish 推送）无需重复 CI，
-# 且 deploy.yml 会在该 push 上自然触发部署。
+# CI 在 PR 与 main 的 push 上触发：合并进 main 后仍要校验一次合并结果（deploy.yml 负责部署）。
+# push 被 branches=[main] 限定，PR 分支的 push 不会触发（同一提交不会因 push+PR 跑两遍）。
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -24,7 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.12']
+        # 3.12 为主（覆盖率上报仅在其上执行），3.13 验证新解释器兼容性
+        python-version: ['3.12', '3.13']
 
     steps:
       - name: Checkout
@@ -104,19 +107,25 @@ jobs:
         run: |
           uv run youth-weekly config
 
-      # 5) 生成物契约检查：generate 必须幂等（输出与已提交产物一致），
-      #    若产生 diff 说明 JSON 产物过期未同步提交，PR 应一并更新产物。
+      # 5) 产物一致性门禁：web/public 与 scripts/dist 的产物均由源码生成，
+      #    generate 必须幂等 —— 若产生 diff 说明产物过期/未随源码一起提交，
+      #    合并后线上产物会与源码脱节，故直接用 git diff --exit-code 让 CI 失败。
       - name: Artifact contract check (generate must be idempotent)
         run: |
           cd scripts
           uv run youth-weekly generate
           cd ..
-          if ! git diff --quiet -- web/public/; then
-            echo "❌ generate 产出与已提交产物不一致：请将最新产物一并提交"
-            git diff --stat -- web/public/
+          # 用 add + diff --cached：既抓改过的产物，也抓「新增但忘了提交」的产物；
+          # 纯 git diff 会漏掉 untracked 的新产物（例如新一期 issue-019.json），导致线上缺期。
+          # 范围只能是 web/public：scripts/dist 属 .gitignore 的构建产物，不参与版本校验，
+          # 且 `git add` 一旦遇到被忽略路径就以非零码退出（Actions 用 bash -e，会直接判失败）。
+          git add -A -- web/public
+          if ! git diff --cached --quiet -- web/public; then
+            echo "❌ 产物与源码不一致（过期或未提交），请在本地重新 generate 并一并提交："
+            git diff --cached --stat -- web/public
             exit 1
           fi
-          echo "✅ 生成产物与提交一致（web/public/ 无 diff）"
+          echo "✅ 生成产物与提交一致（web/public 无改动、无新增）"
 
   # 出刊演练门禁：在临时目录跑完整出刊流水线（collect→issue→update_readme→generate→validate），
   # 验证流程可用且不污染仓库。rehearsal.sh 使用离线样例策展数据（docs/examples/curated.sample.json），

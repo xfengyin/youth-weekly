@@ -55,6 +55,35 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    # 分组：同一套库的 minor/patch 合成一个 PR，避免版本错配
+    # （如 react 19.3 与 react-dom 19.2 各自升级后卡住）；major 仍单独开 PR 人工评估。
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+        update-types:
+          - "minor"
+          - "patch"
+      next:
+        patterns:
+          - "next"
+          - "eslint-config-next"
+        update-types:
+          - "minor"
+          - "patch"
+      testing:
+        patterns:
+          - "jest"
+          - "jest-environment-jsdom"
+          - "ts-jest"
+          - "@types/jest"
+          - "@testing-library/*"
+        update-types:
+          - "minor"
+          - "patch"
     # 暂时忽略 ESLint 10（2026-09 复核）：eslint-config-next 16.3.x 仍把 parser 指向
     # Next 自带的 babel parser（next/dist/compiled/babel），该 parser 内置的 eslint-scope
     # 还是 8.x 时代实现，缺少 ESLint 10 新增要求的 ScopeManager#addGlobals，

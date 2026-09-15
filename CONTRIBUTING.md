@@ -145,3 +145,15 @@ description: "本期简介"
 ## 许可
 
 提交代码即表示你同意你的贡献遵循 MIT 许可证。
+
+## 文档地图
+
+| 想知道什么 | 看哪 |
+|---|---|
+| 系统怎么搭的、为什么这么搭（含 ADR 决策记录） | [`ARCHITECTURE_REVIEW.md`](./ARCHITECTURE_REVIEW.md) |
+| 本周怎么采集、写作、出刊 | [`docs/PUBLISHING_RUNBOOK.md`](./docs/PUBLISHING_RUNBOOK.md)、[`docs/CONTENT_PLAYBOOK.md`](./docs/CONTENT_PLAYBOOK.md) |
+| 内容排期 | [`docs/CONTENT_SCHEDULE.md`](./docs/CONTENT_SCHEDULE.md) |
+| 用 AI 辅助写作的约定 | [`docs/AI_ASSIST.md`](./docs/AI_ASSIST.md) |
+| 历次变更 | [`CHANGELOG.md`](./CHANGELOG.md) |
+| 重构升级计划与进度 | [`docs/REFACTOR-PLAN.md`](./docs/REFACTOR-PLAN.md) |
+| 已发布的周刊（自动生成的期号索引，勿手改表格） | [`docs/README.md`](./docs/README.md) |
