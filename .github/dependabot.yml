@@ -55,3 +55,11 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    # 暂时忽略 ESLint 10（2026-09 复核）：eslint-config-next 16.3.x 仍把 parser 指向
+    # Next 自带的 babel parser（next/dist/compiled/babel），该 parser 内置的 eslint-scope
+    # 还是 8.x 时代实现，缺少 ESLint 10 新增要求的 ScopeManager#addGlobals，
+    # lint 会以 TypeError: scopeManager.addGlobals is not a function 失败。
+    # 等 Next 更新该 parser（或 eslint-config-next 换掉它）后，删掉下面这段即可恢复接收升级。
+    ignore:
+      - dependency-name: "eslint"
+        versions: [">= 10.0.0"]
