@@ -69,7 +69,9 @@ def _render_docs_table(issues: list[dict]) -> str:
         num = issue.get("issue", slug)
         title = str(issue.get("title") or f"第{num}期")
         date = str(issue.get("date") or "")
-        lines.append(f"| 第 {num} 期 | {title} | {date} | [阅读](./issues/{slug}/README.md) |")
+        lines.append(
+            f"| 第 {num} 期 | {title} | {date} | [阅读](./issues/{slug}/README.md) |"
+        )
     return "\n".join(lines)
 
 
@@ -133,13 +135,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"错误：README.md 缺少标记 {START}/{END}", file=sys.stderr)
         return 1
     if not ok2:
-        print(f"错误：docs/README.md 缺少标记 {TABLE_START}/{TABLE_END}", file=sys.stderr)
+        print(
+            f"错误：docs/README.md 缺少标记 {TABLE_START}/{TABLE_END}", file=sys.stderr
+        )
         return 1
 
     if args.check:
         diff = new_readme != readme_text or new_docs != docs_text
         if diff:
-            print("README 索引存在差异，请运行 scripts/update_readme.py 同步", file=sys.stderr)
+            print(
+                "README 索引存在差异，请运行 scripts/update_readme.py 同步",
+                file=sys.stderr,
+            )
             return 1
         print("README 索引已是最新")
         return 0

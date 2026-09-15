@@ -19,6 +19,7 @@ if str(_SCRIPT_DIR / "src") not in sys.path:
 
 # ---------------- ContentItem ---------------- #
 
+
 class TestContentItem:
     """测试内容项"""
 
@@ -37,7 +38,9 @@ class TestContentItem:
         assert item.score == 0
         assert item.extra == {}
 
+
 # ---------------- BaseCollector ---------------- #
+
 
 class TestBaseCollector:
     """测试基类采集器"""
@@ -72,7 +75,9 @@ class TestBaseCollector:
             resp = collector._fetch_with_retry("http://x")
         assert resp is None
 
+
 # ---------------- RSSCollector ---------------- #
+
 
 class TestRSSCollector:
     """测试 RSS 采集器"""
@@ -121,7 +126,9 @@ class TestRSSCollector:
         assert result[0].title == "Title"
         assert result[0].published_date == "2026-01-01"
 
+
 # ---------------- ContentCurator ---------------- #
+
 
 class TestContentCurator:
     """测试策展器"""
@@ -233,7 +240,9 @@ class TestContentCurator:
         assert len(top) == 3
         curator.close()
 
+
 # ---------------- IssueGenerator ---------------- #
+
 
 class TestIssueGenerator:
     """测试周刊生成器"""

@@ -1,6 +1,7 @@
 # 重构升级方案（执行中）
 
-> 状态：**执行中**（分支 `refactor/execute-2026-09`）｜最后更新：2026-09-15
+> 状态：**已提交 PR [#89](https://github.com/xfengyin/youth-weekly/pull/89)**（分支 `refactor/execute-2026-09`）｜最后更新：2026-09-15
+> 本地验证：pytest 169 passed（cov 门槛达标）｜black/isort/flake8/mypy 全绿｜eslint/tsc 干净｜jest 75 passed｜next build 26 页成功
 > 分析基础：全仓只读审查（代码结构 / 依赖 / 产物 / CI / git 入库统计），每条结论均有 file:line 依据。
 > 原则：ponytail —— 能删就删、复用已有、标准库与原生能力优先、不为「以后可能需要」造抽象。
 
@@ -24,31 +25,31 @@
 
 | # | 任务 | 证据 | 状态 | 验收 |
 |---|---|---|---|---|
-| A1 | 删 `plugins/example.py` + `config.yaml` 的 `ocp.exclude_plugins` | `config.yaml:82-84`；`plugins/example.py` | 执行中 | `uv run --no-sync pytest -q` 全绿；`youth-weekly generate` 产物不变 |
-| A2 | 删疑似死代码 `plugin/loader.py`（先证实无调用点） | `plugin/loader.py:28,82` 仅见定义与 `__all__` | 执行中 | 全仓 grep 无调用 + 测试通过 |
-| A3 | 重写 `ARCHITECTURE_REVIEW.md`（当前架构 + 决策记录），新增 `docs/README.md` 索引 | `ARCHITECTURE_REVIEW.md:37-44`（写 Next 14/React 18/3 workflow） | 执行中 | 文档中每个版本号都能与 `package.json` / workflows 对上 |
+| A1 | 删 `plugins/example.py` + `config.yaml` 的 `ocp.exclude_plugins` | `config.yaml:82-84`；`plugins/example.py` | ✅ 完成 | `uv run --no-sync pytest -q` 全绿；`youth-weekly generate` 产物不变 |
+| A2 | 删疑似死代码 `plugin/loader.py`（先证实无调用点） | `plugin/loader.py:28,82` 仅见定义与 `__all__` | ✅ 完成 | 全仓 grep 无调用 + 测试通过 |
+| A3 | 重写 `ARCHITECTURE_REVIEW.md`（当前架构 + 决策记录），新增 `docs/README.md` 索引 | `ARCHITECTURE_REVIEW.md:37-44`（写 Next 14/React 18/3 workflow） | ✅ 完成 | 文档中每个版本号都能与 `package.json` / workflows 对上 |
 
 ### 批次 B · 契约与门禁加固
 
 | # | 任务 | 证据 | 状态 | 验收 |
 |---|---|---|---|---|
-| B1 | CI 增加「产物一致性」校验：`generate` 后 `git diff --exit-code` 必须为空 | 42 个产物 JSON 已入库（`web/public/`） | 执行中 | 手改任一期 `web/public/issue-*.json` 后 CI 必须失败 |
-| B2 | 扩大 CI 触发面：push 到 main 也跑（现在只 `pull_request`） | `ci.yml` 触发条件 | 执行中 | main 上出现 CI 运行且绿 |
-| B3 | Python 3.13 加入 CI 测试矩阵 | `requires-python >=3.12`，CI 用 3.12 | 执行中 | 3.12/3.13 双绿 |
-| B4 | dependabot 分组（react 组 / next 组 / testing 组），避免同套库被拆成多个 PR | 历史事故：react 19.3 与 react-dom 19.2 不匹配而卡住 | 执行中 | 同组依赖只出一个 PR |
+| B1 | CI 增加「产物一致性」校验：`generate` 后 `git diff --exit-code` 必须为空 | 42 个产物 JSON 已入库（`web/public/`） | ✅ 完成 | 手改任一期 `web/public/issue-*.json` 后 CI 必须失败 |
+| B2 | 扩大 CI 触发面：push 到 main 也跑（现在只 `pull_request`） | `ci.yml` 触发条件 | ✅ 完成 | main 上出现 CI 运行且绿 |
+| B3 | Python 3.13 加入 CI 测试矩阵 | `requires-python >=3.12`，CI 用 3.12 | ✅ 完成 | 3.12/3.13 双绿 |
+| B4 | dependabot 分组（react 组 / next 组 / testing 组），避免同套库被拆成多个 PR | 历史事故：react 19.3 与 react-dom 19.2 不匹配而卡住 | ✅ 完成 | 同组依赖只出一个 PR |
 
 ### 批次 C · 前端结构
 
 | # | 任务 | 证据 | 状态 | 验收 |
 |---|---|---|---|---|
-| C1 | 拆 `issues/[slug]/page.tsx`（521 行）为职责单一组件，行为逐字不变 | `web/src/app/issues/[slug]/page.tsx` | 执行中 | `npm run lint && npm run type-check && npm test` 通过 |
-| C2 | 合并 `lib/toc.ts` 与 `lib/magazine.ts` 的重复解析 | `toc.ts:32,52`；`magazine.ts:110` | 执行中 | 18 期逐期渲染结果一致 |
+| C1 | 拆 `issues/[slug]/page.tsx`（521 行）为职责单一组件，行为逐字不变 | `web/src/app/issues/[slug]/page.tsx` | ✅ 完成 | `npm run lint && npm run type-check && npm test` 通过 |
+| C2 | 合并 `lib/toc.ts` 与 `lib/magazine.ts` 的重复解析 | `toc.ts:32,52`；`magazine.ts:110` | ✅ 完成 | 18 期逐期渲染结果一致 |
 
 ### 批次 D · 升级
 
 | # | 任务 | 证据 | 状态 | 验收 |
 |---|---|---|---|---|
-| D1 | Tailwind 3.4.19 → 4（单独改动，便于回滚） | `web/package.json`、`postcss.config.js`、`globals.css`(518 行) | 待执行 | `npm run build` 成功且页面视觉无回归 |
+| D1 | Tailwind 3.4.19 → 4（单独改动，便于回滚） | `web/package.json`、`postcss.config.js`、`globals.css`(518 行) | ↩️ 尝试后回滚 | `npm run build` 成功且页面视觉无回归 |
 | D2 | eslint 10 —— **已处置**：`eslint-config-next` 固定用 Next 自带 babel parser（缺 `addGlobals`），已加 `ignore: eslint >= 10.0.0` | `dependabot.yml`；PR #84 已附证据关闭 | 完成 | Next 更新该 parser 后删 ignore |
 
 ---
@@ -88,3 +89,15 @@
     cd web && npm run lint && npm run type-check && npm test && npm run build
     # 根目录一站式门禁
     make all
+
+---
+
+## 7. 执行结果与遗留
+
+| 项 | 结果 |
+|---|---|
+| D1 Tailwind 3→4 | **未完成（已回滚，零损伤）**：官方迁移器 `@tailwindcss/upgrade` 报 `Cannot apply unknown utility class bg-white`（本仓库在 `@layer components` 里对核心工具类用 `@apply`）；改手工迁移（`@import "tailwindcss"` + `@config`）后 `next build` 仍失败于 `globals.css` 经 PostCSS/turbopack 的处理。已自动回滚（tailwindcss 回到 3.4.19，工作区干净）。**建议单开会话**：需拿到完整报错并做浏览器视觉回归，不宜与功能改动混在一起。 |
+| 顺带修好的既有问题 | `tests/test_curator_collectors.py`（本次删类后遗留空行）与 `scripts/update_readme.py`（历史遗留、CI 范围外）已按 black 重新格式化，现 `black/isort` 全绿。 |
+| 澄清的误判 | ① workflow 是 **10 个**不是 7 个；② `search-data.json` 仅 23KB，「体积阈值」属伪需求（不做）；③ `react`/`react-dom` 实际装的都是 19.3.0，只是 package.json 声明范围旧（dependabot 分组已防再拆开）。 |
+
+仍需你拍板：`core/curator.py` 的 sqlite 去重范围（决定能否用产物 JSON 替代），以及 PR #89 是否直接合并。
