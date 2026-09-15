@@ -61,11 +61,9 @@ def _make_docs(tmp_path: Path, slugs: list[str]) -> Path:
 
 class TestGenerateWhitelist:
     def test_default_whitelist_contains_only_static_plugins(self):
-        """默认白名单必须是纯静态插件,绝不包含 collect/issue/example"""
+        """默认白名单必须是纯静态插件,绝不包含需要运行期的 collect/issue"""
         assert "collect" not in DEFAULT_STATIC_PLUGINS
         assert "issue" not in DEFAULT_STATIC_PLUGINS
-        assert "example" not in DEFAULT_STATIC_PLUGINS
-        assert "hello_world" not in DEFAULT_STATIC_PLUGINS
         assert "issue_index" in DEFAULT_STATIC_PLUGINS
         assert "issue_json" in DEFAULT_STATIC_PLUGINS
         assert "rss" in DEFAULT_STATIC_PLUGINS

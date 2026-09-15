@@ -28,6 +28,7 @@ export function cleanHeadingText(raw: string): string {
 /**
  * 从 markdown 正文提取 ## / ### 标题（带行号）。
  * 与 MarkdownRenderer 中自定义 h2/h3 组件按 node.position.start.line 匹配。
+ * 由 parseMagazine 调用一次，随 MagazineIssue.toc 一起返回，避免重复解析。
  */
 export function extractToc(content: string): TocItem[] {
   const items: TocItem[] = []
@@ -46,15 +47,6 @@ export function extractToc(content: string): TocItem[] {
     }
   }
   return items
-}
-
-/** 行号 → TocItem 映射（渲染时按 node.position 查锚点 id） */
-export function tocByLine(content: string): Map<number, TocItem> {
-  const map = new Map<number, TocItem>()
-  for (const item of extractToc(content)) {
-    map.set(item.line, item)
-  }
-  return map
 }
 
 /**
