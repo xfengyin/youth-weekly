@@ -116,14 +116,16 @@ jobs:
           uv run youth-weekly generate
           cd ..
           # 用 add + diff --cached：既抓改过的产物，也抓「新增但忘了提交」的产物；
-          # 后者在纯 git diff 下是 untracked，会被漏掉，导致线上缺期。
-          git add -A -- web/public scripts/dist
-          if ! git diff --cached --quiet; then
+          # 纯 git diff 会漏掉 untracked 的新产物（例如新一期 issue-019.json），导致线上缺期。
+          # 范围只能是 web/public：scripts/dist 属 .gitignore 的构建产物，不参与版本校验，
+          # 且 `git add` 一旦遇到被忽略路径就以非零码退出（Actions 用 bash -e，会直接判失败）。
+          git add -A -- web/public
+          if ! git diff --cached --quiet -- web/public; then
             echo "❌ 产物与源码不一致（过期或未提交），请在本地重新 generate 并一并提交："
-            git diff --cached --stat -- web/public scripts/dist
+            git diff --cached --stat -- web/public
             exit 1
           fi
-          echo "✅ 生成产物与提交一致（web/public、scripts/dist 无 diff）"
+          echo "✅ 生成产物与提交一致（web/public 无改动、无新增）"
 
   # 出刊演练门禁：在临时目录跑完整出刊流水线（collect→issue→update_readme→generate→validate），
   # 验证流程可用且不污染仓库。rehearsal.sh 使用离线样例策展数据（docs/examples/curated.sample.json），
