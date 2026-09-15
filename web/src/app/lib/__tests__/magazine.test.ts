@@ -125,8 +125,16 @@ describe('parseMagazine', () => {
   })
 
   it('空内容安全返回', () => {
-    expect(parseMagazine('')).toEqual({ title: '', sections: [] })
-    expect(parseMagazine(undefined as unknown as string)).toEqual({ title: '', sections: [] })
+    expect(parseMagazine('')).toEqual({ title: '', sections: [], toc: [] })
+    expect(parseMagazine(undefined as unknown as string)).toEqual({ title: '', sections: [], toc: [] })
+  })
+
+  it('同一次解析产出目录项（TOC 与 sections 不再各自解析）', () => {
+    const m = parseMagazine('# 标题\n\n## 栏目\n\n### 篇\n\n正文\n')
+    expect(m.toc.map((t) => [t.level, t.text, t.id])).toEqual([
+      [2, '栏目', 'section-1'],
+      [3, '篇', 'section-2'],
+    ])
   })
 })
 

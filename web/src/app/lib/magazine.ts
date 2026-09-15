@@ -7,6 +7,8 @@
  * 兼容策略：解析失败（sections 为空）时调用方回退到纯 Markdown 渲染。
  */
 
+import { extractToc, type TocItem } from './toc'
+
 export interface MagazineArticle {
   /** 文章标题（栏目标题下 ### 后的第一行）；刊首语等无标题块为空串 */
   title: string
@@ -38,6 +40,8 @@ export interface MagazineIssue {
   /** 期号信息行（> 2026-09-07 | 第17期 | 每周更新） */
   meta?: string
   sections: MagazineSection[]
+  /** 目录项（## / ### 标题，带行号与锚点 id）；与 sections 同一次解析产出 */
+  toc: TocItem[]
 }
 
 /** 内置栏目 → 英文名 + 主色（未知栏目回退 FEATURE/墨黑） */
@@ -109,7 +113,7 @@ function parseArticle(chunk: string): MagazineArticle | null {
  */
 export function parseMagazine(content: string): MagazineIssue {
   const text = (content || '').replace(/\r\n/g, '\n').trim()
-  const result: MagazineIssue = { title: '', sections: [] }
+  const result: MagazineIssue = { title: '', sections: [], toc: extractToc(content) }
   if (!text) return result
 
   const h1 = text.match(/^#\s+(.+)$/m)

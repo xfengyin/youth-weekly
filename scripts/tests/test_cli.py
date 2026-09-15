@@ -40,7 +40,7 @@ class TestCLI:
         docs_dir.mkdir()
         output_dir = tmp_path / "output"
 
-        result = main(["generate", "--output", str(output_dir), "example"])
+        result = main(["generate", "--output", str(output_dir), "stats"])
 
         assert result == 0
         assert output_dir.exists()

@@ -29,7 +29,6 @@ from youth_weekly.core.validation import validate_issues
 from youth_weekly.plugin import Registry
 from youth_weekly.plugins import (  # noqa: F401
     collect,
-    example,
     issue,
     issue_index,
     issue_json,

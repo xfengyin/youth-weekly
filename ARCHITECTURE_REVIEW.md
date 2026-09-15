@@ -1,283 +1,83 @@
-# 青年周刊项目架构审查报告 (Architecture Review)
+# 架构说明（当前状态）
 
-**审查日期**: 2026-06-11（快照日期；后续变更见 git 历史与 T-A 基础重构，2026-08 已按快照口径更新过时描述）
-**审查范围**: 全栈项目 (Python后端 + Next.js前端 + CI/CD)
-**审查标准**: OWASP安全规范、PEP 8、Python企业级工程规范、React/Next.js最佳实践
-**审查结论**: 架构设计优良，安全基线达标，但存在 5 个P0级问题需立即修复
-
----
-
-## 一、项目概览
-
-```
-youth-weekly/
-├── web/                          # Next.js 14 前端 (SSG)
-│   ├── src/app/                  # App Router 页面与组件
-│   ├── package.json              # React 18, next-themes, react-markdown（默认安全渲染）
-│   └── next.config.js            # output: 'export' 静态导出
-├── scripts/                      # Python 3.12+ 后端脚本
-│   ├── src/youth_weekly/         # 核心包
-│   │   ├── core/                 # 业务核心 (采集/策展/生成/LLM)
-│   │   ├── plugin/               # OCP 插件架构
-│   │   └── utils/                # 工具函数
-│   ├── tests/                    # pytest 测试套件
-│   ├── pyproject.toml            # uv 依赖管理
-│   └── uv.lock                   # 锁定依赖
-├── docs/                         # 周刊内容 (Markdown + frontmatter)
-│   └── issues/
-├── .github/workflows/            # CI/CD (3 个 workflow)
-├── config.yaml                   # Pydantic 配置源
-└── content_sources.yaml          # 采集源配置
-```
-
-### 技术栈
-
-| 层级 | 技术 | 版本 | 评估 |
-|------|------|------|------|
-| 前端框架 | Next.js | 14.2.24 | SSG 静态导出，适合 GitHub Pages |
-| 前端运行时 | React | 18.3.1 | 稳定，支持 Server Components |
-| 前端语言 | TypeScript | 5.7.x | strict 模式开启 |
-| 前端样式 | Tailwind CSS | 3.4.x | 设计系统规范 |
-| 后端语言 | Python | 3.12+ | 类型注解完整 |
-| 配置系统 | Pydantic | 2.0+ | 企业级配置管理 |
-| 包管理 | uv | latest | 现代 Python 包管理 |
-| CI/CD | GitHub Actions | - | 3 个 workflow 完整覆盖 |
-| 部署目标 | GitHub Pages | - | 静态站点托管 |
+> 本文档只描述**当前**真实架构，每个版本号都能在仓库文件里对上。
+> 历史版本（2026-06）曾写「Next.js 14 / React 18 / 3 个 workflow」，那三条均已过期，正文已在 2026-09 重写；
+> 当时提出的 T-A（基础重构）、T-B（管线重构）结论已落地，见 `CHANGELOG.md`。
 
 ---
 
-## 二、架构亮点 (Strengths)
+## 1. 三个组成部分
 
-### 2.1 OCP 插件架构 (开闭原则)
+| 部分 | 技术栈 | 职责 | 入口 |
+|---|---|---|---|
+| `scripts/` | Python >=3.12 + uv + Pydantic + requests，包名 `youth-weekly-scripts` 2.0.0 | 采集 → 策展 → 生成周刊 Markdown 与 JSON 产物 | CLI `youth-weekly`（`src/youth_weekly/cli.py`） |
+| `web/` | Next.js 16.3.5（静态导出）+ React 19.2/19.3 + TypeScript 5.9 + Tailwind 3.4 + remark-gfm/react-markdown | 静态站点：期号页、归档、分类、搜索、订阅 | `web/src/app/**` |
+| `wechat-miniprogram/` | 微信小程序原生 | 同一份 JSON 产物的小程序视图 | `wechat-miniprogram/pages/**` |
 
-```
-BasePlugin (抽象基类)
-    ├── IssueIndexPlugin      # 生成 issue-index.json
-    ├── SearchIndexPlugin     # 生成 search-data.json
-    ├── NewsletterGenerator   # 生成邮件模板
-    └── [可扩展] 自定义插件
-```
+## 2. 数据流（唯一真相在 `docs/` 与源码）
 
-- **设计优良**: `BasePlugin` 定义统一接口，`Registry` 管理注册与实例化
-- **线程安全**: `RLock` 保护插件注册表并发访问
-- **配置驱动**: `config.yaml` 的 `ocp.exclude_plugins` 控制加载范围
 
-### 2.2 Pydantic 配置系统
+    docs/issues/<期号>/README.md   ←── 人工/AI 审阅的内容源（frontmatter + 正文）
+            │  youth-weekly generate
+            ▼
+    web/public/issue_index.json + issue-<slug>.json + site-data.json + search-data.json
+    scripts/dist/rss.xml + stats.json + artifacts-manifest.json（含 SHA-256）
+            │
+            ├──► web 构建时读取（web/src/app/lib/content.ts，产物缺失即快速失败，绝不静默空数据上线）
+            └──► 小程序运行时经 HTTPS 读取同一份 JSON
 
-- **类型安全**: 9 个配置模型覆盖站点/作者/路径/分类/内容/RSS/构建/插件/LLM
-- **环境变量覆盖**: `YOUTH_WEEKLY_*` 前缀支持，生产环境零代码切换
-- **降级策略**: 配置文件缺失时回退默认值，YAML 语法错误时抛出明确异常
-- **线程安全**: 双重检查锁定 (`double-checked locking`) 确保单例并发安全
+- 前端**不再直接解析 `docs/*.md`**：Markdown 的杂志化解析只在构建产物之上进行（`web/src/app/lib/magazine.ts`）。
+- `scripts/dist/artifacts-manifest.json` 记录产物哈希，用于检测「产物与源码脱节」。
 
-### 2.3 LLM 抽象层 (依赖倒置)
+## 3. 决策记录（ADR）
 
-```python
-LLMProvider (抽象接口)
-    ├── OpenAIProvider
-    ├── AnthropicProvider
-    └── OpenAICompatibleProvider  # DeepSeek/Moonshot 等
-```
+**ADR-001 · 两套扩展点各管一段，不得互相扩张**
+- 采集源扩展：只改 `scripts/src/youth_weekly/core/collectors.py` 的 collector 注册表（`register_collector` / `get_collector`）。
+- 生成阶段扩展：只改 `scripts/src/youth_weekly/plugin/registry.py` 的 `Registry`（`@register`），插件放 `scripts/src/youth_weekly/plugins/`。
+- 理由：两者生命周期不同（采集跑在网络层、产物生成跑在纯数据层），合并会让测试必须同时造网络桩；代价是「新增一类东西要知道改哪边」，因此把边界写死比让两边都能注册更好。
 
-- **符合依赖倒置**: 高层模块 (`Expander`) 不依赖具体 LLM 实现
-- **降级机制**: LLM 不可用时自动降级为简单格式化，不阻断主流程
-- **重试策略**: 指数退避 (`backoff_factor=2`)，最大 3 次重试
+**ADR-002 · 产物必须入库，并由 CI 校验一致性**
+- `web/public/*.json` 与 `scripts/dist/*` 属于受版本控制的交付物（静态站可直接上线，不依赖构建期有 Python 环境）。
+- 代价是「可能忘记重新生成」：CI 门禁为 `generate` 之后 `git add -A -- web/public scripts/dist` + `git diff --cached --quiet`，产物有任何改动或新增都让 CI 失败。
 
-### 2.4 安全基线
+**ADR-003 · 数据层是静态 JSON，不引入服务端 API/数据库**
+- 站点是纯静态导出，搜索索引构建期生成、客户端加载；不引入 GraphQL/tRPC/DB。
+- 理由：内容更新频率是「每周一期」，静态产物的构建与缓存成本远低于运行一个服务。
 
-| 防护点 | 实现 | 评估 |
-|--------|------|------|
-| 路径遍历 | `Path.is_relative_to()` 标准库校验 | 优于字符串前缀匹配 |
-| SQL 注入 | SQLite 参数化查询 (`?` 占位符) | 安全 |
-| 日志注入 | 参数化 logging (`logger.info("%s", value)`) | 安全 |
-| XSS (前端) | react-markdown 默认不渲染原始 HTML + 外链 `rel="noopener noreferrer"` | 安全 |
-| 模板注入 | Jinja2 `autoescape=True` | 安全 |
+**ADR-004 · 不做「动态插件目录自动发现」**
+- 2026-09 删除 `plugin/loader.py`（100 行）与其测试：它只被测试引用，生产代码无调用点，也没有任何配置项能指定插件目录，即一个永远无法被触发的功能。
+- 新增插件的方式是 `plugins/` 包内建文件 + 显式 import（导入即注册）。
 
-### 2.5 CI/CD 流程
+## 4. CI / 自动化事实
 
-```
-Push/PR → CI Workflow
-    ├── lint    (black + isort + flake8 + mypy)
-    ├── test    (pytest --cov-fail-under=70)
-    ├── security (bandit + pip-audit)
-    ├── build   (uv build)
-    ├── cli-smoke (--help / list / config)
-    └── frontend (npm run lint + type-check + build)
-```
+`.github/workflows/ci.yml` 四个 job：
 
----
+| job | 内容 |
+|---|---|
+| `quality` | Python 3.12 + **3.13** 矩阵：格式化/lint → `pytest --cov-fail-under=70`（覆盖率仅在 3.12 上报 codecov）→ 构建 → CLI 冒烟 → **产物一致性门禁** |
+| `rehearsal` | 在临时目录跑完整出刊流程（`rehearsal.sh`，离线样例数据），验证不污染仓库 |
+| `security` | 依赖与 secrets 检查 |
+| `frontend` | Node 20：`npm ci` → lint → type-check → test → build |
 
-## 三、P0 级问题 (立即修复)
+触发：`pull_request`（到 main）**与 `push`（到 main）**。
 
-### 3.1 GitHub Pages 未启用导致 404
+仓库共 10 个 workflow：`ci`、`deploy`（仅 main push，发布 Pages）、`weekly-publish`（cron 周一 13:00 UTC 采集发布）、`nightly`、`dependabot-auto-merge`、`dependabot-auto-rebase`、`gemini-issue-triage`、`gemini-mention`、`gemini-pr-review`、`auto-close-security-issue`。
 
-- **文件**: `.github/workflows/deploy.yml`
-- **现象**: `actions/configure-pages@v5` 报错 `Get Pages site failed. Error: Not Found`
-- **根因**: 仓库 Settings → Pages 中 Source 未配置为 "GitHub Actions"
-- **修复**: 前往 https://github.com/xfengyin/youth-weekly/settings/pages 选择 **GitHub Actions**
-- **影响**: 网站完全不可访问
+## 5. 已知边界（不做的事写清楚，比留白好）
 
-### 3.2 前端 `dangerouslySetInnerHTML` XSS 风险 —— ✅ 已修复（2026-06 快照后）
+| 事项 | 现状 | 处理 |
+|---|---|---|
+| eslint 10 | `eslint-config-next` 固定用 Next 自带 babel parser，其内联 eslint-scope 缺 `addGlobals`（eslint 10 需要），本地与干净安装均复现 | 已在 `dependabot.yml` 加 `ignore: eslint >= 10.0.0` 并注明移除条件 |
+| Tailwind 3.4 | v4 已发布（4.3），迁移涉及 `@tailwind` 指令、`@config`、PostCSS 插件与 typography 插件加载方式 | 单独分支单独验证，不与功能改动混在一起 |
+| Python 3.13 | 已进 CI 矩阵；3.14 待依赖确认 | 观察一轮 CI 再决定是否提 `requires-python` |
+| `react` / `react-dom` 版本错配 | `react ^19.2.0` 与 `react-dom ^19.3.0` 不同小版本 | dependabot 已按 `react` 组组合并升级，避免再被拆开 |
 
-> 快照时的代码使用 `dangerouslySetInnerHTML` + `DOMPurify.sanitize()`（当时 `web/package.json` 引入 DOMPurify）。
-> **当前状态**：已改为 `react-markdown`（+ remark-gfm）渲染 Markdown，默认不执行 `dangerouslySetInnerHTML`，
-> 不再依赖 DOMPurify（`web/package.json` 已无该依赖），外链统一 `rel="noopener noreferrer"`。原始描述保留如下供追溯：
+## 6. 变更纪律
 
-- **文件**: `web/src/app/issues/[slug]/page.tsx:82`
-- **代码**:
-```tsx
-<div
-  dangerouslySetInnerHTML={{
-    __html: DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'h2', 'h3', 'blockquote', 'code', 'pre', 'div', 'span'],
-      ALLOW_DATA_ATTR: false,
-    }),
-  }}
-/>
-```
-- **风险**: `div`/`span` 容器标签在 DOMPurify 0day 或配置放松时可能成为 XSS 载体
-- **修复建议**: 使用 `react-markdown` 组件渲染 Markdown，彻底消除 HTML 注入面（**已按此落地**）
+改数据契约（新增/重命名 JSON 字段）时必须同步三处，否则线上会静默错位：
 
-### 3.3 `process.cwd()` 路径依赖导致构建环境不一致
+1. 产物生成侧：`scripts/src/youth_weekly/plugins/issue_json.py` 等；
+2. Web 消费侧：`web/src/app/lib/content.ts`（类型定义与快速失败）；
+3. 小程序消费侧：`wechat-miniprogram/utils/request.js` 与 `pages/**`。
 
-- **文件**: `web/src/app/lib/content.ts:9`
-- **代码**:
-```typescript
-const docsDirectory = path.join(process.cwd(), '..', 'docs')
-```
-- **风险**: `process.cwd()` 在 GitHub Actions 中取决于 `working-directory`，不在 `web/` 目录时文件找不到
-- **修复建议**: 使用环境变量 `process.env.DOCS_PATH`，默认值为 `../docs`
-
-### 3.4 前端完全缺失测试
-
-- **文件**: `web/` 目录下无任何 `.test.ts` 或 `.spec.ts`
-- **风险**: `content.ts` 中的路径遍历防护、XSS 过滤、Markdown 渲染等关键逻辑无回归保障
-- **修复建议**: 补充 Jest + React Testing Library，优先覆盖 `safeResolvePath`、`renderMarkdown`
-
-### 3.5 RSS 采集无响应大小限制
-
-- **文件**: `scripts/src/youth_weekly/core/collectors.py:186-193`
-- **代码**:
-```python
-resp = self.session.get(url, timeout=30)
-resp.raise_for_status()
-return resp.content
-```
-- **风险**: 恶意 RSS 源返回 GB 级响应 → 内存耗尽
-- **修复建议**: 增加 `max_size=10*1024*1024` 限制，超限丢弃并记录警告
-
----
-
-## 四、P1 级问题 (一周内修复)
-
-### 4.1 GitHub API 未使用认证令牌
-
-- **文件**: `scripts/src/youth_weekly/core/collectors.py:228-233`
-- **影响**: GitHub Search API 未认证速率限制仅 10 req/min，采集失败率高
-- **修复**: 支持 `GITHUB_TOKEN` 环境变量传入 `Authorization: Bearer`
-
-### 4.2 SQLite 去重逐条操作性能差
-
-- **文件**: `scripts/src/youth_weekly/core/curator.py:97-112`
-- **问题**: `deduplicate()` 对每条内容逐条执行 `SELECT` + `INSERT`
-- **修复**: 使用 `executemany()` 批量插入，或先通过 `SELECT ... IN (...)` 批量查询已存在指纹
-
-### 4.3 缓存无自动失效机制
-
-- **文件**: `scripts/src/youth_weekly/core/content.py:107`
-- **问题**: `@lru_cache(maxsize=32)` 基于 `Path` 对象缓存，文件内容变更后不会自动失效
-- **修复**: 增加基于文件 mtime 的缓存失效，或在生成命令后自动调用 `clear_cache()`
-
-### 4.4 配置来源重复
-
-- **文件**: `config.yaml` vs `content_sources.yaml`
-- **问题**: 分类配置在两个文件中同时存在，维护时容易遗漏同步
-- **修复**: `content_sources.yaml` 的分类引用 `config.yaml` 中的定义，或增加配置校验脚本
-
-### 4.5 pre-commit Python 版本不匹配 —— ✅ 已修复
-
-- **文件**: `.pre-commit-config.yaml:18`
-- **问题**: `language_version: python3.14` 与 `requires-python = ">=3.11"` 和 CI 的 Python 3.12 不一致
-- **修复**: 改为 `python3` 或与 CI 一致的版本
-- **当前状态**: 已统一为 `language_version: python3`，且 T-A 基础重构将 `requires-python` / black / mypy 统一为 **3.12**，与 CI matrix（3.12）一致
-
----
-
-## 五、P2 级问题 (一个月内修复)
-
-### 5.1 插件动态加载代码执行风险
-
-- **文件**: `scripts/src/youth_weekly/plugin/loader.py:74`
-- **风险**: `spec.loader.exec_module(module)` 执行插件目录下的任意 Python 文件
-- **缓解**: 当前已限制插件目录，建议增加数字签名校验或沙箱执行
-
-### 5.2 搜索页面吞掉错误详情
-
-- **文件**: `web/src/app/search/page.tsx:39-44`
-- **问题**: `.catch(() => { setSearchData([]); setIsLoading(false) })` 丢失错误信息
-- **修复**: 增加错误状态展示，或至少 console.error 记录
-
-### 5.3 硬编码字符串与魔法数字
-
-- **文件**: `scripts/src/youth_weekly/core/issue_generator.py`
-- **问题**: 板块名称、GitHub URL 等硬编码在代码中
-- **修复**: 提取到 `config.yaml` 中，支持国际化和自定义
-
-### 5.4 错误信息泄露敏感路径
-
-- **文件**: `scripts/src/youth_weekly/core/config.py:182`
-- **问题**: `FileNotFoundError` 消息包含完整绝对路径
-- **修复**: 日志中记录相对路径，异常消息脱敏
-
----
-
-## 六、架构评分
-
-| 维度 | 得分 | 说明 |
-|------|------|------|
-| **安全性** | 75/100 | 核心防护到位，前端 XSS 和路径依赖需改进 |
-| **架构设计** | 88/100 | OCP、依赖倒置、插件化设计优秀 |
-| **代码质量** | 82/100 | 类型注解完善，存在硬编码和重复配置 |
-| **性能优化** | 72/100 | 缺少响应大小限制、批量优化和缓存策略 |
-| **可测试性** | 68/100 | Python 测试覆盖良好，前端完全缺失 |
-| **可维护性** | 80/100 | 文档和配置较完善，pre-commit 版本不一致 |
-| **CI/CD** | 90/100 | 3 个 workflow 完整，权限最小化 |
-| **综合评分** | **79/100** | 企业级基线，优先处理 P0 问题 |
-
----
-
-## 七、改进路线图
-
-### Phase 1: 紧急修复 (本周)
-1. 启用 GitHub Pages (Settings → Pages → GitHub Actions)
-2. 前端增加 `react-markdown` 替代 `dangerouslySetInnerHTML`
-3. `content.ts` 使用环境变量配置 docs 路径
-4. RSS 采集增加响应大小限制
-
-### Phase 2: 质量提升 (两周内)
-5. 补充前端单元测试 (Jest + RTL)
-6. GitHub API 支持 Token 认证
-7. SQLite 批量插入优化
-8. 缓存自动失效机制
-9. pre-commit 版本修复
-
-### Phase 3: 架构优化 (一个月内)
-10. 插件加载数字签名验证
-11. 配置来源统一
-12. 错误信息脱敏
-13. 硬编码内容配置化
-14. 前端 E2E 测试 (Playwright)
-
----
-
-## 八、审查结论
-
-**青年周刊项目整体架构设计达到企业级基线水平**：
-
-- **OCP 插件架构**实现了真正的开闭原则
-- **Pydantic 配置系统**提供了类型安全和环境适配能力
-- **LLM 抽象层**遵循依赖倒置，支持多模型无缝切换
-- **CI/CD 流程**覆盖 lint/test/security/build/deploy 全链路
-
-**当前最大阻塞**：GitHub Pages 未启用导致网站 404，需要仓库管理员在 Settings 中手动启用。
-
-**建议优先级**：P0 (安全+可用性) → P1 (性能+稳定性) → P2 (可维护性)，按阶段逐步推进。
+`docs/README.md` 是**自动生成的期号索引**（`AUTO_ISSUE_TABLE` 区间由 `update_readme` 环节维护），不要手工编辑该表。

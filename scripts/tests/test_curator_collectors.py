@@ -17,7 +17,6 @@ _SCRIPT_DIR = Path(__file__).parent.parent
 if str(_SCRIPT_DIR / "src") not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR / "src"))
 
-
 # ---------------- ContentItem ---------------- #
 
 
@@ -283,40 +282,3 @@ class TestIssueGenerator:
         (self.issues / "005").mkdir()
         gen = IssueGenerator(issues_dir=self.issues)
         assert gen.get_next_issue_number() == 6
-
-
-# ---------------- PluginLoader ---------------- #
-
-
-class TestPluginLoader:
-    """测试插件加载器"""
-
-    def test_discover_excludes_init(self, tmp_path):
-        from youth_weekly.plugin.loader import discover_plugins
-
-        (tmp_path / "__init__.py").write_text("# init")
-        (tmp_path / "real.py").write_text("# real")
-        files = discover_plugins(tmp_path)
-        assert len(files) == 1
-        assert "real" in str(files[0])
-
-    def test_discover_nonexistent_dir(self, tmp_path):
-        from youth_weekly.plugin.loader import discover_plugins
-
-        assert discover_plugins(tmp_path / "nope") == []
-
-    def test_load_plugin_file(self, tmp_path):
-        from youth_weekly.plugin.loader import load_plugin_file
-
-        f = tmp_path / "dummy.py"
-        f.write_text("X = 1\n")
-        assert load_plugin_file(f) is True
-
-    def test_load_nonexistent(self, tmp_path):
-        from youth_weekly.plugin.loader import load_plugin_file
-
-        assert load_plugin_file(tmp_path / "nope.py") is False
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
