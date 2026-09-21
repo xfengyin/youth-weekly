@@ -24,15 +24,15 @@
 ---
 
 <!-- AUTO_ISSUE_START -->
-## 📰 最新一期 · 第 18 期
+## 📰 最新一期 · 第 19 期
 
-> **2026-09-14** | 第 18 期
+> **2026-09-21** | 第 19 期
 
-**青年周刊 · 第 18 期**
+**青年周刊 · 第 19 期**
 
-本期关注 codecrafters-io/build-your-own-x - ⭐ 547220、sindresorhus/awesome - ⭐ 505996、public-apis/public-apis - ⭐ 480058
+本期关注 codecrafters-io/build-your-own-x - ⭐ 548606、sindresorhus/awesome - ⭐ 508550、public-apis/public-apis - ⭐ 482047
 
-👉 [阅读第 18 期全文](https://xfengyin.github.io/youth-weekly/issues/018/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
+👉 [阅读第 19 期全文](https://xfengyin.github.io/youth-weekly/issues/019/) · [浏览所有周刊](https://xfengyin.github.io/youth-weekly/issues/)
 <!-- AUTO_ISSUE_END -->
 ---
 
