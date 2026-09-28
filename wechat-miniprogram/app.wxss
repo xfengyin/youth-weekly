@@ -1,14 +1,20 @@
 /**app.wxss**/
 page {
-  --primary: #0ea5e9;
-  --primary-light: #e0f2fe;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-body: #4b5563;
-  --text-muted: #9ca3af;
-  --background: #f3f4f6;
+  /* 与 Web 端 globals.css 设计令牌保持一致 */
+  --primary: #0075de;
+  --primary-light: #f2f9ff;
+  --success: #1aae39;
+  --warning: #dd5b00;
+  --danger: #eb5757;
+  --info: #0075de;
+  --text-primary: #1a1a1a;
+  --text-secondary: #615d59;
+  --text-body: #3f3b37;
+  --text-muted: #a39e98;
+  --background: #f6f5f4;
   --white: #ffffff;
-  --border: #e5e7eb;
+  --border: rgba(0, 0, 0, 0.09);
+  --shadow-card: 0 1rpx 4rpx rgba(0, 0, 0, 0.04), 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--background);
@@ -23,10 +29,11 @@ page {
 /* ── 卡片 ── */
 .card {
   background: var(--white);
-  border-radius: 16rpx;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+  border: 1rpx solid var(--border);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--shadow-card);
 }
 
 .card-title {
@@ -85,11 +92,11 @@ page {
 }
 
 .banner-hero {
-  background: linear-gradient(135deg, #0ea5e9, #d946ef);
+  background: var(--primary);
 }
 
 .banner-accent {
-  background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+  background: var(--primary);
 }
 
 .banner-title {
@@ -180,7 +187,12 @@ page {
   color: var(--primary);
   background: var(--primary-light);
   padding: 4rpx 16rpx;
-  border-radius: 8rpx;
+  border-radius: 999rpx;
+}
+
+.button-inverted {
+  background: var(--white);
+  color: var(--primary);
 }
 
 .bottom-tip {

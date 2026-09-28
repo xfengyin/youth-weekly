@@ -6,13 +6,13 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#0ea5e9",
+    "navigationBarBackgroundColor": "#0075de",
     "navigationBarTitleText": "青年周刊",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#0ea5e9",
+    "color": "#a39e98",
+    "selectedColor": "#0075de",
     "backgroundColor": "#ffffff",
     "list": [
       {

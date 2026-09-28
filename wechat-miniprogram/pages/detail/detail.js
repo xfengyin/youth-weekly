@@ -1,5 +1,10 @@
 const { fetchIssue, sanitizeSlug } = require('../../utils/request')
 
+/* 渲染用色与 app.wxss / Web 端设计令牌保持一致 */
+const BRAND = '#0075de'
+const CODE_BG = '#f6f5f4'
+const BORDER = 'rgba(0, 0, 0, 0.09)'
+
 Page({
   data: {
     issue: null,
@@ -72,7 +77,7 @@ Page({
   inline(text) {
     let s = text
       .replace(/\*\*(.+?)\*\*/g, '<text style="font-weight:bold">$1</text>')
-      .replace(/`([^`]+)`/g, '<text style="font-family:monospace;background:#f3f4f6;padding:0 6rpx;border-radius:6rpx;">$1</text>')
+      .replace(/`([^`]+)`/g, '<text style="font-family:monospace;background:' + CODE_BG + ';padding:0 6rpx;border-radius:6rpx;">$1</text>')
       // 链接与图片只保留可见文本（不注入 href，避免外链跳转风险）；
       // 支持一层嵌套括号的 URL（如 javascript:alert(1)）
       .replace(/!\[([^\]]*)\]\(((?:[^()]|\([^()]*\))*)\)/g, '$1')
@@ -104,7 +109,7 @@ Page({
           // 内容已在顶层 escapeHtml 中转义，直接拼接（勿再转义，避免 &lt; 变 &amp;lt;）
           const code = codeLines.join('\n')
           blocks.push(
-            `<view style="background:#f3f4f6;border-radius:12rpx;padding:20rpx;margin:16rpx 0;font-family:monospace;font-size:24rpx;white-space:pre-wrap;">${code}</view>`
+            `<view style="background:${CODE_BG};border-radius:12rpx;padding:20rpx;margin:16rpx 0;font-family:monospace;font-size:24rpx;white-space:pre-wrap;">${code}</view>`
           )
           codeLines = null
         }
@@ -121,7 +126,7 @@ Page({
         const level = Math.min(m[1].length, 6)
         const size = level <= 1 ? 36 : level === 2 ? 32 : 30
         blocks.push(
-          `<view style="font-size:${size}rpx;font-weight:bold;margin:32rpx 0 16rpx 0;color:#0ea5e9;">${this.inline(m[2])}</view>`
+          `<view style="font-size:${size}rpx;font-weight:bold;margin:32rpx 0 16rpx 0;color:${BRAND};">${this.inline(m[2])}</view>`
         )
         return
       }
@@ -130,7 +135,7 @@ Page({
       m = line.match(/^&gt;\s?(.*)$/)
       if (m) {
         blocks.push(
-          `<view style="border-left:6rpx solid #0ea5e9;padding-left:20rpx;margin:16rpx 0;color:#6b7280;">${this.inline(m[1])}</view>`
+          `<view style="border-left:6rpx solid ${BRAND};padding-left:20rpx;margin:16rpx 0;color:#615d59;">${this.inline(m[1])}</view>`
         )
         return
       }
@@ -138,7 +143,7 @@ Page({
       // 分隔线（--- / ***）
       if (/^-{3,}$/.test(line) || /^\*{3,}$/.test(line)) {
         blocks.push(
-          `<view style="height:2rpx;background:#e5e7eb;margin:24rpx 0;"></view>`
+          `<view style="height:2rpx;background:${BORDER};margin:24rpx 0;"></view>`
         )
         return
       }
@@ -148,7 +153,7 @@ Page({
       if (m) {
         blocks.push(
           `<view style="margin:12rpx 0;padding-left:30rpx;position:relative;line-height:1.7;">` +
-            `<view style="position:absolute;left:0;top:14rpx;width:12rpx;height:12rpx;background:#0ea5e9;border-radius:50%;"></view>` +
+            `<view style="position:absolute;left:0;top:14rpx;width:12rpx;height:12rpx;background:${BRAND};border-radius:50%;"></view>` +
             `${this.inline(m[1])}</view>`
         )
         return
@@ -187,7 +192,7 @@ Page({
     // 未闭合代码块：原样收尾（内容已转义，直接拼接）
     if (codeLines !== null) {
       blocks.push(
-        `<view style="background:#f3f4f6;border-radius:12rpx;padding:20rpx;margin:16rpx 0;font-family:monospace;font-size:24rpx;white-space:pre-wrap;">${codeLines.join('\n')}</view>`
+        `<view style="background:${CODE_BG};border-radius:12rpx;padding:20rpx;margin:16rpx 0;font-family:monospace;font-size:24rpx;white-space:pre-wrap;">${codeLines.join('\n')}</view>`
       )
     }
 

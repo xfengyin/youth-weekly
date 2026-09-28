@@ -68,7 +68,7 @@
     <view class="banner-subtitle" style="margin-bottom: 24rpx;">
       每周一更新，不错过任何精彩内容
     </view>
-    <button class="button" style="background: white; color: #0ea5e9;" open-type="share">
+    <button class="button button-inverted" open-type="share">
       分享给朋友
     </button>
   </view>
