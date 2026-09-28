@@ -96,7 +96,7 @@ export function MarkdownFallback({ content, headingIds, toc }: MarkdownFallbackP
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className={`block text-sm hover:text-[#e60012] transition-colors ${
+                className={`block text-sm hover:text-[#0075de] transition-colors ${
                   item.level === 3 ? 'pl-4 text-[#615d59] dark:text-[#a39e98]' : 'font-semibold'
                 }`}
               >

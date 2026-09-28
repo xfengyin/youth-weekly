@@ -36,7 +36,7 @@ export default function IssueShell({
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-6">
           <Link
             href="/issues/"
-            className="inline-flex items-center text-[13px] font-bold tracking-wide text-[#615d59] dark:text-[#a39e98] hover:text-[#e60012] dark:hover:text-[#ff5a5f] transition-colors"
+            className="inline-flex items-center text-[13px] font-bold tracking-wide text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             返回周刊列表
@@ -46,7 +46,7 @@ export default function IssueShell({
         {/* ── 封面 ── */}
         <header className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-6 pb-10">
           {/* 顶部信息条 */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-y-2 border-black dark:border-white py-2 text-[11px] md:text-xs font-bold uppercase tracking-[0.18em] text-[rgba(0,0,0,0.8)] dark:text-[rgba(255,255,255,0.8)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-y border-[var(--color-border-strong)] py-2 text-[11px] md:text-xs font-bold uppercase tracking-[0.18em] text-[rgba(0,0,0,0.8)] dark:text-[rgba(255,255,255,0.8)]">
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" />
               {issue.date}
@@ -56,7 +56,7 @@ export default function IssueShell({
               <Clock className="w-3.5 h-3.5" />
               约 {minutes} 分钟
             </span>
-            <span className="text-[#e60012] dark:text-[#ff5a5f]">定价：免费</span>
+            <span className="text-[#0075de] dark:text-[#62aef0]">定价：免费</span>
           </div>
 
           {/* 刊头 masthead */}
@@ -66,7 +66,7 @@ export default function IssueShell({
                 青年周刊
               </h1>
               <div className="mt-2 flex items-center gap-3">
-                <span className="h-1.5 w-14 bg-[#e60012]" aria-hidden="true" />
+                <span className="h-1.5 w-14 bg-[#0075de]" aria-hidden="true" />
                 <span className="text-[11px] md:text-xs font-black uppercase tracking-[0.42em] text-[#615d59] dark:text-[#a39e98]">
                   Youth Weekly
                 </span>
@@ -83,13 +83,13 @@ export default function IssueShell({
             <IssueCover
               src={cover}
               alt={`${issue.title} 封面`}
-              className="aspect-[16/10] w-full border-2 border-black dark:border-white shadow-[6px_6px_0_rgba(0,0,0,0.85)] dark:shadow-[6px_6px_0_rgba(255,255,255,0.75)] overflow-hidden"
-              imgClassName="aspect-[16/10] w-full object-cover border-2 border-black dark:border-white shadow-[6px_6px_0_rgba(0,0,0,0.85)] dark:shadow-[6px_6px_0_rgba(255,255,255,0.75)]"
+              className="aspect-[16/10] w-full rounded-notion-lg border border-[var(--color-border)] shadow-[var(--shadow-card)] overflow-hidden"
+              imgClassName="aspect-[16/10] w-full object-cover rounded-notion-lg"
             />
 
-            <div className="flex flex-col justify-between border-2 border-black dark:border-white bg-white dark:bg-[#1b1a18] p-6 md:p-7 shadow-[6px_6px_0_rgba(0,0,0,0.85)] dark:shadow-[6px_6px_0_rgba(255,255,255,0.75)]">
+            <div className="flex flex-col justify-between border border-[var(--color-border)] bg-white dark:bg-[#1b1a18] p-6 md:p-7 shadow-[var(--shadow-card)]">
               <div>
-                <span className="inline-block bg-[#e60012] px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-white">
+                <span className="inline-block bg-[#0075de] px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-white">
                   封面故事
                 </span>
                 <h2 className="mt-4 text-xl md:text-2xl font-black leading-snug text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
@@ -103,7 +103,7 @@ export default function IssueShell({
               </div>
 
               {highlights.length > 0 && (
-                <div className="mt-6 pt-5 border-t border-dashed border-black/25 dark:border-white/25">
+                <div className="mt-6 pt-5 border-t border-dashed border-[var(--color-border)]">
                   <div className="text-[11px] font-black uppercase tracking-[0.24em] text-[#8d8781] mb-2.5">
                     本期看点
                   </div>
@@ -111,7 +111,7 @@ export default function IssueShell({
                     {highlights.map((name) => (
                       <li
                         key={name}
-                        className="border border-black/30 dark:border-white/30 px-2.5 py-1 text-[12px] font-bold text-[rgba(0,0,0,0.8)] dark:text-[rgba(255,255,255,0.8)]"
+                        className="border border-[var(--color-border-strong)] px-2.5 py-1 text-[12px] font-bold text-[rgba(0,0,0,0.8)] dark:text-[rgba(255,255,255,0.8)]"
                       >
                         {name}
                       </li>
@@ -127,9 +127,9 @@ export default function IssueShell({
 
         {/* ── 卷尾：投稿 + 期次导航 ── */}
         <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-6">
-          <div className="border-2 border-black dark:border-white bg-white dark:bg-[#1b1a18] p-6 md:p-7 shadow-[6px_6px_0_rgba(0,0,0,0.85)] dark:shadow-[6px_6px_0_rgba(255,255,255,0.75)]">
+          <div className="border border-[var(--color-border)] bg-white dark:bg-[#1b1a18] p-6 md:p-7 shadow-[var(--shadow-card)]">
             <p className="font-black text-lg flex items-center gap-2 text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
-              <Heart className="w-5 h-5 text-[#e60012]" />
+              <Heart className="w-5 h-5 text-[#0075de]" />
               喜欢这期内容？
             </p>
             <p className="mt-2 text-[15px] text-[#3f3b37] dark:text-[#c9c4bd]">
@@ -138,7 +138,7 @@ export default function IssueShell({
                 href="https://github.com/xfengyin/youth-weekly/issues"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-bold text-[#e60012] hover:underline"
+                className="font-bold text-[#0075de] hover:underline"
               >
                 GitHub Issues
               </a>{' '}
@@ -150,12 +150,12 @@ export default function IssueShell({
             {older ? (
               <Link
                 href={`/issues/${older.slug}/`}
-                className="group flex flex-col gap-1.5 border-2 border-black dark:border-white bg-white dark:bg-[#1b1a18] p-5 transition-transform hover:-translate-y-0.5"
+                className="group flex flex-col gap-1.5 border border-[var(--color-border)] bg-white dark:bg-[#1b1a18] p-5 shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-card-hover)]"
               >
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8d8781] inline-flex items-center gap-1">
                   <ChevronLeft className="w-3.5 h-3.5" /> 上一期
                 </span>
-                <span className="font-bold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] line-clamp-2 group-hover:text-[#e60012] transition-colors">
+                <span className="font-bold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] line-clamp-2 group-hover:text-[#0075de] transition-colors">
                   {older.title}
                 </span>
                 <span className="text-xs text-[#a39e98]">{older.date}</span>
@@ -167,12 +167,12 @@ export default function IssueShell({
             {newer && (
               <Link
                 href={`/issues/${newer.slug}/`}
-                className="group flex flex-col items-end gap-1.5 border-2 border-black dark:border-white bg-white dark:bg-[#1b1a18] p-5 text-right transition-transform hover:-translate-y-0.5"
+                className="group flex flex-col items-end gap-1.5 border border-[var(--color-border)] bg-white dark:bg-[#1b1a18] p-5 text-right shadow-[var(--shadow-card)] transition-shadow hover:shadow-[var(--shadow-card-hover)]"
               >
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#8d8781] inline-flex items-center gap-1">
                   下一期 <ChevronRight className="w-3.5 h-3.5" />
                 </span>
-                <span className="font-bold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] line-clamp-2 group-hover:text-[#e60012] transition-colors">
+                <span className="font-bold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] line-clamp-2 group-hover:text-[#0075de] transition-colors">
                   {newer.title}
                 </span>
                 <span className="text-xs text-[#a39e98]">{newer.date}</span>
@@ -180,11 +180,11 @@ export default function IssueShell({
             )}
           </nav>
 
-          <div className="mt-8 flex justify-between border-t border-black/15 dark:border-white/15 pt-6">
-            <Link href="/issues/" className="text-sm font-bold text-[#e60012] hover:underline">
+          <div className="mt-8 flex justify-between border-t border-[var(--color-border)] pt-6">
+            <Link href="/issues/" className="text-sm font-bold text-[#0075de] hover:underline">
               ← 查看所有周刊
             </Link>
-            <Link href="/subscribe/" className="text-sm font-bold text-[#e60012] hover:underline">
+            <Link href="/subscribe/" className="text-sm font-bold text-[#0075de] hover:underline">
               订阅周刊 →
             </Link>
           </div>

@@ -141,7 +141,7 @@ describe('parseMagazine', () => {
 describe('sectionMeta', () => {
   it('已知栏目返回英文名与配色', () => {
     expect(sectionMeta('科技新势力').en).toBe('TECH')
-    expect(sectionMeta('刊首语').color).toBe('#e60012')
+    expect(sectionMeta('刊首语').color).toBe('#0075de')
   })
 
   it('未知栏目回退 FEATURE', () => {

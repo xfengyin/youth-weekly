@@ -27,7 +27,7 @@ export default function HeroSection({ issueCount, categoryCount, latestIssue }: 
 
             <h1 className="text-4xl md:text-[56px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-6 leading-[1.08] tracking-tight">
               欢迎来到
-              <span className="text-gradient block mt-1">青年周刊</span>
+              <span className="text-[#0075de] dark:text-[#62aef0] block mt-1">青年周刊</span>
             </h1>
 
             <p className="text-lg md:text-xl text-[#615d59] dark:text-[#a39e98] max-w-xl mb-10 leading-relaxed">
@@ -86,7 +86,7 @@ export default function HeroSection({ issueCount, categoryCount, latestIssue }: 
                 <IssueCover
                   src={coverUrl(latestIssue.slug)}
                   alt={`${latestIssue.title} 封面`}
-                  className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#0075de] via-[#2a9d99] to-[#8b5cf6]"
+                  className="absolute inset-0 w-full h-full bg-[#f6f5f4] dark:bg-[#202020]"
                   imgClassName="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 />
                 {/* 渐变遮罩 */}

@@ -95,7 +95,7 @@ export default function Header() {
             {mounted && (
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
+                className="p-2 rounded-md text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
                 aria-label={theme === 'dark' ? '切换到亮色主题' : '切换到暗色主题'}
                 aria-pressed={theme === 'dark'}
               >
@@ -110,7 +110,7 @@ export default function Header() {
             {/* RSS 入口（桌面端，与移动端菜单保持一致；next/link 自动加 basePath 前缀） */}
             <Link
               href="/rss.xml"
-              className="hidden md:inline-flex items-center p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
+              className="hidden md:inline-flex items-center p-2 rounded-md text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
               aria-label="RSS 订阅"
             >
               <Rss className="w-5 h-5" />
@@ -119,7 +119,7 @@ export default function Header() {
             {/* Subscribe CTA (Desktop) */}
             <Link
               href="/subscribe/"
-              className="hidden md:inline-flex items-center text-[15px] font-semibold text-white bg-[#0075de] hover:bg-[#005bab] px-4 py-1.5 rounded-[4px] transition-colors"
+              className="hidden md:inline-flex items-center text-[15px] font-semibold text-white bg-[#0075de] hover:bg-[#005bab] px-4 py-1.5 rounded-md transition-colors"
             >
               订阅
             </Link>
@@ -128,7 +128,7 @@ export default function Header() {
             <button
               ref={menuButtonRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-[4px] text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
+              className="md:hidden p-2 rounded-md text-[#615d59] dark:text-[#a39e98] hover:bg-[#f6f5f4] dark:hover:bg-[rgba(255,255,255,0.08)] transition-colors"
               aria-label="菜单"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu"

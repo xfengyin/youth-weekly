@@ -22,9 +22,9 @@ export default function IssueCover({ src, alt, className = '', imgClassName = ''
       <div
         role="img"
         aria-label={alt}
-        className={`flex items-center justify-center bg-gradient-to-br from-[#0075de] via-[#2a9d99] to-[#8b5cf6] ${className}`}
+        className={`flex items-center justify-center bg-[#f6f5f4] dark:bg-[#202020] ${className}`}
       >
-        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-white text-2xl font-bold">
+        <div className="w-16 h-16 rounded-full bg-[#0075de]/10 flex items-center justify-center text-[#0075de] dark:text-[#62aef0] text-2xl font-bold">
           刊
         </div>
       </div>

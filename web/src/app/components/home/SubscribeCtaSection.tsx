@@ -14,7 +14,7 @@ export default function SubscribeCtaSection() {
         </p>
         <Link
           href="/subscribe/"
-          className="inline-flex items-center justify-center px-8 py-3 bg-white text-[#0075de] font-semibold text-[15px] rounded-[4px] hover:bg-[#f6f5f4] transition-colors"
+          className="inline-flex items-center justify-center px-8 py-3 bg-white text-[#0075de] font-semibold text-[15px] rounded-md hover:bg-[#f6f5f4] transition-colors"
         >
           立即订阅
           <ArrowRight className="w-5 h-5 ml-2" />

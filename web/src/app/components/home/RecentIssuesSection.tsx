@@ -29,7 +29,7 @@ export default function RecentIssuesSection({ issues, totalCount }: RecentIssues
                 <IssueCover
                   src={coverUrl(issue.slug)}
                   alt={`${issue.title} 封面`}
-                  className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#0075de] via-[#2a9d99] to-[#8b5cf6]"
+                  className="absolute inset-0 w-full h-full bg-[#f6f5f4] dark:bg-[#202020]"
                   imgClassName="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                 />
                 <span className="absolute top-3 left-3 badge !bg-white/90 dark:!bg-black/60 !text-[#0075de] dark:!text-[#62aef0]">

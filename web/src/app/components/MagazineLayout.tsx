@@ -10,7 +10,7 @@ function ArticleCard({
   accent: string
 }) {
   return (
-    <article className="group relative flex flex-col bg-white dark:bg-[#1b1a18] border border-black/10 dark:border-white/10 p-5 md:p-6 shadow-[4px_4px_0_rgba(0,0,0,0.06)] dark:shadow-[4px_4px_0_rgba(255,255,255,0.04)] transition-transform duration-200 hover:-translate-y-0.5">
+    <article className="group relative flex flex-col bg-white dark:bg-[#1b1a18] border border-[var(--color-border)] p-5 md:p-6 shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-[var(--shadow-card-hover)]">
       <span className="absolute left-0 top-0 h-full w-1" style={{ backgroundColor: accent }} aria-hidden="true" />
       {article.title && (
         <h3 className="text-lg md:text-xl font-bold leading-snug text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-3">
@@ -18,13 +18,13 @@ function ArticleCard({
         </h3>
       )}
       {article.body && (
-        <div className="mag-article-body prose-mag text-[15px] leading-[1.85] text-[#3f3b37] dark:text-[#c9c4bd]">
+        <div className="prose-mag text-[15px] leading-[1.85] text-[#3f3b37] dark:text-[#c9c4bd]">
           <ArticleBody markdown={article.body} />
         </div>
       )}
       {(article.source || article.url) && (
         <footer className="mt-auto pt-4 flex items-center justify-between gap-3">
-          <span className="text-[11px] tracking-wide uppercase font-semibold text-[#8d8781] dark:text-[#8d8781]">
+          <span className="text-[11px] tracking-wide uppercase font-semibold text-[#8d8781]">
             {article.source ? `via ${article.source}` : ''}
           </span>
           {article.url && (
@@ -47,7 +47,7 @@ function ArticleCard({
 /** 空栏目占位（保留杂志栏目完整性） */
 function EmptySection({ accent }: { accent: string }) {
   return (
-    <div className="border-2 border-dashed border-black/15 dark:border-white/15 px-6 py-10 text-center">
+    <div className="border border-dashed border-[var(--color-border-strong)] px-6 py-10 text-center">
       <p className="text-sm text-[#8d8781]">本期该栏目暂无精选内容</p>
       <a
         href="https://github.com/xfengyin/youth-weekly/issues"
@@ -74,7 +74,7 @@ function MagazineSectionBlock({
   return (
     <section
       id={`section-${index + 1}`}
-      className="scroll-mt-24 border-t-2 border-black/85 dark:border-white/80"
+      className="scroll-mt-24 border-t border-[var(--color-border-strong)]"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 md:py-12">
         {/* 栏目标题：大号序号 + 英文栏目名 + 中文栏目名 + 导语 */}
@@ -135,7 +135,7 @@ export default function MagazineLayout({ sections }: { sections: MagazineSection
     <>
       {/* ── 目次 ── */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="flex items-end justify-between border-b-4 border-black dark:border-white pb-3 mb-6">
+        <div className="flex items-end justify-between border-b-2 border-[var(--color-border-strong)] pb-3 mb-6">
           <h2 className="text-3xl md:text-4xl font-black tracking-[0.18em] text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
             目 次
           </h2>

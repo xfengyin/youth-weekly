@@ -46,7 +46,7 @@ export interface MagazineIssue {
 
 /** 内置栏目 → 英文名 + 主色（未知栏目回退 FEATURE/墨黑） */
 const SECTION_META: Array<{ key: string; en: string; color: string }> = [
-  { key: '刊首语', en: "EDITOR'S NOTE", color: '#e60012' },
+  { key: '刊首语', en: "EDITOR'S NOTE", color: '#0075de' },
   { key: '科技新势力', en: 'TECH', color: '#1657a8' },
   { key: '二次元次元壁', en: 'ACG', color: '#c2185b' },
   { key: '游戏研究所', en: 'GAMES', color: '#1aae39' },

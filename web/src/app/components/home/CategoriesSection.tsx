@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { type Category } from '../../lib/content'
-import { categoryVisual } from '../../lib/category-visual'
 
 /** 首页“内容板块”：渐变图标卡网格 */
 export default function CategoriesSection({ categories }: { categories: Category[] }) {
@@ -18,9 +17,7 @@ export default function CategoriesSection({ categories }: { categories: Category
               href={`/categories/#${encodeURIComponent(category.name)}`}
               className="card card-hover p-6 text-center group"
             >
-              <div
-                className={`category-icon-card mx-auto mb-4 bg-gradient-to-br ${categoryVisual(category.id).gradient}`}
-              >
+              <div className="category-icon-card mx-auto mb-4">
                 <span aria-hidden="true">{category.icon}</span>
               </div>
               <h3 className="font-bold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-1.5 group-hover:text-[#0075de] dark:group-hover:text-[#62aef0] transition-colors">

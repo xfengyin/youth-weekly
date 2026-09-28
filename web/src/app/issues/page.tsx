@@ -29,19 +29,19 @@ export default function IssuesPage() {
           <header className="mb-10">
             <Link
               href="/"
-              className="mb-6 inline-flex items-center text-[13px] font-bold tracking-wide text-[#615d59] dark:text-[#a39e98] transition-colors hover:text-[#e60012] dark:hover:text-[#ff5a5f]"
+              className="mb-6 inline-flex items-center text-[13px] font-bold tracking-wide text-[#615d59] dark:text-[#a39e98] transition-colors hover:text-[#0075de] dark:hover:text-[#62aef0]"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
               返回首页
             </Link>
 
-            <div className="flex flex-wrap items-end justify-between gap-4 border-b-4 border-black pb-4 dark:border-white">
+            <div className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-[var(--color-border-strong)] pb-4">
               <div>
                 <h1 className="mag-masthead text-5xl leading-none text-[rgba(0,0,0,0.95)] sm:text-6xl dark:text-[rgba(255,255,255,0.95)]">
                   青年周刊
                 </h1>
                 <div className="mt-2 flex items-center gap-3">
-                  <span className="h-1.5 w-14 bg-[#e60012]" aria-hidden="true" />
+                  <span className="h-1.5 w-14 bg-[#0075de]" aria-hidden="true" />
                   <span className="text-[11px] font-black uppercase tracking-[0.4em] text-[#615d59] dark:text-[#a39e98]">
                     Back Issues
                   </span>
@@ -55,25 +55,25 @@ export default function IssuesPage() {
           {latest && (
             <Link
               href={`/issues/${latest.slug}/`}
-              className="group mb-14 grid gap-6 border-2 border-black bg-white p-5 shadow-[8px_8px_0_rgba(0,0,0,0.85)] transition-transform duration-200 hover:-translate-y-0.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-8 md:p-7 dark:border-white dark:bg-[#1b1a18] dark:shadow-[8px_8px_0_rgba(255,255,255,0.75)]"
+              className="group mb-14 grid gap-6 border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-[var(--shadow-card-hover)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-8 md:p-7 dark:bg-[#1b1a18]"
             >
               <div className="relative">
                 <IssueCover
                   src={coverUrl(latest.slug)}
                   alt={`${latest.title} 封面`}
-                  className="aspect-[3/4] w-full border-2 border-black object-cover dark:border-white"
-                  imgClassName="aspect-[3/4] w-full border-2 border-black object-cover dark:border-white"
+                  className="aspect-[3/4] w-full object-cover"
+                  imgClassName="aspect-[3/4] w-full object-cover"
                 />
-                <span className="absolute left-0 top-0 bg-[#e60012] px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-white">
+                <span className="absolute left-0 top-0 bg-[#0075de] px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-white">
                   最新一期
                 </span>
               </div>
 
               <div className="flex flex-col justify-center">
-                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#e60012]">
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-[#0075de]">
                   Cover Story
                 </span>
-                <h2 className="mt-3 text-2xl font-black leading-snug text-[rgba(0,0,0,0.95)] transition-colors group-hover:text-[#e60012] md:text-3xl dark:text-[rgba(255,255,255,0.95)]">
+                <h2 className="mt-3 text-2xl font-black leading-snug text-[rgba(0,0,0,0.95)] transition-colors group-hover:text-[#0075de] md:text-3xl dark:text-[rgba(255,255,255,0.95)]">
                   {latest.title}
                 </h2>
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px] text-[#615d59] dark:text-[#a39e98]">
@@ -88,7 +88,7 @@ export default function IssuesPage() {
                     {latest.description}
                   </p>
                 )}
-                <span className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-black text-[#e60012]">
+                <span className="mt-6 inline-flex items-center gap-1.5 text-[15px] font-black text-[#0075de]">
                   阅读本期
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
@@ -99,7 +99,7 @@ export default function IssuesPage() {
           {/* ── 往期：封面网格 ── */}
           {rest.length > 0 && (
             <>
-              <div className="mb-6 flex items-end justify-between border-b-2 border-black pb-2 dark:border-white">
+              <div className="mb-6 flex items-end justify-between border-b-2 border-[var(--color-border-strong)] pb-2">
                 <h2 className="text-2xl font-black tracking-[0.16em] text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)]">
                   往期回顾
                 </h2>
@@ -111,7 +111,7 @@ export default function IssuesPage() {
               <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6">
                 {rest.map((issue) => (
                   <Link key={issue.slug} href={`/issues/${issue.slug}/`} className="group">
-                    <div className="relative overflow-hidden border-2 border-black shadow-[5px_5px_0_rgba(0,0,0,0.8)] transition-transform duration-200 group-hover:-translate-y-1 dark:border-white dark:shadow-[5px_5px_0_rgba(255,255,255,0.7)]">
+                    <div className="relative overflow-hidden border border-[var(--color-border)] shadow-[var(--shadow-card)] transition-shadow duration-200 group-hover:shadow-[var(--shadow-card-hover)]">
                       <IssueCover
                         src={coverUrl(issue.slug)}
                         alt={`${issue.title} 封面`}
@@ -122,7 +122,7 @@ export default function IssuesPage() {
                         第{issue.issue}期
                       </span>
                     </div>
-                    <h3 className="mt-3 line-clamp-2 text-[15px] font-bold leading-snug text-[rgba(0,0,0,0.95)] transition-colors group-hover:text-[#e60012] dark:text-[rgba(255,255,255,0.95)]">
+                    <h3 className="mt-3 line-clamp-2 text-[15px] font-bold leading-snug text-[rgba(0,0,0,0.95)] transition-colors group-hover:text-[#0075de] dark:text-[rgba(255,255,255,0.95)]">
                       {issue.title}
                     </h3>
                     <p className="mt-1 text-[12px] text-[#8d8781]">{issue.date}</p>
@@ -133,11 +133,11 @@ export default function IssuesPage() {
           )}
 
           {/* ── 尾部 ── */}
-          <div className="mt-14 flex justify-between border-t border-black/15 pt-6 dark:border-white/15">
-            <Link href="/" className="text-sm font-bold text-[#e60012] hover:underline">
+          <div className="mt-14 flex justify-between border-t border-[var(--color-border)] pt-6">
+            <Link href="/" className="text-sm font-bold text-[#0075de] hover:underline">
               ← 返回首页
             </Link>
-            <Link href="/subscribe/" className="text-sm font-bold text-[#e60012] hover:underline">
+            <Link href="/subscribe/" className="text-sm font-bold text-[#0075de] hover:underline">
               订阅周刊 →
             </Link>
           </div>

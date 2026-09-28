@@ -41,7 +41,7 @@ export default function ReadingProgress() {
         className="h-full transition-[width] duration-150 ease-out"
         style={{
           width: `${progress}%`,
-          background: 'linear-gradient(90deg, #0075de, #62aef0)',
+          background: 'var(--color-brand)',
         }}
       />
     </div>

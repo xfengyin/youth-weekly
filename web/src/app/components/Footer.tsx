@@ -61,14 +61,14 @@ export default function Footer() {
               <a
                 href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/rss.xml`}
                 aria-label="RSS 订阅"
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eceae7] dark:bg-[rgba(255,255,255,0.08)] text-[#dd5b00] dark:text-[#ffb25e] hover:bg-[#dd5b00] hover:text-white dark:hover:bg-[#dd5b00] dark:hover:text-white transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eceae7] dark:bg-[rgba(255,255,255,0.08)] text-[#615d59] dark:text-[#a39e98] hover:bg-[#0075de] hover:text-white dark:hover:bg-[#0075de] dark:hover:text-white transition-colors"
               >
                 <Rss className="w-5 h-5" />
               </a>
               <a
                 href="mailto:youth-weekly@example.com"
                 aria-label="邮件联系"
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eceae7] dark:bg-[rgba(255,255,255,0.08)] text-[#615d59] dark:text-[#a39e98] hover:bg-[#1aae39] hover:text-white dark:hover:bg-[#1aae39] dark:hover:text-white transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eceae7] dark:bg-[rgba(255,255,255,0.08)] text-[#615d59] dark:text-[#a39e98] hover:bg-[#0075de] hover:text-white dark:hover:bg-[#0075de] dark:hover:text-white transition-colors"
               >
                 <Mail className="w-5 h-5" />
               </a>
@@ -117,7 +117,7 @@ export default function Footer() {
             </p>
             <p className="text-sm text-[#615d59] dark:text-[#a39e98] flex items-center">
               用
-              <Heart className="w-4 h-4 mx-1 text-[#dd5b00]" />
+              <Heart className="w-4 h-4 mx-1 text-[#eb5757]" />
               为年轻人创作
             </p>
             {/* 隐私政策与使用条款页面尚未建立，待真正需要时再创建（YAGNI） */}

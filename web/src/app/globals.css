@@ -2,27 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Notion Design System: CSS Custom Properties ── */
+/* ══════════════════════════════════════════════════════════════
+   设计令牌（Design Tokens）
+   - 中性灰阶（暖灰）+ 单一品牌主色（#0075de）+ 语义色
+   - 8px 间距体系（Tailwind 默认 4px 步进）
+   - 圆角：sm 6px / md 8px / lg 12px；阴影三级：sm / card / card-hover
+   - 与小程序端 app.wxss 的同名变量保持一致
+   ══════════════════════════════════════════════════════════════ */
 :root {
+  /* 中性灰阶 */
   --color-bg: #ffffff;
   --color-bg-alt: #f6f5f4;
   --color-text: rgba(0, 0, 0, 0.95);
   --color-text-secondary: #615d59;
   --color-text-muted: #a39e98;
-  --color-border: rgba(0, 0, 0, 0.1);
-  --color-blue: #0075de;
-  --color-blue-hover: #005bab;
-  --color-blue-light: #62aef0;
-  --color-blue-focus: #097fe8;
-  --color-badge-bg: #f2f9ff;
-  --color-badge-text: #097fe8;
+  --color-border: rgba(0, 0, 0, 0.09);
+  --color-border-strong: rgba(0, 0, 0, 0.16);
+
+  /* 品牌主色（单一） */
+  --color-brand: #0075de;
+  --color-brand-hover: #005bab;
+  --color-brand-light: #62aef0;
+  --color-brand-subtle-bg: #f2f9ff;
+  --color-brand-subtle-text: #097fe8;
+
+  /* 语义色 */
   --color-success: #1aae39;
   --color-warning: #dd5b00;
-  --color-error: #eb5757;
-  --notion-card-shadow: rgba(0, 0, 0, 0.04) 0px 4px 18px,
-    rgba(0, 0, 0, 0.027) 0px 2.025px 7.84688px,
-    rgba(0, 0, 0, 0.02) 0px 0.8px 2.925px,
-    rgba(0, 0, 0, 0.01) 0px 0.175px 1.04062px;
+  --color-danger: #eb5757;
+  --color-info: #0075de;
+  /* 兼容旧命名（后续统一迁移到 --color-brand / --color-danger） */
+  --color-blue: var(--color-brand);
+  --color-blue-hover: var(--color-brand-hover);
+  --color-blue-light: var(--color-brand-light);
+  --color-blue-focus: #097fe8;
+  --color-badge-bg: var(--color-brand-subtle-bg);
+  --color-badge-text: var(--color-brand-subtle-text);
+  --color-error: var(--color-danger);
+
+  /* 阴影层级 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 2px 6px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 /*
@@ -38,8 +59,12 @@
   --color-text-secondary: #a39e98;
   --color-text-muted: #615d59;
   --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(255, 255, 255, 0.2);
   --color-badge-bg: rgba(0, 117, 222, 0.15);
   --color-badge-text: #62aef0;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 2px 6px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 @layer base {
@@ -56,7 +81,7 @@
 }
 
 @layer components {
-  /* ── Prose Custom (Notion Style) ── */
+  /* ── Prose Custom（正文排版） ── */
   .prose-custom {
     @apply prose prose-lg dark:prose-invert max-w-none;
     line-height: 1.7;
@@ -65,31 +90,31 @@
   .prose-custom h1 {
     @apply text-3xl font-bold mt-10 mb-5;
     font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
-    color: rgba(0, 0, 0, 0.95);
+    color: var(--color-text);
     letter-spacing: -0.025em;
   }
 
   .prose-custom h2 {
     @apply text-2xl font-bold mt-8 mb-4;
     font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
-    color: rgba(0, 0, 0, 0.95);
+    color: var(--color-text);
     letter-spacing: -0.02em;
   }
 
   .prose-custom h3 {
     @apply text-xl font-semibold mt-6 mb-3;
     font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
-    color: rgba(0, 0, 0, 0.95);
+    color: var(--color-text);
   }
 
   .prose-custom h4 {
     @apply text-lg font-semibold mt-4 mb-2;
     font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
-    color: rgba(0, 0, 0, 0.95);
+    color: var(--color-text);
   }
 
   .prose-custom a {
-    color: var(--color-blue);
+    color: var(--color-brand);
     text-decoration: none;
     transition: color 0.15s;
   }
@@ -113,24 +138,7 @@
     padding: 0;
   }
 
-  .prose-custom blockquote {
-    @apply border-l-4 pl-5 my-6;
-    border-left-color: var(--color-blue);
-    color: var(--color-text-secondary);
-    font-style: normal;
-  }
-
-  /* Dark mode overrides for prose */
-  :is(.dark) .prose-custom h1,
-  :is(.dark) .prose-custom h2,
-  :is(.dark) .prose-custom h3,
-  :is(.dark) .prose-custom h4 {
-    color: rgba(255, 255, 255, 0.95);
-  }
-
-  /* ── 杂志化排版增强（t15）────────────────────────────── */
-
-  /* 标题锚点：sticky Header 下跳转不遮挡；h2 左侧序号条 */
+  /* 标题锚点：sticky Header 下跳转不遮挡；h2 左侧品牌色序号条 */
   .prose-custom h2,
   .prose-custom h3,
   .prose-custom h4 {
@@ -149,12 +157,12 @@
     bottom: 0.28em;
     width: 4px;
     border-radius: 2px;
-    background: linear-gradient(180deg, var(--color-blue), #62aef0);
+    background: var(--color-brand);
   }
 
   /* 表格：圆角容器 + 斑马纹，移动端横向滚动 */
   .prose-custom .contains-table {
-    @apply my-6 overflow-x-auto rounded-notion-lg border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)];
+    @apply my-6 overflow-x-auto rounded-notion-lg border border-[rgba(0,0,0,0.09)] dark:border-[rgba(255,255,255,0.1)];
   }
   .prose-custom table {
     @apply w-full text-sm leading-relaxed;
@@ -179,28 +187,21 @@
     border-bottom: none;
   }
 
-  /* 图片：居中 + 圆角 + 阴影 */
+  /* 图片：居中 + 圆角 + 轻阴影 */
   .prose-custom img {
-    @apply my-6 mx-auto rounded-notion-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)];
+    @apply my-6 mx-auto rounded-notion-lg;
+    box-shadow: var(--shadow-card);
   }
 
-  /* 引用：左侧渐变竖条 + 图标装饰 */
+  /* 引用：左侧品牌色竖条 + 浅品牌底色 */
   .prose-custom blockquote {
+    @apply pl-5 my-6;
     position: relative;
-    border-left: none;
-    padding-left: 1.25rem;
-    background: linear-gradient(90deg, rgba(0,117,222,0.07), transparent 70%);
+    border-left: 3px solid var(--color-brand);
+    background: rgba(0, 117, 222, 0.05);
     border-radius: 0 8px 8px 0;
-  }
-  .prose-custom blockquote::before {
-    content: '“';
-    position: absolute;
-    left: 0.15rem;
-    top: -0.35em;
-    font-size: 2.2em;
-    line-height: 1;
-    color: var(--color-blue);
-    opacity: 0.35;
+    color: var(--color-text-secondary);
+    font-style: normal;
   }
   .prose-custom blockquote p {
     margin: 0.35em 0;
@@ -215,19 +216,16 @@
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
-  /* ── Buttons (Notion Style) ── */
+  /* ── 按钮 ── */
   .btn-primary {
-    @apply font-semibold py-2 px-4 transition-all duration-150;
-    background: var(--color-blue);
+    @apply inline-flex items-center justify-center font-semibold py-2 px-4 transition-colors duration-150;
+    background: var(--color-brand);
     color: #ffffff;
     border: 1px solid transparent;
-    border-radius: 4px;
+    border-radius: 6px;
   }
   .btn-primary:hover {
-    background: var(--color-blue-hover);
-  }
-  .btn-primary:active {
-    transform: scale(0.97);
+    background: var(--color-brand-hover);
   }
   .btn-primary:focus-visible {
     outline: 2px solid var(--color-blue-focus);
@@ -235,64 +233,53 @@
   }
 
   .btn-secondary {
-    @apply font-semibold py-2 px-4 transition-all duration-150;
-    background: rgba(0, 0, 0, 0.05);
-    color: rgba(0, 0, 0, 0.95);
-    border: 1px solid transparent;
-    border-radius: 4px;
+    @apply inline-flex items-center justify-center font-semibold py-2 px-4 transition-colors duration-150;
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
   }
   .btn-secondary:hover {
-    background: rgba(0, 0, 0, 0.08);
-    transform: scale(1.02);
-  }
-  .btn-secondary:active {
-    transform: scale(0.97);
+    background: rgba(0, 0, 0, 0.07);
   }
   :is(.dark) .btn-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.06);
   }
   :is(.dark) .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
   }
 
-  /* ── Card (Notion Style) ── */
+  /* ── 卡片 ── */
   .card {
     @apply overflow-hidden;
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 12px;
-    box-shadow: var(--notion-card-shadow);
+    box-shadow: var(--shadow-card);
     transition: box-shadow 0.2s ease;
   }
   .card:hover {
-    box-shadow: rgba(0, 0, 0, 0.06) 0px 6px 24px,
-      rgba(0, 0, 0, 0.04) 0px 3px 10px,
-      rgba(0, 0, 0, 0.03) 0px 1px 4px;
+    box-shadow: var(--shadow-card-hover);
   }
 
-  /* ── Input (Notion Style) ── */
+  /* ── 输入框 ── */
   .input {
     @apply w-full px-3 py-2 text-base transition-colors duration-150;
     background: var(--color-bg);
-    color: rgba(0, 0, 0, 0.9);
-    border: 1px solid #dddddd;
-    border-radius: 4px;
+    color: var(--color-text);
+    border: 1px solid var(--color-border-strong);
+    border-radius: 6px;
   }
   .input:focus {
     @apply outline-none;
     border-color: var(--color-blue-focus);
-    box-shadow: 0 0 0 2px rgba(9, 127, 232, 0.2);
+    box-shadow: 0 0 0 3px rgba(0, 117, 222, 0.15);
   }
   .input::placeholder {
     color: var(--color-text-muted);
   }
-  :is(.dark) .input {
-    color: rgba(255, 255, 255, 0.9);
-    border-color: rgba(255, 255, 255, 0.15);
-  }
 
-  /* ── Callout Block (Notion Style) ── */
+  /* ── Callout 提示块 ── */
   .callout {
     @apply flex items-start gap-3 p-4 rounded-notion my-4;
     background: var(--color-bg-alt);
@@ -306,33 +293,19 @@
     color: var(--color-text-secondary);
   }
 
-  /* ── Pill Badge (Notion Style) ── */
+  /* ── 徽章 ── */
   .badge {
     @apply inline-flex items-center font-semibold text-xs tracking-wide;
     background: var(--color-badge-bg);
     color: var(--color-badge-text);
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 9999px;
     letter-spacing: 0.125px;
-  }
-
-  /* ── Bookmark Card (Notion Style) ── */
-  .bookmark-card {
-    @apply flex items-center gap-4 p-4 rounded-notion transition-shadow;
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-  }
-  .bookmark-card:hover {
-    box-shadow: var(--notion-card-shadow);
   }
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-500;
-  }
-
-  /* ── 动效（克制：fade-in-up / hover lift）── */
+  /* ── 动效（克制：fade-in-up）── */
   @keyframes fade-in-up {
     from {
       opacity: 0;
@@ -347,42 +320,28 @@
     animation: fade-in-up 0.5s ease-out both;
   }
 
-  /* 卡片悬浮：轻微上浮 + 阴影加深 */
+  /* 卡片悬浮：阴影加深（不做位移，保持克制） */
   .card-hover {
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease;
   }
   .card-hover:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      rgba(0, 0, 0, 0.08) 0px 12px 32px,
-      rgba(0, 0, 0, 0.04) 0px 4px 12px;
-  }
-  :is(.dark) .card-hover:hover {
-    box-shadow:
-      rgba(0, 0, 0, 0.5) 0px 12px 32px,
-      rgba(0, 0, 0, 0.3) 0px 4px 12px;
+    box-shadow: var(--shadow-card-hover);
   }
 
-  /* 分类渐变图标卡 */
+  /* 分类图标卡：中性浅底 + 细边框 */
   .category-icon-card {
     @apply flex items-center justify-center w-14 h-14 rounded-2xl text-3xl;
-    box-shadow: inset 0 -2px 6px rgba(0, 0, 0, 0.08);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
   }
 
   /* ── Serif Heading Utility ── */
   .font-serif-heading {
     font-family: var(--font-noto-serif-sc), 'Songti SC', 'SimSun', Georgia, serif;
   }
-
-  /* ── Warm Section Background ── */
-  .bg-warm {
-    background: var(--color-bg-alt);
-  }
 }
 
-/* ── Custom Scrollbar (Notion Style) ── */
+/* ── 自定义滚动条 ── */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -411,7 +370,7 @@
 
 /* ══════════════════════════════════════════════════════════════
    杂志版式（Magazine Layout）
-   参考《周刊少年Jump》《知音漫客》《看天下》的封面 / 目次 / 栏目 / 社论版式
+   保留刊头 / 目次 / 栏目的刊物结构，色彩统一为品牌主色
    ══════════════════════════════════════════════════════════════ */
 
 /* 纸张质感：暖白纸底 + 细网点 */
@@ -451,7 +410,7 @@
   line-height: 0.82;
   font-weight: 900;
   margin: 0.06em 0.12em 0 0;
-  color: #e60012;
+  color: var(--color-brand);
 }
 
 /* 文章正文（杂志内文） */
@@ -473,7 +432,7 @@
 }
 
 .prose-mag a {
-  color: #e60012;
+  color: var(--color-brand);
   text-decoration: none;
 }
 
@@ -492,7 +451,7 @@
 }
 
 .prose-mag blockquote {
-  border-left: 3px solid #e60012;
+  border-left: 3px solid var(--color-brand);
   padding-left: 0.9em;
   color: #615d59;
   font-style: normal;
@@ -514,5 +473,5 @@
 
 .prose-mag img {
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--color-border);
 }
