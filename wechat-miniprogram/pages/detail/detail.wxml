@@ -1,13 +1,13 @@
 <view class="container">
   <!-- 加载状态 -->
   <view wx:if="{{loading}}" class="loading">
-    <text style="color: #6b7280;">加载中...</text>
+    <text>加载中...</text>
   </view>
 
   <!-- 内容不存在（非法 slug / 无此期次） -->
   <view wx:elif="{{notFound}}" class="empty">
     <text>该期周刊不存在或已被移除</text>
-    <navigator url="/pages/list/list" open-type="switchTab" style="color: #0ea5e9; font-size: 28rpx; margin-top: 20rpx;">
+    <navigator url="/pages/list/list" open-type="switchTab" class="link-back" style="display: block; margin-top: 20rpx;">
       返回周刊列表
     </navigator>
   </view>
@@ -15,8 +15,8 @@
   <!-- 内容 -->
   <block wx:else>
     <!-- 头部信息 -->
-    <view class="card" style="background: linear-gradient(135deg, #0ea5e9, #8b5cf6); color: white;">
-      <view style="font-size: 26rpx; opacity: 0.9; margin-bottom: 16rpx;">
+    <view class="card banner banner-accent">
+      <view class="banner-subtitle" style="margin-bottom: 16rpx;">
         {{issue.date}} · 第{{issue.issue}}期
       </view>
       <view style="font-size: 40rpx; font-weight: bold; line-height: 1.4;">
@@ -37,8 +37,8 @@
     </view>
 
     <!-- 返回列表 -->
-    <view style="text-align: center; padding: 40rpx;">
-      <navigator url="/pages/list/list" open-type="switchTab" style="color: #0ea5e9; font-size: 28rpx;">
+    <view class="bottom-tip">
+      <navigator url="/pages/list/list" open-type="switchTab" class="link-back">
         ← 返回周刊列表
       </navigator>
     </view>
