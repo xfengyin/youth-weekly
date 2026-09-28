@@ -156,14 +156,6 @@ export function getIssueBySlug(slug: string): Issue | null {
 }
 
 /**
- * 获取搜索索引（与 /search/ 页客户端 fetch 的 search-data.json 同源）。
- */
-export function getSearchIndex(): SearchResult[] {
-  const data = readJson<SearchResult[]>('search-data.json')
-  return Array.isArray(data) ? data : []
-}
-
-/**
  * 站点分类（唯一来源：site-data.json，由 config.yaml 生成）。
  */
 export function getCategories(): Category[] {

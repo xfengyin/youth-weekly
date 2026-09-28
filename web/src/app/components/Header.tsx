@@ -5,26 +5,20 @@ import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useState, useEffect, useRef } from 'react'
 import { Sun, Moon, Menu, X, Rss } from 'lucide-react'
+import { useScrolled } from '../hooks/useScrolled'
 
 export default function Header() {
   const { theme, setTheme } = useTheme()
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  // 滚动后 Header 加深阴影（杂志感层次）
+  const scrolled = useScrolled(8)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // 移动菜单按钮引用：关闭后把焦点还给它，保证键盘导航不丢失
   const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     setMounted(true)
-  }, [])
-
-  // 滚动后 Header 加深阴影（杂志感层次）
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   /** 当前导航高亮（issues/[slug] 详情页也归属“周刊”） */

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Mail, Rss, Check } from 'lucide-react'
+import { Mail, Rss, Check } from 'lucide-react'
+import PageHeader from '../components/ui/PageHeader'
 
 interface SubscribeClientProps {
   contactEmail: string
@@ -33,22 +33,7 @@ export default function SubscribeClient({ contactEmail }: SubscribeClientProps) 
   return (
     <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-10">
-          <Link
-            href="/"
-            className="inline-flex items-center text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] font-semibold text-[15px] mb-5"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            返回首页
-          </Link>
-          <h1 className="text-3xl md:text-[40px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] leading-tight">
-            订阅青年周刊
-          </h1>
-          <p className="mt-3 text-[#615d59] dark:text-[#a39e98]">
-            每周一更新，不错过任何精彩内容
-          </p>
-        </div>
+        <PageHeader title="订阅青年周刊" description="每周一更新，不错过任何精彩内容" />
 
         {/* Subscription Options */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">

@@ -1,18 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
+import { useScrolled } from '../hooks/useScrolled'
 
 /** 返回顶部按钮：滚动超过一定距离后显示 */
 export default function BackToTop() {
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 600)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const visible = useScrolled(600)
 
   if (!visible) return null
 

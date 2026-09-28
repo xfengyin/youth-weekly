@@ -7,8 +7,7 @@
  * 3. 正常 slug 从 issue-<slug>.json 返回完整 Issue
  * 4. getAllIssues 从 issue_index.json 读取(已发布列表,按期号倒序)
  * 5. getCategories 从 site-data.json 读取分类
- * 6. getSearchIndex 从 search-data.json 读取搜索索引
- * 7. 缺少产物时抛出可操作错误
+ * 6. 缺少产物时抛出可操作错误
  */
 
 import path from 'path'
@@ -196,21 +195,6 @@ describe('content.ts（JSON 数据源）', () => {
       setPublicFiles({ 'robots.txt': 'User-agent: *' })
       const { getCategories } = require('../content')
       expect(() => getCategories()).toThrow(/site-data\.json/)
-    })
-  })
-
-  describe('getSearchIndex - 从 search-data.json 读取', () => {
-    it('返回搜索索引条目', () => {
-      setPublicFiles({
-        'search-data.json': [
-          { issue: 1, title: '创刊号', date: '2026-04-08', slug: '001', excerpt: '这是摘要...' },
-        ],
-      })
-      const { getSearchIndex } = require('../content')
-      const index = getSearchIndex()
-
-      expect(index).toHaveLength(1)
-      expect(index[0]).toMatchObject({ issue: 1, slug: '001', excerpt: '这是摘要...' })
     })
   })
 

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Archive } from 'lucide-react'
+import { Calendar, Archive } from 'lucide-react'
 import { getAllIssues } from '../lib/content'
+import PageHeader from '../components/ui/PageHeader'
+import EmptyState from '../components/ui/EmptyState'
 
 export const metadata: Metadata = {
   title: '文章归档',
@@ -32,22 +34,7 @@ export default function ArchivePage() {
   return (
     <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-10">
-          <Link
-            href="/"
-            className="inline-flex items-center text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] font-semibold text-[15px] mb-5"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            返回首页
-          </Link>
-          <h1 className="text-3xl md:text-[40px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] leading-tight">
-            文章归档
-          </h1>
-          <p className="mt-3 text-[#615d59] dark:text-[#a39e98]">
-            共 {issues.length} 期周刊
-          </p>
-        </div>
+        <PageHeader title="文章归档" description={`共 ${issues.length} 期周刊`} />
 
         {/* Archive by Year */}
         <div className="space-y-10">
@@ -89,12 +76,7 @@ export default function ArchivePage() {
 
         {/* Empty State */}
         {issues.length === 0 && (
-          <div className="text-center py-20">
-            <Archive className="w-14 h-14 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
-            <p className="text-[#615d59] dark:text-[#a39e98]">
-              暂无归档内容
-            </p>
-          </div>
+          <EmptyState icon={Archive} description="暂无归档内容" />
         )}
       </div>
     </div>

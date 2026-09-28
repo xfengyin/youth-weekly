@@ -2,16 +2,11 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import { Search, ArrowLeft, Calendar, X, AlertCircle } from 'lucide-react'
+import { Search, Calendar, X, AlertCircle } from 'lucide-react'
 import Fuse from 'fuse.js'
-
-interface SearchResult {
-  issue: number
-  title: string
-  date: string
-  slug: string
-  excerpt: string
-}
+import { type SearchResult } from '../lib/content'
+import PageHeader from '../components/ui/PageHeader'
+import EmptyState from '../components/ui/EmptyState'
 
 /**
  * 搜索页交互主体（客户端组件）。
@@ -80,19 +75,7 @@ export default function SearchClient() {
   return (
     <div className="min-h-screen bg-[#f6f5f4] dark:bg-[#202020] py-16">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-10">
-          <Link
-            href="/"
-            className="inline-flex items-center text-[#615d59] dark:text-[#a39e98] hover:text-[#0075de] dark:hover:text-[#62aef0] font-semibold text-[15px] mb-5"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            返回首页
-          </Link>
-          <h1 className="text-3xl md:text-[40px] font-bold font-serif-heading text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] leading-tight">
-            搜索
-          </h1>
-        </div>
+        <PageHeader title="搜索" />
 
         {/* Search Input */}
         <div className="relative mb-8">
@@ -182,27 +165,21 @@ export default function SearchClient() {
 
         {/* Empty State */}
         {!isLoading && query && results.length === 0 && (
-          <div className="text-center py-20">
-            <Search className="w-14 h-14 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
-            <h3 className="text-lg font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2">
-              未找到相关内容
-            </h3>
-            <p className="text-[#615d59] dark:text-[#a39e98]">
-              请尝试使用其他关键词搜索
-            </p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title="未找到相关内容"
+            description="请尝试使用其他关键词搜索"
+          />
         )}
 
         {/* Initial State */}
         {!isLoading && !query && (
-          <div className="text-center py-20">
-            <Search className="w-14 h-14 text-[#615d59] dark:text-[#a39e98] mx-auto mb-5" />
-            <h3 className="text-lg font-semibold text-[rgba(0,0,0,0.95)] dark:text-[rgba(255,255,255,0.95)] mb-2">
-              开始搜索
-            </h3>
-            <p className="text-[#615d59] dark:text-[#a39e98] mb-8">
-              输入关键词搜索周刊内容
-            </p>
+          <EmptyState
+            icon={Search}
+            title="开始搜索"
+            description="输入关键词搜索周刊内容"
+            descriptionClassName="mb-8"
+          >
             <div className="flex flex-wrap justify-center gap-2">
               {['AI工具', '游戏评测', '职场指南', '书籍推荐'].map((tag) => (
                 <button
@@ -215,7 +192,7 @@ export default function SearchClient() {
                 </button>
               ))}
             </div>
-          </div>
+          </EmptyState>
         )}
       </div>
     </div>

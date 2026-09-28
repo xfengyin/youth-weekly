@@ -100,7 +100,7 @@ const config: Config = {
         'notion-hover':
           'rgba(0,0,0,0.06) 0px 6px 24px, rgba(0,0,0,0.04) 0px 3px 10px, rgba(0,0,0,0.03) 0px 1px 4px',
       },
-      typography: (theme: any) => ({
+      typography: (theme: (path: string) => string) => ({
         DEFAULT: {
           css: {
             color: '#37352f',

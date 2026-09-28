@@ -1,3 +1,4 @@
+import { type ComponentPropsWithoutRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { type TocItem } from '../lib/toc'
@@ -8,6 +9,22 @@ import { type TocItem } from '../lib/toc'
  * 2. 外链自动 target="_blank" rel="noopener noreferrer"。
  * 3. 正文 h1 降级为 h2，避免与页面级 h1 并存。
  */
+
+type MarkdownLinkProps = ComponentPropsWithoutRef<'a'> & { node?: unknown }
+
+/** 统一链接渲染：外链在新标签打开并阻断反向 tabnabbing */
+function MarkdownLink({ node: _node, href, children, ...props }: MarkdownLinkProps) {
+  const isExternal = typeof href === 'string' && /^https?:\/\//.test(href)
+  return (
+    <a
+      href={href}
+      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      {...props}
+    >
+      {children}
+    </a>
+  )
+}
 
 interface MarkdownRendererProps {
   content: string
@@ -36,18 +53,7 @@ function MarkdownRenderer({ content, headingIds }: MarkdownRendererProps) {
             {children}
           </h3>
         ),
-        a: ({ node: _node, href, children, ...props }) => {
-          const isExternal = typeof href === 'string' && /^https?:\/\//.test(href)
-          return (
-            <a
-              href={href}
-              {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              {...props}
-            >
-              {children}
-            </a>
-          )
-        },
+        a: MarkdownLink,
       }}
     >
       {content}
@@ -61,18 +67,7 @@ export function ArticleBody({ markdown }: { markdown: string }) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        a: ({ node: _node, href, children, ...props }) => {
-          const isExternal = typeof href === 'string' && /^https?:\/\//.test(href)
-          return (
-            <a
-              href={href}
-              {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              {...props}
-            >
-              {children}
-            </a>
-          )
-        },
+        a: MarkdownLink,
       }}
     >
       {markdown}
