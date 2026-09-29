@@ -15,7 +15,7 @@ permissions:
 # 并发控制：同 ref 上取消旧的运行，避免重复浪费
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true   # Gitea 侧必须为 true：条件表达式在 push 时为 false，同样会堵死并发组
 
 jobs:
   # 合并 lint + test + build + cli-smoke 为单一矩阵作业

@@ -22,7 +22,7 @@ permissions:
 # 周刊生成原子性：同 workflow 下串行进行，新运行不打断旧运行。
 concurrency:
   group: "weekly-publish-${{ github.workflow }}"
-  cancel-in-progress: false  # 周刊生成不可打断
+  cancel-in-progress: true   # Gitea 侧必须为 true：false 时一个卡住的 run 会永久堵死并发组
 
 jobs:
   weekly-publish:
