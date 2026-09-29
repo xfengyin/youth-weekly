@@ -34,8 +34,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Gitea 只对带 needs 的 job 求值 job 级 if（见 gitea-flow skill）。
+  # 没有这个占位 job，下面的 build/deploy 会在 Gitea 上永久排队。
+  # 另外 Gitea 不支持 upload-artifact@v4（upload-pages-artifact 内部用的就是它），
+  # 会报 GHESNotSupportedError —— 这两个 job 本来就只能在 github.com 上跑。
+  preflight:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 说明
+        run: echo "GitHub Pages 部署只在 github.com 上执行；Gitea 上到此为止。"
+
   build:
     name: Build & Upload Artifact
+    needs: preflight
+    if: github.server_url == 'https://github.com'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
 
@@ -175,7 +187,8 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-24.04
-    needs: build
+    needs: [preflight, build]
+    if: github.server_url == 'https://github.com'
     timeout-minutes: 10
     # deploy-pages v4 要求绑定 github-pages environment；
     # 若仓库未配置 protection rules，绑定 environment 不会阻塞自动部署。
