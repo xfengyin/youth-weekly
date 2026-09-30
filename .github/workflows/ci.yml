@@ -7,6 +7,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  # Gitea 没有单 job rerun API，只能 push 重跑；放开手动触发，随时可重跑而不必加空提交
+  workflow_dispatch:
 
 # 最小化权限：CI 流水线只读仓库
 permissions:
