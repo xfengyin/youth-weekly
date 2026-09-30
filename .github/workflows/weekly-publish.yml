@@ -125,7 +125,7 @@ jobs:
       # GITHUB_TOKEN 的 push 不会触发其他 workflow（GitHub 防递归机制），
       # 所以必须在提交后显式调用 deploy.yml 的 workflow_dispatch。
       - name: Trigger deploy workflow
-        if: steps.commit.outputs.no_changes == 'false'
+        if: steps.commit.outputs.no_changes == 'false' && github.server_url == 'https://github.com'
         run: |
           curl -sS -f -X POST \
             -H "Authorization: Bearer ${{ github.token }}" \

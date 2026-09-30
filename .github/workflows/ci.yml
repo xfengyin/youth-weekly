@@ -79,7 +79,7 @@ jobs:
           uv run pytest --cov=youth_weekly --cov-report=xml --cov-report=term --cov-fail-under=70
 
       - name: Upload coverage
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.12' && github.server_url == 'https://github.com'
         uses: codecov/codecov-action@v6
         with:
           files: ./scripts/coverage.xml
